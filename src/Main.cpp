@@ -2,6 +2,7 @@
  * Main playground for testing code.
  */
 
+#include "PolygonDemo.hpp"
 #include "SDL2/Error.hpp"
 #include "SDL2/UniquePointer.hpp"
 #include <SDL.h>
@@ -39,8 +40,8 @@ int main() {
 
   bool program_running = true;
   auto [window, renderer] = makeWindowAndRenderer();
-  auto last_print_time = std::chrono::steady_clock::now();
   auto time_delta = 0us;
+  PolygonDemo demo;
 
   while (program_running) {
     const auto frame_start_time = std::chrono::steady_clock::now();
@@ -53,21 +54,14 @@ int main() {
       }
     }
 
+    SDL_SetRenderDrawColor(renderer.get(), 0, 0, 0, 255);
     SDL_RenderClear(renderer.get());
+    demo.handleFrame(renderer.get(), time_delta);
     SDL_RenderPresent(renderer.get());
 
     const auto frame_duration = std::chrono::steady_clock::now() - frame_start_time;
     std::this_thread::sleep_for(std::chrono::microseconds{1s} / 60 - frame_duration);
     time_delta = std::chrono::duration_cast<std::chrono::microseconds>(
         std::chrono::steady_clock::now() - frame_start_time);
-
-    if (std::chrono::steady_clock::now() - last_print_time > 1s) {
-      std::cout << "Frame duration: "
-                << std::chrono::duration_cast<std::chrono::microseconds>(frame_duration).count()
-                << ", time delta:"
-                << std::chrono::duration_cast<std::chrono::microseconds>(time_delta).count()
-                << std::endl;
-      last_print_time = std::chrono::steady_clock::now();
-    }
   }
 }

@@ -29,6 +29,7 @@ CPMAddPackage(
 
 add_executable(GameEngine
   src/Main.cpp
+  src/PolygonDemo.cpp
   src/SDL2/Error.cpp
 )
 if(GAME_ENGINE_CXX_FLAGS)
