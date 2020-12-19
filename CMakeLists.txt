@@ -20,6 +20,13 @@ CPMAddPackage(
   URL_HASH SHA256=349268f695c02efbc9b9148a70b85e58cefbbf704abd3e91be654db7f1e2c863
 )
 
+CPMAddPackage(
+  NAME span-lite
+  VERSION 0.9.0
+  GITHUB_REPOSITORY martinmoene/span-lite
+  GIT_TAG f894171e9a5b9c3a8b63a508ad86f5ca085c4954
+)
+
 add_executable(GameEngine
   src/Main.cpp
   src/SDL2/Error.cpp
@@ -28,6 +35,6 @@ if(GAME_ENGINE_CXX_FLAGS)
   target_compile_options(GameEngine PRIVATE "SHELL:${GAME_ENGINE_CXX_FLAGS}")
   target_link_options(GameEngine PRIVATE "SHELL:${GAME_ENGINE_CXX_FLAGS}")
 endif()
-target_link_libraries(GameEngine PRIVATE SDL2)
+target_link_libraries(GameEngine PRIVATE SDL2 span-lite)
 
 add_custom_target(run COMMAND GameEngine)
