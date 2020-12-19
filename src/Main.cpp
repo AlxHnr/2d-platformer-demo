@@ -2,26 +2,20 @@
  * Main playground for testing code.
  */
 
-#include <SDL.h>
 #include <iostream>
 #include <memory>
 #include <string_view>
+
+#include <SDL.h>
+
+#include "SDL2/UniquePointer.hpp"
+
+using namespace GameEngine;
 
 namespace {
 void throwSDLError(std::string_view message) {
   throw std::runtime_error{
       std::string{"Error: "}.append(message).append(": ").append(SDL_GetError())};
-}
-
-/** Wrap the given pointer in a unique pointer using the matching SDL function
- * for release. */
-template <typename T>
-auto wrapPointer(T* ptr) {
-  struct Deleter {
-    void operator()(SDL_Window* window) { SDL_DestroyWindow(window); };
-    void operator()(SDL_Renderer* renderer) { SDL_DestroyRenderer(renderer); };
-  };
-  return std::unique_ptr<T, Deleter>{ptr};
 }
 }  // namespace
 
@@ -41,8 +35,8 @@ int main() {
   if (SDL_CreateWindowAndRenderer(1280, 800, 0, &raw_window, &raw_renderer) != 0) {
     throwSDLError("Failed to create window and renderer");
   }
-  auto window = wrapPointer(raw_window);
-  auto renderer = wrapPointer(raw_renderer);
+  auto window = SDL2::wrapPointer(raw_window);
+  auto renderer = SDL2::wrapPointer(raw_renderer);
 
   SDL_RenderClear(renderer.get());
   SDL_RenderPresent(renderer.get());
