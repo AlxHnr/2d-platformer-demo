@@ -13,6 +13,6 @@ namespace GameEngine::SDL2 {
  * @param message Describes the reason for throwing.
  */
 void throwRuntimeError(std::string_view message);
-}  // namespace GameEngine::SDL2
+} // namespace GameEngine::SDL2
 
 #endif

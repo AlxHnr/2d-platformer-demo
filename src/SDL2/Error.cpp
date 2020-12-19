@@ -12,4 +12,4 @@ void throwRuntimeError(std::string_view message) {
   throw std::runtime_error{
       std::string{"Error: "}.append(message).append(": ").append(SDL_GetError())};
 }
-}  // namespace GameEngine::SDL2
+} // namespace GameEngine::SDL2

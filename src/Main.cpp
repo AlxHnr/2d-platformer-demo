@@ -16,14 +16,14 @@ using namespace GameEngine;
 namespace {
 /** @return Pair containing [window, renderer]. */
 auto makeWindowAndRenderer() {
-  SDL_Window* window = nullptr;
-  SDL_Renderer* renderer = nullptr;
+  SDL_Window *window = nullptr;
+  SDL_Renderer *renderer = nullptr;
   if (SDL_CreateWindowAndRenderer(1280, 800, 0, &window, &renderer) != 0) {
     SDL2::throwRuntimeError("Failed to create window and renderer");
   }
   return std::pair{SDL2::wrapPointer(window), SDL2::wrapPointer(renderer)};
 }
-}  // namespace
+} // namespace
 
 int main() {
   struct Context {
@@ -32,7 +32,6 @@ int main() {
         SDL2::throwRuntimeError("Failed to initialize SDL2");
       }
     }
-
     ~Context() { SDL_Quit(); }
   } context{};
 
