@@ -2,10 +2,9 @@
  * Implements simple wrappers around SDL2 error functions.
  */
 
+#include "Error.hpp"
 #include <SDL_error.h>
 #include <system_error>
-
-#include "Error.hpp"
 
 namespace GameEngine::SDL2 {
 void throwRuntimeError(std::string_view message) {

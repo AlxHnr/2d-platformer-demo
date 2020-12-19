@@ -5,10 +5,9 @@
 #ifndef GAME_ENGINE_SRC_SDL2_UNIQUE_POINTER_HPP
 #define GAME_ENGINE_SRC_SDL2_UNIQUE_POINTER_HPP
 
-#include <memory>
-
 #include <SDL_render.h>
 #include <SDL_video.h>
+#include <memory>
 
 namespace GameEngine::SDL2 {
 struct Deleter {
