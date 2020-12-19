@@ -37,10 +37,14 @@ int main() {
     ~Context() { SDL_Quit(); }
   } context{};
 
-  auto [window, renderer] = makeWindowAndRenderer();
-
   bool program_running = true;
+  auto [window, renderer] = makeWindowAndRenderer();
+  auto last_print_time = std::chrono::steady_clock::now();
+  auto time_delta = 0us;
+
   while (program_running) {
+    const auto frame_start_time = std::chrono::steady_clock::now();
+
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
       if (event.type == SDL_QUIT) {
@@ -51,6 +55,19 @@ int main() {
 
     SDL_RenderClear(renderer.get());
     SDL_RenderPresent(renderer.get());
-    std::this_thread::sleep_for(16ms);
+
+    const auto frame_duration = std::chrono::steady_clock::now() - frame_start_time;
+    std::this_thread::sleep_for(std::chrono::microseconds{1s} / 60 - frame_duration);
+    time_delta = std::chrono::duration_cast<std::chrono::microseconds>(
+        std::chrono::steady_clock::now() - frame_start_time);
+
+    if (std::chrono::steady_clock::now() - last_print_time > 1s) {
+      std::cout << "Frame duration: "
+                << std::chrono::duration_cast<std::chrono::microseconds>(frame_duration).count()
+                << ", time delta:"
+                << std::chrono::duration_cast<std::chrono::microseconds>(time_delta).count()
+                << std::endl;
+      last_print_time = std::chrono::steady_clock::now();
+    }
   }
 }
