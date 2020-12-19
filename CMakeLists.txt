@@ -26,5 +26,6 @@ if(GAME_ENGINE_CXX_FLAGS)
   target_compile_options(GameEngine PRIVATE "SHELL:${GAME_ENGINE_CXX_FLAGS}")
   target_link_options(GameEngine PRIVATE "SHELL:${GAME_ENGINE_CXX_FLAGS}")
 endif()
+target_link_libraries(GameEngine PRIVATE SDL2)
 
 add_custom_target(run COMMAND GameEngine)
