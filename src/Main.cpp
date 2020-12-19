@@ -6,11 +6,24 @@
 #include <iostream>
 #include <memory>
 #include <string_view>
+#include <utility>
 
 #include "SDL2/Error.hpp"
 #include "SDL2/UniquePointer.hpp"
 
 using namespace GameEngine;
+
+namespace {
+/** @return Pair containing [window, renderer]. */
+auto makeWindowAndRenderer() {
+  SDL_Window* window = nullptr;
+  SDL_Renderer* renderer = nullptr;
+  if (SDL_CreateWindowAndRenderer(1280, 800, 0, &window, &renderer) != 0) {
+    SDL2::throwRuntimeError("Failed to create window and renderer");
+  }
+  return std::pair{SDL2::wrapPointer(window), SDL2::wrapPointer(renderer)};
+}
+}  // namespace
 
 int main() {
   struct Context {
@@ -23,13 +36,7 @@ int main() {
     ~Context() { SDL_Quit(); }
   } context{};
 
-  SDL_Window* raw_window = nullptr;
-  SDL_Renderer* raw_renderer = nullptr;
-  if (SDL_CreateWindowAndRenderer(1280, 800, 0, &raw_window, &raw_renderer) != 0) {
-    SDL2::throwRuntimeError("Failed to create window and renderer");
-  }
-  auto window = SDL2::wrapPointer(raw_window);
-  auto renderer = SDL2::wrapPointer(raw_renderer);
+  auto [window, renderer] = makeWindowAndRenderer();
 
   SDL_RenderClear(renderer.get());
   SDL_RenderPresent(renderer.get());
