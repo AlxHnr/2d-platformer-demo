@@ -2,28 +2,21 @@
  * Main playground for testing code.
  */
 
+#include <SDL.h>
 #include <iostream>
 #include <memory>
 #include <string_view>
 
-#include <SDL.h>
-
+#include "SDL2/Error.hpp"
 #include "SDL2/UniquePointer.hpp"
 
 using namespace GameEngine;
-
-namespace {
-void throwSDLError(std::string_view message) {
-  throw std::runtime_error{
-      std::string{"Error: "}.append(message).append(": ").append(SDL_GetError())};
-}
-}  // namespace
 
 int main() {
   struct Context {
     Context() {
       if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
-        throwSDLError("Failed to initialize SDL2");
+        SDL2::throwRuntimeError("Failed to initialize SDL2");
       }
     }
 
@@ -33,7 +26,7 @@ int main() {
   SDL_Window* raw_window = nullptr;
   SDL_Renderer* raw_renderer = nullptr;
   if (SDL_CreateWindowAndRenderer(1280, 800, 0, &raw_window, &raw_renderer) != 0) {
-    throwSDLError("Failed to create window and renderer");
+    SDL2::throwRuntimeError("Failed to create window and renderer");
   }
   auto window = SDL2::wrapPointer(raw_window);
   auto renderer = SDL2::wrapPointer(raw_renderer);

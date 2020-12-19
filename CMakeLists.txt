@@ -21,7 +21,9 @@ CPMAddPackage(
 )
 
 add_executable(GameEngine
-  src/Main.cpp)
+  src/Main.cpp
+  src/SDL2/Error.cpp
+)
 if(GAME_ENGINE_CXX_FLAGS)
   target_compile_options(GameEngine PRIVATE "SHELL:${GAME_ENGINE_CXX_FLAGS}")
   target_link_options(GameEngine PRIVATE "SHELL:${GAME_ENGINE_CXX_FLAGS}")
