@@ -4,6 +4,22 @@ cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+if(NOT EXISTS "${CMAKE_BINARY_DIR}/CPM.cmake")
+  message(STATUS "Downloading CPM.cmake")
+  file(DOWNLOAD https://github.com/TheLartians/CPM.cmake/releases/download/v0.27.5/CPM.cmake
+    "${CMAKE_BINARY_DIR}/CPM.cmake"
+    EXPECTED_HASH SHA256=f858e68c350c21c44497e56b8291c9e679bca3cfbbd96b3240ba5fc69d6ada84
+    TLS_VERIFY ON)
+endif()
+include(${CMAKE_BINARY_DIR}/CPM.cmake)
+
+CPMAddPackage(
+  NAME SDL2
+  VERSION 2.0.12
+  URL https://www.libsdl.org/release/SDL2-2.0.12.tar.gz
+  URL_HASH SHA256=349268f695c02efbc9b9148a70b85e58cefbbf704abd3e91be654db7f1e2c863
+)
+
 add_executable(GameEngine
   src/Main.cpp)
 if(GAME_ENGINE_CXX_FLAGS)
