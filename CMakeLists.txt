@@ -1,3 +1,5 @@
+cmake_policy(SET CMP0048 NEW)
+
 project(GameEngine)
 cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
 
