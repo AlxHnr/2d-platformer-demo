@@ -8,6 +8,7 @@
 #include <SDL_render.h>
 #include <array>
 #include <chrono>
+#include <glm/vec2.hpp>
 
 namespace GameEngine {
 class PolygonDemo {
@@ -15,13 +16,9 @@ public:
   PolygonDemo();
   void handleFrame(SDL_Renderer *renderer, std::chrono::microseconds time_delta);
 
-  struct Point {
-    int x, y;
-  };
-
 private:
-  std::array<Point, 4> rectangle{};
-  std::array<Point, 3> triangle{};
+  std::array<glm::vec2, 4> rectangle{};
+  std::array<glm::vec2, 3> triangle{};
 };
 } // namespace GameEngine
 
