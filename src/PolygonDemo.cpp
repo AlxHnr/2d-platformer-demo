@@ -20,7 +20,7 @@ void renderPolygon(SDL_Renderer *renderer, nonstd::span<GameEngine::PolygonDemo:
 
 namespace GameEngine {
 PolygonDemo::PolygonDemo()
-    : rectangle{{{170, 170}, {550, 290}, {370, 300}, {470, 500}}}, triangle{{{575, 400},
+    : rectangle{{{170, 170}, {550, 290}, {450, 380}, {270, 300}}}, triangle{{{575, 400},
                                                                              {792, 515},
                                                                              {870, 670}}} {}
 
