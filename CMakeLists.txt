@@ -12,6 +12,10 @@ if(NOT EXISTS "${CMAKE_BINARY_DIR}/CPM.cmake")
 endif()
 include(${CMAKE_BINARY_DIR}/CPM.cmake)
 
+CPMAddPackage(NAME glm VERSION 0.9.9.8
+  GITHUB_REPOSITORY g-truc/glm
+  GIT_TAG bf71a834948186f4097caa076cd2663c69a10e1e)
+
 CPMAddPackage(NAME SDL2 VERSION 2.0.12
   URL https://www.libsdl.org/release/SDL2-2.0.12.tar.gz
   URL_HASH SHA256=349268f695c02efbc9b9148a70b85e58cefbbf704abd3e91be654db7f1e2c863)
@@ -29,6 +33,6 @@ if(GAME_ENGINE_CXX_FLAGS)
   target_compile_options(GameEngine PRIVATE "SHELL:${GAME_ENGINE_CXX_FLAGS}")
   target_link_options(GameEngine PRIVATE "SHELL:${GAME_ENGINE_CXX_FLAGS}")
 endif()
-target_link_libraries(GameEngine PRIVATE SDL2 span-lite)
+target_link_libraries(GameEngine PRIVATE glm SDL2 span-lite)
 
 add_custom_target(run COMMAND GameEngine)
