@@ -4,6 +4,7 @@
 
 #include "PolygonDemo.hpp"
 #include "ConvexBoundingPolygon.hpp"
+#include "Math.hpp"
 #include "PolygonEdge.hpp"
 #include <SDL.h>
 #include <cmath>
@@ -24,7 +25,7 @@ std::vector<glm::vec2> collectNormals(nonstd::span<const glm::vec2> points) {
 
   const auto *previous_point = &points.back();
   for (const auto &point : points) {
-    const auto normal = GameEngine::PolygonEdge{*previous_point, point}.getNormal();
+    const auto normal = GameEngine::Math::computeNormalOfEdge(*previous_point, point);
     result.push_back(normal);
     previous_point = &point;
   }
@@ -44,7 +45,7 @@ void renderPolygon(SDL_Renderer *renderer, nonstd::span<const glm::vec2> points,
     SDL_RenderDrawLine(renderer, previous_point->x, previous_point->y, point.x, point.y);
 
     const auto center = (*previous_point + point) / 2.0f;
-    const auto normal = GameEngine::PolygonEdge{*previous_point, point}.getNormal() * 35.0f;
+    const auto normal = GameEngine::Math::computeNormalOfEdge(*previous_point, point) * 35.0f;
     SDL_SetRenderDrawColor(renderer, 255, 180, 180, 255);
     SDL_RenderDrawLine(renderer, center.x, center.y, center.x + normal.x, center.y + normal.y);
 
@@ -66,12 +67,8 @@ struct ProjectedEdges {
  * @return Min and max values of all vertices projected onto the specified axis.
  */
 ProjectedEdges projectPolygonToNormal(nonstd::span<const glm::vec2> points, const glm::vec2 &axis) {
-  std::vector<float> dot_products;
-  dot_products.reserve(points.size());
-  std::transform(points.begin(), points.end(), std::back_inserter(dot_products),
-                 [&](const glm::vec2 &point) { return glm::dot(point, axis); });
-  const auto [min, max] = std::minmax_element(dot_products.begin(), dot_products.end());
-  return {*min, *max, *max - *min};
+  const auto [min, max] = GameEngine::Math::projectVerticesOntoAxisMinMax(points, axis);
+  return {min, max, max - min};
 }
 
 std::optional<glm::vec2> collidePolygons(SDL_Renderer *renderer, nonstd::span<const glm::vec2> a,

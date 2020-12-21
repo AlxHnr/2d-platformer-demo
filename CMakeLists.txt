@@ -29,6 +29,7 @@ CPMAddPackage(NAME span-lite VERSION 0.9.0
 add_executable(GameEngine
   src/ConvexBoundingPolygon.cpp
   src/Main.cpp
+  src/Math.cpp
   src/PolygonDemo.cpp
   src/PolygonEdge.cpp
   src/SDL2/Error.cpp

@@ -3,11 +3,11 @@
  */
 
 #include "PolygonEdge.hpp"
-#include <glm/geometric.hpp>
+#include "Math.hpp"
 
 namespace GameEngine {
 PolygonEdge::PolygonEdge(const glm::vec2 &start, const glm::vec2 &end)
-    : start{start}, end{end}, normal{glm::normalize(glm::vec2{start.y - end.y, end.x - start.x})} {}
+    : start{start}, end{end}, normal{Math::computeNormalOfEdge(start, end)} {}
 
 const glm::vec2 &PolygonEdge::getStart() const { return start; }
 
