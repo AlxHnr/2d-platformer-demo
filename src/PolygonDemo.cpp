@@ -8,6 +8,7 @@
 #include <glm/geometric.hpp>
 #include <glm/gtx/rotate_vector.hpp>
 #include <nonstd/span.hpp>
+#include <optional>
 
 namespace {
 /** Collects all normal vectors from the given polygon.
@@ -22,7 +23,7 @@ std::vector<glm::vec2> collectNormals(nonstd::span<const glm::vec2> points) {
   const auto *previous_point = &points.back();
   for (const auto &point : points) {
     const auto normal =
-        glm::normalize(glm::vec2{point.y - previous_point->y, previous_point->x - point.x});
+        glm::normalize(glm::vec2{previous_point->y - point.y, point.x - previous_point->x});
     result.push_back(normal);
     previous_point = &point;
   }
@@ -43,7 +44,7 @@ void renderPolygon(SDL_Renderer *renderer, nonstd::span<const glm::vec2> points,
 
     const auto center = (*previous_point + point) / 2.0f;
     const auto normal =
-        glm::normalize(glm::vec2{point.y - previous_point->y, previous_point->x - point.x}) * 35.0f;
+        glm::normalize(glm::vec2{previous_point->y - point.y, point.x - previous_point->x}) * 35.0f;
     SDL_SetRenderDrawColor(renderer, 255, 180, 180, 255);
     SDL_RenderDrawLine(renderer, center.x, center.y, center.x + normal.x, center.y + normal.y);
 
@@ -54,6 +55,7 @@ void renderPolygon(SDL_Renderer *renderer, nonstd::span<const glm::vec2> points,
 struct ProjectedEdges {
   float min;
   float max;
+  float distance;
 };
 
 /** Projects all vertices in the given polygon onto the given axis and returns the minmax values.
@@ -69,11 +71,11 @@ ProjectedEdges projectPolygonToNormal(nonstd::span<const glm::vec2> points, cons
   std::transform(points.begin(), points.end(), std::back_inserter(dot_products),
                  [&](const glm::vec2 &point) { return glm::dot(point, axis); });
   const auto [min, max] = std::minmax_element(dot_products.begin(), dot_products.end());
-  return {*min, *max};
+  return {*min, *max, *max - *min};
 }
 
-bool collidePolygons(SDL_Renderer *renderer, nonstd::span<const glm::vec2> a,
-                     nonstd::span<const glm::vec2> b, const int offset) {
+std::optional<glm::vec2> collidePolygons(SDL_Renderer *renderer, nonstd::span<const glm::vec2> a,
+                                         nonstd::span<const glm::vec2> b, const int offset) {
   const glm::vec2 screen_center{640, 400};
   int iteration = 1;
 
@@ -89,30 +91,38 @@ bool collidePolygons(SDL_Renderer *renderer, nonstd::span<const glm::vec2> a,
     const auto b_edges = projectPolygonToNormal(b, normal);
 
     if (a_edges.min > b_edges.max || a_edges.max < b_edges.min) {
-      return false;
+      return std::nullopt;
     }
 
-    const auto a_distance = a_edges.max - a_edges.min;
-    const auto b_distance = b_edges.max - b_edges.min;
     SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
     SDL_RenderDrawLine(renderer, screen_center.x, screen_center.y - iteration * 2 + offset,
-                       screen_center.x + a_distance, screen_center.y - iteration * 2 + offset);
+                       screen_center.x + a_edges.distance,
+                       screen_center.y - iteration * 2 + offset);
     SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
     SDL_RenderDrawLine(renderer, screen_center.x, screen_center.y + iteration * 2 + offset,
-                       screen_center.x + b_distance, screen_center.y + iteration * 2 + offset);
+                       screen_center.x + b_edges.distance,
+                       screen_center.y + iteration * 2 + offset);
 
     iteration++;
   }
 
-  return true;
+  return glm::vec2{};
 }
 } // namespace
 
 namespace GameEngine {
 PolygonDemo::PolygonDemo()
-    : rectangle{{{170, 170}, {550, 290}, {450, 380}, {270, 300}}}, triangle{{{575, 400},
-                                                                             {792, 515},
-                                                                             {870, 670}}} {}
+    : rectangle{{
+          {170, 170},
+          {270, 300},
+          {450, 380},
+          {550, 290},
+      }},
+      triangle{{
+          {870, 670},
+          {792, 515},
+          {575, 400},
+      }} {}
 
 void PolygonDemo::handleFrame(SDL_Renderer *renderer, const std::chrono::microseconds) {
   const auto move_factor = (SDL_GetTicks() % 20000) / 100.0f;
