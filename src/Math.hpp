@@ -39,6 +39,14 @@ glm::vec2 computeNormalOfEdge(const glm::vec2 &edge_start, const glm::vec2 &edge
  */
 std::pair<float, float> projectVerticesOntoAxisMinMax(nonstd::span<const glm::vec2> vertices,
                                                       const glm::vec2 &axis);
+
+/** Contains the smallest and largest values found while projecting arbitrary vertices onto an
+ * axis. */
+struct ProjectetVerticesMinMax {
+  glm::vec2 axis;
+  float min; /**< Smallest projected value. */
+  float max; /**< Largest projected value. */
+};
 } // namespace GameEngine::Math
 
 #endif

@@ -28,14 +28,6 @@ public:
 private:
   std::array<glm::vec2, VertexCount> vertices;
 
-  /** Contains the smallest and largest values found while projecting arbitrary vertices onto an
-   * axis. */
-  struct ProjectetVerticesMinMax {
-    glm::vec2 axis;
-    float min; /**< Smallest projected value. */
-    float max; /**< Largest projected value. */
-  };
-
   static constexpr size_t edge_count = []() -> size_t {
     if (VertexCount < 2) {
       return 0;
@@ -47,7 +39,7 @@ private:
   }();
 
   /** Precomputed normals and projected vertices for all projected_vertices. */
-  std::array<ProjectetVerticesMinMax, edge_count> projected_vertices;
+  std::array<Math::ProjectetVerticesMinMax, edge_count> projected_vertices;
 };
 
 /** Deduction guide for vertex count template parameter. */
