@@ -23,34 +23,29 @@ namespace {
 std::vector<glm::vec2> collectNormals(nonstd::span<const glm::vec2> points) {
   std::vector<glm::vec2> result{};
 
-  const auto *previous_point = &points.back();
-  for (const auto &point : points) {
-    const auto normal = GameEngine::Math::computeNormalOfEdge(*previous_point, point);
+  GameEngine::Math::forEachEdge(points, [&](size_t, const glm::vec2 &start, const glm::vec2 &end) {
+    const auto normal = GameEngine::Math::computeNormalOfEdge(start, end);
     result.push_back(normal);
-    previous_point = &point;
-  }
+  });
 
   return result;
 }
 
 void renderPolygon(SDL_Renderer *renderer, nonstd::span<const glm::vec2> points,
                    const bool collision) {
-  const auto *previous_point = &points.back();
-  for (const auto &point : points) {
+  GameEngine::Math::forEachEdge(points, [&](size_t, const glm::vec2 &start, const glm::vec2 &end) {
     if (collision) {
       SDL_SetRenderDrawColor(renderer, 255, 255, 100, 255);
     } else {
       SDL_SetRenderDrawColor(renderer, 180, 180, 255, 255);
     }
-    SDL_RenderDrawLine(renderer, previous_point->x, previous_point->y, point.x, point.y);
+    SDL_RenderDrawLine(renderer, start.x, start.y, end.x, end.y);
 
-    const auto center = (*previous_point + point) / 2.0f;
-    const auto normal = GameEngine::Math::computeNormalOfEdge(*previous_point, point) * 35.0f;
+    const auto center = (start + end) / 2.0f;
+    const auto normal = GameEngine::Math::computeNormalOfEdge(start, end) * 35.0f;
     SDL_SetRenderDrawColor(renderer, 255, 180, 180, 255);
     SDL_RenderDrawLine(renderer, center.x, center.y, center.x + normal.x, center.y + normal.y);
-
-    previous_point = &point;
-  }
+  });
 }
 
 struct ProjectedEdges {

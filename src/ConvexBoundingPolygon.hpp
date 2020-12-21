@@ -5,7 +5,7 @@
 #ifndef GAME_ENGINE_SRC_CONVEX_BOUNDING_POLYGON_HPP
 #define GAME_ENGINE_SRC_CONVEX_BOUNDING_POLYGON_HPP
 
-#include "PolygonEdge.hpp"
+#include "Math.hpp"
 #include <array>
 #include <glm/vec2.hpp>
 
@@ -15,16 +15,26 @@ public:
   template <typename... T> ConvexBoundingPolygon(const T &... vertex) : vertices{vertex...} {
     static_assert(VertexCount == sizeof...(T),
                   "Vertex count mismatch in ConvexBoundingPolygon constructor");
-    if (VertexCount < 2) {
-      return;
-    }
-    for (size_t index = 1; index < vertices.size(); ++index) {
-      edges[index - 1] = PolygonEdge{vertices[index - 1], vertices[index]};
-    }
-    if (VertexCount > 2) {
-      edges.back() = PolygonEdge{vertices.back(), vertices.front()};
-    }
+    Math::forEachEdge(vertices,
+                      [&](const size_t index, const glm::vec2 &start, const glm::vec2 &end) {
+                        const auto axis = Math::computeNormalOfEdge(start, end);
+                        const auto [min, max] = Math::projectVerticesOntoAxisMinMax(vertices, axis);
+                        projected_vertices[index] = {axis, min, max};
+                      });
   }
+
+  const std::array<glm::vec2, VertexCount> &getVertices() const { return vertices; }
+
+private:
+  std::array<glm::vec2, VertexCount> vertices;
+
+  /** Contains the smallest and largest values found while projecting arbitrary vertices onto an
+   * axis. */
+  struct ProjectetVerticesMinMax {
+    glm::vec2 axis;
+    float min; /**< Smallest projected value. */
+    float max; /**< Largest projected value. */
+  };
 
   static constexpr size_t edge_count = []() -> size_t {
     if (VertexCount < 2) {
@@ -36,14 +46,8 @@ public:
     return VertexCount;
   }();
 
-  const std::array<glm::vec2, VertexCount> &getVertices() const { return vertices; }
-  const std::array<PolygonEdge, edge_count> &getEdges() const { return edges; }
-
-private:
-  std::array<glm::vec2, VertexCount> vertices;
-
-  /** Edges and Precomputed normals for all vertices. */
-  std::array<PolygonEdge, edge_count> edges;
+  /** Precomputed normals and projected vertices for all projected_vertices. */
+  std::array<ProjectetVerticesMinMax, edge_count> projected_vertices;
 };
 
 /** Deduction guide for vertex count template parameter. */
