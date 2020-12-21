@@ -6,9 +6,9 @@
 #define GAME_ENGINE_SRC_POLYGON_DEMO_HPP
 
 #include <SDL_render.h>
-#include <array>
 #include <chrono>
 #include <glm/vec2.hpp>
+#include <vector>
 
 namespace GameEngine {
 class PolygonDemo {
@@ -17,8 +17,8 @@ public:
   void handleFrame(SDL_Renderer *renderer, std::chrono::microseconds time_delta);
 
 private:
-  std::array<glm::vec2, 4> rectangle{};
-  std::array<glm::vec2, 3> triangle{};
+  std::vector<glm::vec2> rectangle{};
+  std::vector<glm::vec2> triangle{};
 };
 } // namespace GameEngine
 
