@@ -115,14 +115,15 @@ PolygonDemo::PolygonDemo()
                                                                              {870, 670}}} {}
 
 void PolygonDemo::handleFrame(SDL_Renderer *renderer, const std::chrono::microseconds) {
-  const auto move_factor = SDL_GetTicks() / 20 % 250;
+  const auto move_factor = SDL_GetTicks() / 20 % 550;
+  const auto rotation_speed = 0.05f;
 
   auto moved_rectangle = rectangle;
   for (auto &point : moved_rectangle) {
     const auto matrix =
         glm::translate(glm::vec3{move_factor, move_factor, 0.0f}) *
         glm::translate(glm::vec3{350.0f, 275.0f, 0.0f}) *
-        glm::rotate(glm::mat4{1}, 0.0025f * move_factor, glm::vec3{0.0f, 0.0f, 1.0f}) *
+        glm::rotate(glm::mat4{1}, rotation_speed * move_factor, glm::vec3{0.0f, 0.0f, 1.0f}) *
         glm::translate(glm::vec3{-350.0f, -275.0f, 0.0f});
     point = glm::vec2{matrix * glm::vec4{point, 0.0f, 1.0f}};
   }
@@ -132,7 +133,7 @@ void PolygonDemo::handleFrame(SDL_Renderer *renderer, const std::chrono::microse
     const auto matrix =
         glm::translate(-glm::vec3{move_factor / 1.25, move_factor, 0.0f}) *
         glm::translate(glm::vec3{750.0f, 470.0f, 0.0f}) *
-        glm::rotate(glm::mat4{1}, -0.0025f * move_factor, glm::vec3{0.0f, 0.0f, 1.0f}) *
+        glm::rotate(glm::mat4{1}, -rotation_speed * move_factor, glm::vec3{0.0f, 0.0f, 1.0f}) *
         glm::translate(glm::vec3{-750.0f, -470.0f, 0.0f});
     point = glm::vec2{matrix * glm::vec4{point, 0.0f, 1.0f}};
   }
