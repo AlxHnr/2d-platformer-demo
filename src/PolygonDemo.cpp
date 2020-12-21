@@ -115,7 +115,7 @@ PolygonDemo::PolygonDemo()
                                                                              {870, 670}}} {}
 
 void PolygonDemo::handleFrame(SDL_Renderer *renderer, const std::chrono::microseconds) {
-  const auto move_factor = SDL_GetTicks() / 20 % 550;
+  const auto move_factor = (SDL_GetTicks() % 20000) / 100.0f;
   const auto rotation_speed = 0.05f;
 
   auto moved_rectangle = rectangle;
