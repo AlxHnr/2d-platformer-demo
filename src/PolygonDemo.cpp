@@ -3,6 +3,8 @@
  */
 
 #include "PolygonDemo.hpp"
+#include "ConvexBoundingPolygon.hpp"
+#include "PolygonEdge.hpp"
 #include <SDL.h>
 #include <cmath>
 #include <glm/geometric.hpp>
@@ -22,8 +24,7 @@ std::vector<glm::vec2> collectNormals(nonstd::span<const glm::vec2> points) {
 
   const auto *previous_point = &points.back();
   for (const auto &point : points) {
-    const auto normal =
-        glm::normalize(glm::vec2{previous_point->y - point.y, point.x - previous_point->x});
+    const auto normal = GameEngine::PolygonEdge{*previous_point, point}.getNormal();
     result.push_back(normal);
     previous_point = &point;
   }
@@ -43,8 +44,7 @@ void renderPolygon(SDL_Renderer *renderer, nonstd::span<const glm::vec2> points,
     SDL_RenderDrawLine(renderer, previous_point->x, previous_point->y, point.x, point.y);
 
     const auto center = (*previous_point + point) / 2.0f;
-    const auto normal =
-        glm::normalize(glm::vec2{previous_point->y - point.y, point.x - previous_point->x}) * 35.0f;
+    const auto normal = GameEngine::PolygonEdge{*previous_point, point}.getNormal() * 35.0f;
     SDL_SetRenderDrawColor(renderer, 255, 180, 180, 255);
     SDL_RenderDrawLine(renderer, center.x, center.y, center.x + normal.x, center.y + normal.y);
 
@@ -122,7 +122,30 @@ PolygonDemo::PolygonDemo()
           {870, 670},
           {792, 515},
           {575, 400},
-      }} {}
+      }} {
+  ConvexBoundingPolygon empty{};
+  ConvexBoundingPolygon one{glm::vec2{792, 515}};
+  ConvexBoundingPolygon line{
+      glm::vec2{792, 515},
+      glm::vec2{870, 670},
+  };
+  ConvexBoundingPolygon<3> test1{
+      glm::vec2{575, 400},
+      glm::vec2{792, 515},
+      glm::vec2{870, 670},
+  };
+  ConvexBoundingPolygon<3> test2{
+      triangle.at(0),
+      triangle.at(1),
+      triangle.at(2),
+  };
+  ConvexBoundingPolygon test3{
+      glm::vec2{170, 170},
+      glm::vec2{270, 300},
+      glm::vec2{450, 380},
+      glm::vec2{550, 290},
+  };
+}
 
 void PolygonDemo::handleFrame(SDL_Renderer *renderer, const std::chrono::microseconds) {
   const auto move_factor = (SDL_GetTicks() % 20000) / 100.0f;

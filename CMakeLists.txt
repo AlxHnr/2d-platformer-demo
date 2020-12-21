@@ -27,8 +27,10 @@ CPMAddPackage(NAME span-lite VERSION 0.9.0
   GIT_TAG f894171e9a5b9c3a8b63a508ad86f5ca085c4954)
 
 add_executable(GameEngine
+  src/ConvexBoundingPolygon.cpp
   src/Main.cpp
   src/PolygonDemo.cpp
+  src/PolygonEdge.cpp
   src/SDL2/Error.cpp
 )
 if(GAME_ENGINE_CXX_FLAGS)
