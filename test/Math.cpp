@@ -99,3 +99,17 @@ TEST_CASE("Traverse polygon using Math::ForEachEdge()") {
     REQUIRE(edges_traversed == 4);
   }
 }
+
+TEST_CASE("Math::computeNormalOfEdge()") {
+  const auto normal1 = GameEngine::Math::computeNormalOfEdge({0, 0}, {0, 1});
+  REQUIRE(normal1.x == doctest::Approx(-1));
+  REQUIRE(normal1.y == doctest::Approx(0));
+
+  const auto normal2 = GameEngine::Math::computeNormalOfEdge({0, 0}, {1, 0});
+  REQUIRE(normal2.x == doctest::Approx(0));
+  REQUIRE(normal2.y == doctest::Approx(1));
+
+  const auto normal3 = GameEngine::Math::computeNormalOfEdge({0, 0}, {1, 1});
+  REQUIRE(normal3.x == doctest::Approx(-0.7071));
+  REQUIRE(normal3.y == doctest::Approx(0.7071));
+}
