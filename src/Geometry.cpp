@@ -2,7 +2,7 @@
  * Implements math helper functions.
  */
 
-#include "Math.hpp"
+#include "Geometry.hpp"
 #include <SDL_assert.h>
 #include <glm/geometric.hpp>
 #include <glm/gtc/constants.hpp>
@@ -20,12 +20,12 @@ namespace {
  * @return True if a collision was detected.
  */
 bool checkPartialSATCollision(
-    nonstd::span<const GameEngine::Math::ProjectetVerticesMinMax> projected_minmax_values_of_a,
+    nonstd::span<const GameEngine::Geometry::ProjectetVerticesMinMax> projected_minmax_values_of_a,
     nonstd::span<const glm::vec2> polygon_b) {
   const size_t all_axes_overlap =
       std::all_of(projected_minmax_values_of_a.begin(), projected_minmax_values_of_a.end(),
-                  [&](const GameEngine::Math::ProjectetVerticesMinMax &projected_vertices) {
-                    const auto [min, max] = GameEngine::Math::projectVerticesOntoAxisMinMax(
+                  [&](const auto &projected_vertices) {
+                    const auto [min, max] = GameEngine::Geometry::projectVerticesOntoAxisMinMax(
                         polygon_b, projected_vertices.axis);
                     return projected_vertices.min < max && projected_vertices.max > min;
                   });
@@ -33,7 +33,7 @@ bool checkPartialSATCollision(
 }
 } // namespace
 
-namespace GameEngine::Math {
+namespace GameEngine::Geometry {
 void forEachEdge(nonstd::span<const glm::vec2> vertices,
                  const std::function<void(const size_t edge_index, const glm::vec2 &edge_start,
                                           const glm::vec2 &edge_end)> &function) {
@@ -80,4 +80,4 @@ bool checkPolygonCollision(
   return checkPartialSATCollision(projected_minmax_values_of_a, polygon_b) &&
          checkPartialSATCollision(projected_minmax_values_of_b, polygon_a);
 }
-} // namespace GameEngine::Math
+} // namespace GameEngine::Geometry

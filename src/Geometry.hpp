@@ -1,16 +1,16 @@
 /** @file
- * Declares math helper functions.
+ * Declares geometry helper functions.
  */
 
-#ifndef GAME_ENGINE_SRC_MATH_HPP
-#define GAME_ENGINE_SRC_MATH_HPP
+#ifndef GAME_ENGINE_SRC_GEOMETRY_HPP
+#define GAME_ENGINE_SRC_GEOMETRY_HPP
 
 #include <functional>
 #include <glm/vec2.hpp>
 #include <nonstd/span.hpp>
 #include <utility>
 
-namespace GameEngine::Math {
+namespace GameEngine::Geometry {
 /** Apply the given function to all edges of specified polygon.
  *
  * @param vertices Represents the polygon which edges should be traversed.
@@ -64,6 +64,6 @@ bool checkPolygonCollision(
     nonstd::span<const ProjectetVerticesMinMax> projected_minmax_values_of_a,
     nonstd::span<const glm::vec2> polygon_b,
     nonstd::span<const ProjectetVerticesMinMax> projected_minmax_values_of_b);
-} // namespace GameEngine::Math
+} // namespace GameEngine::Geometry
 
 #endif

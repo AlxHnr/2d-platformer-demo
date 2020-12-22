@@ -4,9 +4,8 @@
 
 #include "PolygonDemo.hpp"
 #include "ConvexBoundingPolygon.hpp"
-#include "Math.hpp"
+#include "Geometry.hpp"
 #include <SDL.h>
-#include <cmath>
 #include <glm/geometric.hpp>
 #include <glm/gtx/rotate_vector.hpp>
 #include <nonstd/span.hpp>
@@ -22,29 +21,31 @@ namespace {
 std::vector<glm::vec2> collectNormals(nonstd::span<const glm::vec2> points) {
   std::vector<glm::vec2> result{};
 
-  GameEngine::Math::forEachEdge(points, [&](size_t, const glm::vec2 &start, const glm::vec2 &end) {
-    const auto normal = GameEngine::Math::computeNormalOfEdge(start, end);
-    result.push_back(normal);
-  });
+  GameEngine::Geometry::forEachEdge(
+      points, [&](size_t, const glm::vec2 &start, const glm::vec2 &end) {
+        const auto normal = GameEngine::Geometry::computeNormalOfEdge(start, end);
+        result.push_back(normal);
+      });
 
   return result;
 }
 
 void renderPolygon(SDL_Renderer *renderer, nonstd::span<const glm::vec2> points,
                    const bool collision) {
-  GameEngine::Math::forEachEdge(points, [&](size_t, const glm::vec2 &start, const glm::vec2 &end) {
-    if (collision) {
-      SDL_SetRenderDrawColor(renderer, 255, 255, 100, 255);
-    } else {
-      SDL_SetRenderDrawColor(renderer, 180, 180, 255, 255);
-    }
-    SDL_RenderDrawLine(renderer, start.x, start.y, end.x, end.y);
+  GameEngine::Geometry::forEachEdge(
+      points, [&](size_t, const glm::vec2 &start, const glm::vec2 &end) {
+        if (collision) {
+          SDL_SetRenderDrawColor(renderer, 255, 255, 100, 255);
+        } else {
+          SDL_SetRenderDrawColor(renderer, 180, 180, 255, 255);
+        }
+        SDL_RenderDrawLine(renderer, start.x, start.y, end.x, end.y);
 
-    const auto center = (start + end) / 2.0f;
-    const auto normal = GameEngine::Math::computeNormalOfEdge(start, end) * 35.0f;
-    SDL_SetRenderDrawColor(renderer, 255, 180, 180, 255);
-    SDL_RenderDrawLine(renderer, center.x, center.y, center.x + normal.x, center.y + normal.y);
-  });
+        const auto center = (start + end) / 2.0f;
+        const auto normal = GameEngine::Geometry::computeNormalOfEdge(start, end) * 35.0f;
+        SDL_SetRenderDrawColor(renderer, 255, 180, 180, 255);
+        SDL_RenderDrawLine(renderer, center.x, center.y, center.x + normal.x, center.y + normal.y);
+      });
 }
 
 struct ProjectedEdges {
@@ -61,7 +62,7 @@ struct ProjectedEdges {
  * @return Min and max values of all vertices projected onto the specified axis.
  */
 ProjectedEdges projectPolygonToNormal(nonstd::span<const glm::vec2> points, const glm::vec2 &axis) {
-  const auto [min, max] = GameEngine::Math::projectVerticesOntoAxisMinMax(points, axis);
+  const auto [min, max] = GameEngine::Geometry::projectVerticesOntoAxisMinMax(points, axis);
   return {min, max, max - min};
 }
 
@@ -165,23 +166,23 @@ void PolygonDemo::handleFrame(SDL_Renderer *renderer, const std::chrono::microse
   collidePolygons(renderer, moved_rectangle, moved_triangle, 0);
   collidePolygons(renderer, moved_triangle, moved_rectangle, 50);
 
-  std::array<Math::ProjectetVerticesMinMax, 3> projected_triangle;
-  std::array<Math::ProjectetVerticesMinMax, 4> projected_rectangle;
-  Math::forEachEdge(
+  std::array<Geometry::ProjectetVerticesMinMax, 3> projected_triangle;
+  std::array<Geometry::ProjectetVerticesMinMax, 4> projected_rectangle;
+  Geometry::forEachEdge(
       moved_triangle, [&](const size_t index, const glm::vec2 &start, const glm::vec2 &end) {
-        const auto axis = Math::computeNormalOfEdge(start, end);
-        const auto [min, max] = Math::projectVerticesOntoAxisMinMax(moved_triangle, axis);
+        const auto axis = Geometry::computeNormalOfEdge(start, end);
+        const auto [min, max] = Geometry::projectVerticesOntoAxisMinMax(moved_triangle, axis);
         projected_triangle[index] = {axis, min, max};
       });
-  Math::forEachEdge(
+  Geometry::forEachEdge(
       moved_rectangle, [&](const size_t index, const glm::vec2 &start, const glm::vec2 &end) {
-        const auto axis = Math::computeNormalOfEdge(start, end);
-        const auto [min, max] = Math::projectVerticesOntoAxisMinMax(moved_rectangle, axis);
+        const auto axis = Geometry::computeNormalOfEdge(start, end);
+        const auto [min, max] = Geometry::projectVerticesOntoAxisMinMax(moved_rectangle, axis);
         projected_rectangle[index] = {axis, min, max};
       });
 
-  const auto collision = Math::checkPolygonCollision(moved_rectangle, projected_rectangle,
-                                                     moved_triangle, projected_triangle);
+  const auto collision = Geometry::checkPolygonCollision(moved_rectangle, projected_rectangle,
+                                                         moved_triangle, projected_triangle);
 
   renderPolygon(renderer, moved_rectangle, collision);
   renderPolygon(renderer, moved_triangle, collision);

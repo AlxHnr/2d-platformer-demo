@@ -5,7 +5,7 @@
 #ifndef GAME_ENGINE_SRC_CONVEX_BOUNDING_POLYGON_HPP
 #define GAME_ENGINE_SRC_CONVEX_BOUNDING_POLYGON_HPP
 
-#include "Math.hpp"
+#include "Geometry.hpp"
 #include <array>
 #include <glm/vec2.hpp>
 
@@ -40,12 +40,12 @@ public:
   template <typename... T> ConvexBoundingPolygon(const T &... vertex) : vertices{vertex...} {
     static_assert(VertexCount == sizeof...(T),
                   "Vertex count mismatch in ConvexBoundingPolygon constructor");
-    Math::forEachEdge(vertices,
-                      [&](const size_t index, const glm::vec2 &start, const glm::vec2 &end) {
-                        const auto axis = Math::computeNormalOfEdge(start, end);
-                        const auto [min, max] = Math::projectVerticesOntoAxisMinMax(vertices, axis);
-                        projected_vertices[index] = {axis, min, max};
-                      });
+    Geometry::forEachEdge(
+        vertices, [&](const size_t index, const glm::vec2 &start, const glm::vec2 &end) {
+          const auto axis = Geometry::computeNormalOfEdge(start, end);
+          const auto [min, max] = Geometry::projectVerticesOntoAxisMinMax(vertices, axis);
+          projected_vertices[index] = {axis, min, max};
+        });
   }
 
   const std::array<glm::vec2, VertexCount> &getVertices() const { return vertices; }
@@ -64,7 +64,7 @@ private:
   }();
 
   /** Precomputed normals and projected vertices for all normal axes of the polygon. */
-  std::array<Math::ProjectetVerticesMinMax, edge_count> projected_vertices;
+  std::array<Geometry::ProjectetVerticesMinMax, edge_count> projected_vertices;
 };
 
 /** Deduction guide for vertex count template parameter. Allows construction without specifying a
