@@ -5,7 +5,6 @@
 #include "PolygonDemo.hpp"
 #include "ConvexBoundingPolygon.hpp"
 #include "Math.hpp"
-#include "PolygonEdge.hpp"
 #include <SDL.h>
 #include <cmath>
 #include <glm/geometric.hpp>

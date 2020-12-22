@@ -32,7 +32,6 @@ CPMAddPackage(NAME doctest VERSION 2.4.3
 
 add_library(GameEngine
   src/Math.cpp
-  src/PolygonEdge.cpp
   src/SDL2/Error.cpp
 )
 if(GAME_ENGINE_CXX_FLAGS)
