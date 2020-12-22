@@ -4,6 +4,7 @@
 
 #include <Math.hpp>
 #include <doctest/doctest.h>
+#include <glm/geometric.hpp>
 
 TEST_CASE("Traverse polygon using Math::ForEachEdge()") {
   SUBCASE("Zero vertices") {
@@ -112,4 +113,35 @@ TEST_CASE("Math::computeNormalOfEdge()") {
   const auto normal3 = GameEngine::Math::computeNormalOfEdge({0, 0}, {1, 1});
   REQUIRE(normal3.x == doctest::Approx(-0.7071));
   REQUIRE(normal3.y == doctest::Approx(0.7071));
+}
+
+TEST_CASE("Math::projectVerticesOntoAxisMinMax()") {
+  const auto axis = glm::normalize(glm::vec2{5, 2});
+
+  SUBCASE("No vertices") {
+    const auto [min, max] = GameEngine::Math::projectVerticesOntoAxisMinMax({}, axis);
+    REQUIRE(min == doctest::Approx(0));
+    REQUIRE(max == doctest::Approx(0));
+  }
+
+  SUBCASE("One vertex") {
+    const std::array vertex = {glm::vec2{2, 3}};
+    const auto [min, max] = GameEngine::Math::projectVerticesOntoAxisMinMax(vertex, axis);
+    REQUIRE(min == doctest::Approx(2.9711));
+    REQUIRE(max == doctest::Approx(2.9711));
+  }
+
+  SUBCASE("Two vertices") {
+    const std::array line = {glm::vec2{2, 3}, glm::vec2{-0.85, 7}};
+    const auto [min, max] = GameEngine::Math::projectVerticesOntoAxisMinMax(line, axis);
+    REQUIRE(min == doctest::Approx(1.8105));
+    REQUIRE(max == doctest::Approx(2.9711));
+  }
+
+  SUBCASE("Three vertices") {
+    const std::array triangle = {glm::vec2{2, 3}, glm::vec2{-0.85, 7}, glm::vec2{-0.5, 4.2}};
+    const auto [min, max] = GameEngine::Math::projectVerticesOntoAxisMinMax(triangle, axis);
+    REQUIRE(min == doctest::Approx(1.0956));
+    REQUIRE(max == doctest::Approx(2.9711));
+  }
 }
