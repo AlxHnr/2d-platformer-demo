@@ -30,10 +30,8 @@ CPMAddPackage(NAME doctest VERSION 2.4.3
   GITHUB_REPOSITORY onqtam/doctest
   GIT_TAG 352589e5c3bcce53bcbc05da2f2611d614348f3d)
 
-add_executable(GameEngine
-  src/Main.cpp
+add_library(GameEngine
   src/Math.cpp
-  src/PolygonDemo.cpp
   src/PolygonEdge.cpp
   src/SDL2/Error.cpp
 )
@@ -41,6 +39,12 @@ if(GAME_ENGINE_CXX_FLAGS)
   target_compile_options(GameEngine PRIVATE "SHELL:${GAME_ENGINE_CXX_FLAGS}")
   target_link_options(GameEngine PRIVATE "SHELL:${GAME_ENGINE_CXX_FLAGS}")
 endif()
-target_link_libraries(GameEngine PRIVATE glm SDL2 span-lite)
+target_link_libraries(GameEngine PUBLIC glm SDL2 span-lite)
 
-add_custom_target(run COMMAND GameEngine)
+add_executable(Test test/Main.cpp)
+target_link_libraries(Test GameEngine doctest)
+add_custom_target(test COMMAND Test)
+
+add_executable(Demo src/Main.cpp src/PolygonDemo.cpp)
+target_link_libraries(Demo GameEngine)
+add_custom_target(run COMMAND Demo)
