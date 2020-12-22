@@ -26,6 +26,10 @@ CPMAddPackage(NAME span-lite VERSION 0.9.0
   GITHUB_REPOSITORY martinmoene/span-lite
   GIT_TAG f894171e9a5b9c3a8b63a508ad86f5ca085c4954)
 
+CPMAddPackage(NAME doctest VERSION 2.4.3
+  GITHUB_REPOSITORY onqtam/doctest
+  GIT_TAG 352589e5c3bcce53bcbc05da2f2611d614348f3d)
+
 add_executable(GameEngine
   src/Main.cpp
   src/Math.cpp
