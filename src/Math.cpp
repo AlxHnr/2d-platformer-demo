@@ -5,6 +5,32 @@
 #include "Math.hpp"
 #include <glm/geometric.hpp>
 
+namespace {
+/** Performs a partial collision check using the separating axis theorem on the given polygon. It
+ * only matches the minmax values of the first polygon against the second polygon. For a complete
+ * collision check is is necessary to match the minmax values of the second polygon against the
+ * first polygon.
+ *
+ * @param projected_minmax_values_of_a Precomputed axis and projected minmax values of the first
+ * polygon.
+ * @param polygon_b All vertices of the second polygon.
+ *
+ * @return True if a collision was detected.
+ */
+bool checkPartialSATCollision(
+    nonstd::span<const GameEngine::Math::ProjectetVerticesMinMax> projected_minmax_values_of_a,
+    nonstd::span<const glm::vec2> polygon_b) {
+  const size_t all_axes_overlap =
+      std::all_of(projected_minmax_values_of_a.begin(), projected_minmax_values_of_a.end(),
+                  [&](const GameEngine::Math::ProjectetVerticesMinMax &projected_vertices) {
+                    const auto [min, max] = GameEngine::Math::projectVerticesOntoAxisMinMax(
+                        polygon_b, projected_vertices.axis);
+                    return projected_vertices.min < max && projected_vertices.max > min;
+                  });
+  return !projected_minmax_values_of_a.empty() && all_axes_overlap;
+}
+} // namespace
+
 namespace GameEngine::Math {
 void forEachEdge(nonstd::span<const glm::vec2> vertices,
                  const std::function<void(const size_t edge_index, const glm::vec2 &edge_start,
@@ -40,5 +66,14 @@ std::pair<float, float> projectVerticesOntoAxisMinMax(nonstd::span<const glm::ve
     max = std::max(max, dot_product);
   }
   return {min, max};
+}
+
+bool checkPolygonCollision(
+    nonstd::span<const glm::vec2> polygon_a,
+    nonstd::span<const ProjectetVerticesMinMax> projected_minmax_values_of_a,
+    nonstd::span<const glm::vec2> polygon_b,
+    nonstd::span<const ProjectetVerticesMinMax> projected_minmax_values_of_b) {
+  return checkPartialSATCollision(projected_minmax_values_of_a, polygon_b) &&
+         checkPartialSATCollision(projected_minmax_values_of_b, polygon_a);
 }
 } // namespace GameEngine::Math

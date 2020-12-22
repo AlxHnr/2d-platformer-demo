@@ -47,6 +47,23 @@ struct ProjectetVerticesMinMax {
   float min; /**< Smallest projected value. */
   float max; /**< Largest projected value. */
 };
+
+/** Check if given convex polygons collide.
+ *
+ * @param polygon_a All points of the first polygon.
+ * @param projected_minmax_values_of_a Contains all normal axes of the first polygon and the minmax
+ * values resulting from projecting all points of the first polygon onto these axes.
+ * @param polygon_b All points of the second polygon.
+ * @param projected_minmax_values_of_b Contains all normal axes of the second polygon and the minmax
+ * values resulting from projecting all points of the second polygon onto these axes.
+ *
+ * @return True if a collision was detected.
+ */
+bool checkPolygonCollision(
+    nonstd::span<const glm::vec2> polygon_a,
+    nonstd::span<const ProjectetVerticesMinMax> projected_minmax_values_of_a,
+    nonstd::span<const glm::vec2> polygon_b,
+    nonstd::span<const ProjectetVerticesMinMax> projected_minmax_values_of_b);
 } // namespace GameEngine::Math
 
 #endif
