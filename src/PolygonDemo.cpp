@@ -163,9 +163,28 @@ void PolygonDemo::handleFrame(SDL_Renderer *renderer, const std::chrono::microse
     point = glm::vec2{matrix * glm::vec4{point, 0.0f, 1.0f}};
   }
 
-  const auto ab = collidePolygons(renderer, moved_rectangle, moved_triangle, 0);
-  const auto ba = collidePolygons(renderer, moved_triangle, moved_rectangle, 50);
-  renderPolygon(renderer, moved_rectangle, ab && ba);
-  renderPolygon(renderer, moved_triangle, ab && ba);
+  collidePolygons(renderer, moved_rectangle, moved_triangle, 0);
+  collidePolygons(renderer, moved_triangle, moved_rectangle, 50);
+
+  std::array<Math::ProjectetVerticesMinMax, 3> projected_triangle;
+  std::array<Math::ProjectetVerticesMinMax, 4> projected_rectangle;
+  Math::forEachEdge(
+      moved_triangle, [&](const size_t index, const glm::vec2 &start, const glm::vec2 &end) {
+        const auto axis = Math::computeNormalOfEdge(start, end);
+        const auto [min, max] = Math::projectVerticesOntoAxisMinMax(moved_triangle, axis);
+        projected_triangle[index] = {axis, min, max};
+      });
+  Math::forEachEdge(
+      moved_rectangle, [&](const size_t index, const glm::vec2 &start, const glm::vec2 &end) {
+        const auto axis = Math::computeNormalOfEdge(start, end);
+        const auto [min, max] = Math::projectVerticesOntoAxisMinMax(moved_rectangle, axis);
+        projected_rectangle[index] = {axis, min, max};
+      });
+
+  const auto collision = Math::checkPolygonCollision(moved_rectangle, projected_rectangle,
+                                                     moved_triangle, projected_triangle);
+
+  renderPolygon(renderer, moved_rectangle, collision);
+  renderPolygon(renderer, moved_triangle, collision);
 }
 } // namespace GameEngine
