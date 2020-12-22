@@ -3,14 +3,17 @@
  */
 
 #include "Math.hpp"
+#include <SDL_assert.h>
 #include <glm/geometric.hpp>
+#include <glm/gtc/constants.hpp>
+#include <glm/gtx/vector_query.hpp>
 
 namespace {
 /** Performs a partial collision check using the separating axis theorem. It only matches the minmax
  * values of the first polygon against the second polygon. For a complete collision check it is also
  * required to match the minmax values of the second polygon against the first polygon.
  *
- * @param projected_minmax_values_of_a Precomputed axis and projected minmax values of the first
+ * @param projected_minmax_values_of_a Precomputed axes and projected minmax values of the first
  * polygon.
  * @param polygon_b All vertices of the second polygon.
  *
@@ -51,6 +54,8 @@ glm::vec2 computeNormalOfEdge(const glm::vec2 &edge_start, const glm::vec2 &edge
 
 std::pair<float, float> projectVerticesOntoAxisMinMax(nonstd::span<const glm::vec2> vertices,
                                                       const glm::vec2 &axis) {
+  SDL_assert(glm::isNormalized(axis, glm::epsilon<float>()));
+
   if (vertices.empty()) {
     return {};
   }

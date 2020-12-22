@@ -33,7 +33,7 @@ glm::vec2 computeNormalOfEdge(const glm::vec2 &edge_start, const glm::vec2 &edge
 /** Project the given vertices onto the given axis and return the smallest and largest values.
  *
  * @param vertices Points to be projected.
- * @param axis Given points will be projected on this axis. Must be normalized.
+ * @param axis Normalized axis onto which the given points will be projected.
  *
  * @return [min, max] Smallest and largest values occurred during projection.
  */
