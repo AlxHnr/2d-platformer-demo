@@ -51,3 +51,19 @@ add_custom_target(test COMMAND Test)
 add_executable(Demo src/Main.cpp src/PolygonDemo.cpp)
 target_link_libraries(Demo GameEngine)
 add_custom_target(run COMMAND Demo)
+
+find_program(LCOV lcov)
+find_program(GENHTML genhtml)
+if(LCOV AND GENHTML)
+  add_custom_target(coverage
+    COMMAND "${LCOV}" --zerocounters --directory "${CMAKE_BINARY_DIR}"
+    COMMAND Test
+    COMMAND "${LCOV}" --capture --directory "${CMAKE_BINARY_DIR}"
+      --include "${PROJECT_SOURCE_DIR}/src/\\*" --output-file "${CMAKE_BINARY_DIR}/lcov.info"
+    COMMAND "${GENHTML}" --demangle-cpp "${CMAKE_BINARY_DIR}/lcov.info"
+      --output-directory "${CMAKE_BINARY_DIR}/coverage")
+else()
+  add_custom_target(coverage
+    COMMAND "${CMAKE_COMMAND}" -E echo "lcov/genhtml binaries not found"
+    COMMAND "${CMAKE_COMMAND}" -E false)
+endif()
