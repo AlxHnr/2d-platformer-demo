@@ -22,11 +22,12 @@ namespace {
 bool checkPartialSATCollision(
     nonstd::span<const GameEngine::Geometry::ProjectetVerticesMinMax> projected_minmax_values_of_a,
     nonstd::span<const glm::vec2> polygon_b) {
+  using namespace GameEngine::Geometry;
   const size_t all_axes_overlap =
       std::all_of(projected_minmax_values_of_a.begin(), projected_minmax_values_of_a.end(),
-                  [&](const auto &projected_vertices) {
-                    const auto [min, max] = GameEngine::Geometry::projectVerticesOntoAxisMinMax(
-                        polygon_b, projected_vertices.axis);
+                  [&](const ProjectetVerticesMinMax &projected_vertices) {
+                    const auto [min, max] =
+                        projectVerticesOntoAxisMinMax(polygon_b, projected_vertices.axis);
                     return projected_vertices.min < max && projected_vertices.max > min;
                   });
   return !projected_minmax_values_of_a.empty() && all_axes_overlap;
