@@ -12,6 +12,31 @@
 namespace GameEngine {
 template <size_t VertexCount> class ConvexBoundingPolygon {
 public:
+  /** Constructs a convex bounding polygon for collision detection.
+   *
+   * @tparam T Must be glm::vec2.
+   * @param Vertex Zero or more edges/points. E.g. 4 points represent a quad. These points must
+   * represent a convex polygon for accurate collision detection.
+   *
+   * Usage example:
+   *
+   * @code
+   * ConvexBoundingPolygon my_triangle{
+   *     glm::vec2{575, 400},
+   *     glm::vec2{792, 515},
+   *     glm::vec2{870, 670},
+   * };
+   *
+   * ConvexBoundingPolygon my_line{
+   *     glm::vec2{575, 400},
+   *     glm::vec2{870, 670},
+   * };
+   *
+   * ConvexBoundingPolygon my_point{
+   *     glm::vec2{575, 400},
+   * };
+   * @endcode
+   */
   template <typename... T> ConvexBoundingPolygon(const T &... vertex) : vertices{vertex...} {
     static_assert(VertexCount == sizeof...(T),
                   "Vertex count mismatch in ConvexBoundingPolygon constructor");
@@ -38,11 +63,12 @@ private:
     return VertexCount;
   }();
 
-  /** Precomputed normals and projected vertices for all projected_vertices. */
+  /** Precomputed normals and projected vertices for all normal axes of the polygon. */
   std::array<Math::ProjectetVerticesMinMax, edge_count> projected_vertices;
 };
 
-/** Deduction guide for vertex count template parameter. */
+/** Deduction guide for vertex count template parameter. Allows construction without specifying a
+ * vertex count. */
 template <typename... T>
 ConvexBoundingPolygon(T &&... vertex) -> ConvexBoundingPolygon<sizeof...(T)>;
 } // namespace GameEngine

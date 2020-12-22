@@ -6,10 +6,9 @@
 #include <glm/geometric.hpp>
 
 namespace {
-/** Performs a partial collision check using the separating axis theorem on the given polygon. It
- * only matches the minmax values of the first polygon against the second polygon. For a complete
- * collision check is is necessary to match the minmax values of the second polygon against the
- * first polygon.
+/** Performs a partial collision check using the separating axis theorem. It only matches the minmax
+ * values of the first polygon against the second polygon. For a complete collision check it is also
+ * required to match the minmax values of the second polygon against the first polygon.
  *
  * @param projected_minmax_values_of_a Precomputed axis and projected minmax values of the first
  * polygon.
