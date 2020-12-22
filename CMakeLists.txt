@@ -39,8 +39,12 @@ if(GAME_ENGINE_CXX_FLAGS)
   target_link_options(GameEngine PRIVATE "SHELL:${GAME_ENGINE_CXX_FLAGS}")
 endif()
 target_link_libraries(GameEngine PUBLIC glm SDL2 span-lite)
+target_include_directories(GameEngine PUBLIC src)
 
-add_executable(Test test/Main.cpp)
+add_executable(Test
+  test/Main.cpp
+  test/Math.cpp
+)
 target_link_libraries(Test GameEngine doctest)
 add_custom_target(test COMMAND Test)
 
