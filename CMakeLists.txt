@@ -36,7 +36,7 @@ add_library(GameEngine
 )
 if(GAME_ENGINE_CXX_FLAGS)
   target_compile_options(GameEngine PRIVATE "SHELL:${GAME_ENGINE_CXX_FLAGS}")
-  target_link_options(GameEngine PRIVATE "SHELL:${GAME_ENGINE_CXX_FLAGS}")
+  target_link_options(GameEngine PUBLIC "SHELL:${GAME_ENGINE_CXX_FLAGS}")
 endif()
 target_link_libraries(GameEngine PUBLIC glm SDL2 span-lite)
 target_include_directories(GameEngine PUBLIC src)
