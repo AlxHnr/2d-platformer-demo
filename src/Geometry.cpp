@@ -8,6 +8,18 @@
 #include <glm/gtc/constants.hpp>
 #include <glm/gtx/vector_query.hpp>
 
+namespace {
+using namespace GameEngine::Geometry;
+
+float computeOverlap(const ProjectedVertices &polygon_projected,
+                     nonstd::span<const glm::vec2> other_polygon) {
+  const auto other_polygon_projected =
+      projectVerticesOntoAxisMinMax(other_polygon, polygon_projected.axis);
+  return glm::min(other_polygon_projected.max - polygon_projected.min,
+                  polygon_projected.max - other_polygon_projected.min);
+}
+} // namespace
+
 namespace GameEngine::Geometry {
 void forEachEdge(nonstd::span<const glm::vec2> vertices,
                  const std::function<void(const size_t edge_index, const glm::vec2 &edge_start,
@@ -53,15 +65,7 @@ checkPolygonCollision(nonstd::span<const glm::vec2> polygon_a,
     return std::nullopt;
   }
 
-  const auto compute_overlap = [](const ProjectedVertices &polygon_projected,
-                                  nonstd::span<const glm::vec2> other_polygon) {
-    const auto other_polygon_projected =
-        projectVerticesOntoAxisMinMax(other_polygon, polygon_projected.axis);
-    return glm::min(other_polygon_projected.max - polygon_projected.min,
-                    polygon_projected.max - other_polygon_projected.min);
-  };
-
-  auto smallest_overlap = compute_overlap(polygon_a_projected.front(), polygon_b);
+  auto smallest_overlap = computeOverlap(polygon_a_projected.front(), polygon_b);
   auto direction_of_smallest_overlap = polygon_a_projected.front().axis;
   if (smallest_overlap < 0) {
     return std::nullopt;
@@ -69,7 +73,7 @@ checkPolygonCollision(nonstd::span<const glm::vec2> polygon_a,
   const auto update_smallest_overlap = [&](const ProjectedVertices &polygon_projected,
                                            nonstd::span<const glm::vec2> other_polygon,
                                            const float invert_axis_factor) {
-    const auto overlap = compute_overlap(polygon_projected, other_polygon);
+    const auto overlap = computeOverlap(polygon_projected, other_polygon);
     if (overlap < 0) {
       return false;
     }
