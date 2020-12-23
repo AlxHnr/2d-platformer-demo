@@ -31,22 +31,22 @@ void forEachEdge(nonstd::span<const glm::vec2> vertices,
  */
 glm::vec2 computeNormalOfEdge(const glm::vec2 &edge_start, const glm::vec2 &edge_end);
 
-/** Project the given vertices onto the given axis and return the smallest and largest values.
- *
- * @param vertices Points to be projected.
- * @param axis Normalized axis onto which the given points will be projected.
- *
- * @return [min, max] Smallest and largest values occurred during projection.
- */
-std::pair<float, float> projectVerticesOntoAxisMinMax(nonstd::span<const glm::vec2> vertices,
-                                                      const glm::vec2 &axis);
-
 /** Contains the smallest and largest values found while projecting vertices onto an axis. */
 struct ProjectedVerticesMinMax {
   glm::vec2 axis; /**< Normalized axis onto which vertices got projected. */
   float min;      /**< Smallest projected value. */
   float max;      /**< Largest projected value. */
 };
+
+/** Project the given vertices onto the given axis and return the smallest and largest values.
+ *
+ * @param vertices Points to be projected.
+ * @param axis Axis onto which the given points will be projected. Must be normalized.
+ *
+ * @return Given Axis and the smallest/largest values occurred during projection.
+ */
+ProjectedVerticesMinMax projectVerticesOntoAxisMinMax(nonstd::span<const glm::vec2> vertices,
+                                                      const glm::vec2 &axis);
 
 /** Check if the given convex polygons collide using the separating axis theorem.
  *

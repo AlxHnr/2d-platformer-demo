@@ -27,12 +27,12 @@ glm::vec2 computeNormalOfEdge(const glm::vec2 &edge_start, const glm::vec2 &edge
   return glm::normalize(glm::vec2{edge_start.y - edge_end.y, edge_end.x - edge_start.x});
 }
 
-std::pair<float, float> projectVerticesOntoAxisMinMax(nonstd::span<const glm::vec2> vertices,
+ProjectedVerticesMinMax projectVerticesOntoAxisMinMax(nonstd::span<const glm::vec2> vertices,
                                                       const glm::vec2 &axis) {
   SDL_assert(glm::isNormalized(axis, glm::epsilon<float>()));
 
   if (vertices.empty()) {
-    return {};
+    return {axis, 0, 0};
   }
 
   const auto first_dot_product = glm::dot(vertices.front(), axis);
@@ -44,7 +44,7 @@ std::pair<float, float> projectVerticesOntoAxisMinMax(nonstd::span<const glm::ve
     min = std::min(min, dot_product);
     max = std::max(max, dot_product);
   }
-  return {min, max};
+  return {axis, min, max};
 }
 
 std::optional<glm::vec2>
@@ -58,8 +58,8 @@ checkPolygonCollision(nonstd::span<const glm::vec2> polygon_a,
 
   const auto compute_overlap = [](const ProjectedVerticesMinMax &minmax,
                                   nonstd::span<const glm::vec2> other_polygon) {
-    const auto [min, max] = projectVerticesOntoAxisMinMax(other_polygon, minmax.axis);
-    return glm::min(max - minmax.min, minmax.max - min);
+    const auto other_minmax = projectVerticesOntoAxisMinMax(other_polygon, minmax.axis);
+    return glm::min(other_minmax.max - minmax.min, minmax.max - other_minmax.min);
   };
 
   auto smallest_overlap = compute_overlap(polygon_a_minmax.front(), polygon_b);

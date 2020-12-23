@@ -62,8 +62,8 @@ struct ProjectedEdges {
  * @return Min and max values of all vertices projected onto the specified axis.
  */
 ProjectedEdges projectPolygonToNormal(nonstd::span<const glm::vec2> points, const glm::vec2 &axis) {
-  const auto [min, max] = GameEngine::Geometry::projectVerticesOntoAxisMinMax(points, axis);
-  return {min, max, max - min};
+  const auto values = GameEngine::Geometry::projectVerticesOntoAxisMinMax(points, axis);
+  return {values.min, values.max, values.max - values.min};
 }
 
 std::optional<glm::vec2> collidePolygons(SDL_Renderer *renderer, nonstd::span<const glm::vec2> a,
@@ -171,14 +171,13 @@ void PolygonDemo::handleFrame(SDL_Renderer *renderer, const std::chrono::microse
   Geometry::forEachEdge(
       moved_triangle, [&](const size_t index, const glm::vec2 &start, const glm::vec2 &end) {
         const auto axis = Geometry::computeNormalOfEdge(start, end);
-        const auto [min, max] = Geometry::projectVerticesOntoAxisMinMax(moved_triangle, axis);
-        projected_triangle[index] = {axis, min, max};
+        projected_triangle[index] = Geometry::projectVerticesOntoAxisMinMax(moved_triangle, axis);
       });
   Geometry::forEachEdge(
       moved_rectangle, [&](const size_t index, const glm::vec2 &start, const glm::vec2 &end) {
         const auto axis = Geometry::computeNormalOfEdge(start, end);
-        const auto [min, max] = Geometry::projectVerticesOntoAxisMinMax(moved_rectangle, axis);
-        projected_rectangle[index] = {axis, min, max};
+        projected_rectangle[index] = Geometry::projectVerticesOntoAxisMinMax(moved_rectangle, axis);
+        ;
       });
 
   const auto displacement_vector = Geometry::checkPolygonCollision(

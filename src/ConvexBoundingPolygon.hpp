@@ -43,8 +43,7 @@ public:
     Geometry::forEachEdge(
         vertices, [&](const size_t index, const glm::vec2 &start, const glm::vec2 &end) {
           const auto axis = Geometry::computeNormalOfEdge(start, end);
-          const auto [min, max] = Geometry::projectVerticesOntoAxisMinMax(vertices, axis);
-          projected_vertices[index] = {axis, min, max};
+          projected_vertices[index] = Geometry::projectVerticesOntoAxisMinMax(vertices, axis);
         });
   }
 
