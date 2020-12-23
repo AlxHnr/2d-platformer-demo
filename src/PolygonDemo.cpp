@@ -114,30 +114,7 @@ PolygonDemo::PolygonDemo()
           {870, 670},
           {792, 515},
           {575, 400},
-      }} {
-  ConvexBoundingPolygon empty{};
-  ConvexBoundingPolygon one{glm::vec2{792, 515}};
-  ConvexBoundingPolygon line{
-      glm::vec2{792, 515},
-      glm::vec2{870, 670},
-  };
-  ConvexBoundingPolygon<3> test1{
-      glm::vec2{575, 400},
-      glm::vec2{792, 515},
-      glm::vec2{870, 670},
-  };
-  ConvexBoundingPolygon<3> test2{
-      triangle.at(0),
-      triangle.at(1),
-      triangle.at(2),
-  };
-  ConvexBoundingPolygon test3{
-      glm::vec2{170, 170},
-      glm::vec2{270, 300},
-      glm::vec2{450, 380},
-      glm::vec2{550, 290},
-  };
-}
+      }} {}
 
 void PolygonDemo::handleFrame(SDL_Renderer *renderer, const std::chrono::microseconds) {
   const auto move_factor = (SDL_GetTicks() % 20000) / 100.0f;
