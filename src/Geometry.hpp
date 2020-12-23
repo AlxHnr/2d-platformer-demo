@@ -42,7 +42,7 @@ std::pair<float, float> projectVerticesOntoAxisMinMax(nonstd::span<const glm::ve
                                                       const glm::vec2 &axis);
 
 /** Contains the smallest and largest values found while projecting vertices onto an axis. */
-struct ProjectetVerticesMinMax {
+struct ProjectedVerticesMinMax {
   glm::vec2 axis; /**< Normalized axis onto which vertices got projected. */
   float min;      /**< Smallest projected value. */
   float max;      /**< Largest projected value. */
@@ -62,9 +62,9 @@ struct ProjectetVerticesMinMax {
  */
 std::optional<glm::vec2>
 checkPolygonCollision(nonstd::span<const glm::vec2> polygon_a,
-                      nonstd::span<const ProjectetVerticesMinMax> polygon_a_minmax,
+                      nonstd::span<const ProjectedVerticesMinMax> polygon_a_minmax,
                       nonstd::span<const glm::vec2> polygon_b,
-                      nonstd::span<const ProjectetVerticesMinMax> polygon_b_minmax);
+                      nonstd::span<const ProjectedVerticesMinMax> polygon_b_minmax);
 } // namespace GameEngine::Geometry
 
 #endif

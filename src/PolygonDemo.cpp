@@ -166,8 +166,8 @@ void PolygonDemo::handleFrame(SDL_Renderer *renderer, const std::chrono::microse
   collidePolygons(renderer, moved_rectangle, moved_triangle, 0);
   collidePolygons(renderer, moved_triangle, moved_rectangle, 50);
 
-  std::array<Geometry::ProjectetVerticesMinMax, 3> projected_triangle;
-  std::array<Geometry::ProjectetVerticesMinMax, 4> projected_rectangle;
+  std::array<Geometry::ProjectedVerticesMinMax, 3> projected_triangle;
+  std::array<Geometry::ProjectedVerticesMinMax, 4> projected_rectangle;
   Geometry::forEachEdge(
       moved_triangle, [&](const size_t index, const glm::vec2 &start, const glm::vec2 &end) {
         const auto axis = Geometry::computeNormalOfEdge(start, end);

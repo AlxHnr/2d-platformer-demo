@@ -49,14 +49,14 @@ std::pair<float, float> projectVerticesOntoAxisMinMax(nonstd::span<const glm::ve
 
 std::optional<glm::vec2>
 checkPolygonCollision(nonstd::span<const glm::vec2> polygon_a,
-                      nonstd::span<const ProjectetVerticesMinMax> polygon_a_minmax,
+                      nonstd::span<const ProjectedVerticesMinMax> polygon_a_minmax,
                       nonstd::span<const glm::vec2> polygon_b,
-                      nonstd::span<const ProjectetVerticesMinMax> polygon_b_minmax) {
+                      nonstd::span<const ProjectedVerticesMinMax> polygon_b_minmax) {
   if (polygon_a_minmax.empty() || polygon_b_minmax.empty()) {
     return std::nullopt;
   }
 
-  const auto compute_overlap = [](const ProjectetVerticesMinMax &minmax,
+  const auto compute_overlap = [](const ProjectedVerticesMinMax &minmax,
                                   nonstd::span<const glm::vec2> other_polygon) {
     const auto [min, max] = projectVerticesOntoAxisMinMax(other_polygon, minmax.axis);
     return glm::min(max - minmax.min, minmax.max - min);
@@ -67,7 +67,7 @@ checkPolygonCollision(nonstd::span<const glm::vec2> polygon_a,
   if (smallest_overlap < 0) {
     return std::nullopt;
   }
-  const auto update_smallest_overlap = [&](const ProjectetVerticesMinMax &minmax,
+  const auto update_smallest_overlap = [&](const ProjectedVerticesMinMax &minmax,
                                            nonstd::span<const glm::vec2> other_polygon,
                                            const float invert_axis_factor) {
     const auto overlap = compute_overlap(minmax, other_polygon);

@@ -64,7 +64,7 @@ private:
   }();
 
   /** Precomputed normals and projected vertices for all normal axes of the polygon. */
-  std::array<Geometry::ProjectetVerticesMinMax, edge_count> projected_vertices;
+  std::array<Geometry::ProjectedVerticesMinMax, edge_count> projected_vertices;
 };
 
 /** Deduction guide for vertex count template parameter. Allows construction without specifying a
