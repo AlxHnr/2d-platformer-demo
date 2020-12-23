@@ -7,6 +7,7 @@
 #include <glm/geometric.hpp>
 #include <glm/gtc/constants.hpp>
 #include <glm/gtx/vector_query.hpp>
+#include <numeric>
 
 namespace {
 using namespace GameEngine::Geometry;
@@ -17,6 +18,11 @@ float computeOverlap(const ProjectedVertices &polygon_projected,
       projectVerticesOntoAxisMinMax(other_polygon, polygon_projected.axis);
   return glm::min(other_polygon_projected.max - polygon_projected.min,
                   polygon_projected.max - other_polygon_projected.min);
+}
+
+glm::vec2 computeCenterOfPolygon(nonstd::span<const glm::vec2> polygon) {
+  return std::accumulate(polygon.begin(), polygon.end(), glm::vec2{}) /
+         static_cast<float>(polygon.size());
 }
 } // namespace
 
@@ -94,6 +100,12 @@ checkPolygonCollision(nonstd::span<const glm::vec2> polygon_a,
       return std::nullopt;
     }
   }
-  return smallest_overlap * -direction_of_smallest_overlap;
+
+  const auto direction_from_a_to_b =
+      computeCenterOfPolygon(polygon_b) - computeCenterOfPolygon(polygon_a);
+  if (glm::dot(direction_from_a_to_b, direction_of_smallest_overlap) > 0) {
+    direction_of_smallest_overlap *= -1;
+  }
+  return smallest_overlap * direction_of_smallest_overlap;
 }
 } // namespace GameEngine::Geometry
