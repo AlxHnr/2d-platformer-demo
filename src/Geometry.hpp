@@ -32,7 +32,7 @@ void forEachEdge(nonstd::span<const glm::vec2> vertices,
 glm::vec2 computeNormalOfEdge(const glm::vec2 &edge_start, const glm::vec2 &edge_end);
 
 /** Contains the smallest and largest values found while projecting vertices onto an axis. */
-struct ProjectedVerticesMinMax {
+struct ProjectedVertices {
   glm::vec2 axis; /**< Normalized axis onto which vertices got projected. */
   float min;      /**< Smallest projected value. */
   float max;      /**< Largest projected value. */
@@ -45,16 +45,16 @@ struct ProjectedVerticesMinMax {
  *
  * @return Given Axis and the smallest/largest values occurred during projection.
  */
-ProjectedVerticesMinMax projectVerticesOntoAxisMinMax(nonstd::span<const glm::vec2> vertices,
-                                                      const glm::vec2 &axis);
+ProjectedVertices projectVerticesOntoAxisMinMax(nonstd::span<const glm::vec2> vertices,
+                                                const glm::vec2 &axis);
 
 /** Check if the given convex polygons collide using the separating axis theorem.
  *
  * @param polygon_a All points of the first polygon.
- * @param polygon_a_minmax Contains all normal axes of the first polygon and the minmax values
+ * @param polygon_a_projected Contains all normal axes of the first polygon and the minmax values
  * resulting from projecting all points of the first polygon onto these axes.
  * @param polygon_b All points of the second polygon.
- * @param polygon_b_minmax Contains all normal axes of the second polygon and the minmax values
+ * @param polygon_b_projected Contains all normal axes of the second polygon and the minmax values
  * resulting from projecting all points of the second polygon onto these axes.
  *
  * @return Displacement vector (MTV) for moving polygon_a out of polygon_b. This function will
@@ -62,9 +62,9 @@ ProjectedVerticesMinMax projectVerticesOntoAxisMinMax(nonstd::span<const glm::ve
  */
 std::optional<glm::vec2>
 checkPolygonCollision(nonstd::span<const glm::vec2> polygon_a,
-                      nonstd::span<const ProjectedVerticesMinMax> polygon_a_minmax,
+                      nonstd::span<const ProjectedVertices> polygon_a_projected,
                       nonstd::span<const glm::vec2> polygon_b,
-                      nonstd::span<const ProjectedVerticesMinMax> polygon_b_minmax);
+                      nonstd::span<const ProjectedVertices> polygon_b_projected);
 } // namespace GameEngine::Geometry
 
 #endif
