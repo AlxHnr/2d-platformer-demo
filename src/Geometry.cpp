@@ -29,11 +29,8 @@ glm::vec2 computeNormalOfEdge(const glm::vec2 &edge_start, const glm::vec2 &edge
 
 ProjectedVerticesMinMax projectVerticesOntoAxisMinMax(nonstd::span<const glm::vec2> vertices,
                                                       const glm::vec2 &axis) {
+  SDL_assert(!vertices.empty());
   SDL_assert(glm::isNormalized(axis, glm::epsilon<float>()));
-
-  if (vertices.empty()) {
-    return {axis, 0, 0};
-  }
 
   const auto first_dot_product = glm::dot(vertices.front(), axis);
   float min = first_dot_product;

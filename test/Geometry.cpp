@@ -118,14 +118,6 @@ TEST_CASE("Geometry::computeNormalOfEdge()") {
 TEST_CASE("Geometry::projectVerticesOntoAxisMinMax()") {
   const auto axis = glm::normalize(glm::vec2{5, 2});
 
-  SUBCASE("No vertices") {
-    const auto values = GameEngine::Geometry::projectVerticesOntoAxisMinMax({}, axis);
-    REQUIRE(values.axis.x == doctest::Approx(axis.x));
-    REQUIRE(values.axis.y == doctest::Approx(axis.y));
-    REQUIRE(values.min == doctest::Approx(0));
-    REQUIRE(values.max == doctest::Approx(0));
-  }
-
   SUBCASE("One vertex") {
     const std::array vertex = {glm::vec2{2, 3}};
     const auto values = GameEngine::Geometry::projectVerticesOntoAxisMinMax(vertex, axis);

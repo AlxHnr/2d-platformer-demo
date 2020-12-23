@@ -40,7 +40,7 @@ struct ProjectedVerticesMinMax {
 
 /** Project the given vertices onto the given axis and return the smallest and largest values.
  *
- * @param vertices Points to be projected.
+ * @param vertices Points to be projected. Must contain at least one point.
  * @param axis Axis onto which the given points will be projected. Must be normalized.
  *
  * @return Given Axis and the smallest/largest values occurred during projection.
