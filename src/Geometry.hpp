@@ -8,6 +8,7 @@
 #include <functional>
 #include <glm/vec2.hpp>
 #include <nonstd/span.hpp>
+#include <optional>
 #include <utility>
 
 namespace GameEngine::Geometry {
@@ -40,30 +41,30 @@ glm::vec2 computeNormalOfEdge(const glm::vec2 &edge_start, const glm::vec2 &edge
 std::pair<float, float> projectVerticesOntoAxisMinMax(nonstd::span<const glm::vec2> vertices,
                                                       const glm::vec2 &axis);
 
-/** Contains the smallest and largest values found while projecting arbitrary vertices onto an
- * axis. */
+/** Contains the smallest and largest values found while projecting vertices onto an axis. */
 struct ProjectetVerticesMinMax {
-  glm::vec2 axis; /**< Normalized axis. */
+  glm::vec2 axis; /**< Normalized axis onto which vertices got projected. */
   float min;      /**< Smallest projected value. */
   float max;      /**< Largest projected value. */
 };
 
-/** Check if given convex polygons collide.
+/** Check if the given convex polygons collide using the separating axis theorem.
  *
  * @param polygon_a All points of the first polygon.
- * @param projected_minmax_values_of_a Contains all normal axes of the first polygon and the minmax
- * values resulting from projecting all points of the first polygon onto these axes.
+ * @param polygon_a_minmax Contains all normal axes of the first polygon and the minmax values
+ * resulting from projecting all points of the first polygon onto these axes.
  * @param polygon_b All points of the second polygon.
- * @param projected_minmax_values_of_b Contains all normal axes of the second polygon and the minmax
- * values resulting from projecting all points of the second polygon onto these axes.
+ * @param polygon_b_minmax Contains all normal axes of the second polygon and the minmax values
+ * resulting from projecting all points of the second polygon onto these axes.
  *
- * @return True if a collision was detected.
+ * @return Displacement vector (MTV) for moving polygon_a out of polygon_b. This function will
+ * return nothing if no collision was detected.
  */
-bool checkPolygonCollision(
-    nonstd::span<const glm::vec2> polygon_a,
-    nonstd::span<const ProjectetVerticesMinMax> projected_minmax_values_of_a,
-    nonstd::span<const glm::vec2> polygon_b,
-    nonstd::span<const ProjectetVerticesMinMax> projected_minmax_values_of_b);
+std::optional<glm::vec2>
+checkPolygonCollision(nonstd::span<const glm::vec2> polygon_a,
+                      nonstd::span<const ProjectetVerticesMinMax> polygon_a_minmax,
+                      nonstd::span<const glm::vec2> polygon_b,
+                      nonstd::span<const ProjectetVerticesMinMax> polygon_b_minmax);
 } // namespace GameEngine::Geometry
 
 #endif

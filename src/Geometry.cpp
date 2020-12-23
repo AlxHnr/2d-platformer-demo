@@ -8,32 +8,6 @@
 #include <glm/gtc/constants.hpp>
 #include <glm/gtx/vector_query.hpp>
 
-namespace {
-/** Performs a partial collision check using the separating axis theorem. It only matches the minmax
- * values of the first polygon against the second polygon. For a complete collision check it is also
- * required to match the minmax values of the second polygon against the first polygon.
- *
- * @param projected_minmax_values_of_a Precomputed axes and projected minmax values of the first
- * polygon.
- * @param polygon_b All vertices of the second polygon.
- *
- * @return True if a collision was detected.
- */
-bool checkPartialSATCollision(
-    nonstd::span<const GameEngine::Geometry::ProjectetVerticesMinMax> projected_minmax_values_of_a,
-    nonstd::span<const glm::vec2> polygon_b) {
-  using namespace GameEngine::Geometry;
-  const size_t all_axes_overlap =
-      std::all_of(projected_minmax_values_of_a.begin(), projected_minmax_values_of_a.end(),
-                  [&](const ProjectetVerticesMinMax &projected_vertices) {
-                    const auto [min, max] =
-                        projectVerticesOntoAxisMinMax(polygon_b, projected_vertices.axis);
-                    return projected_vertices.min < max && projected_vertices.max > min;
-                  });
-  return !projected_minmax_values_of_a.empty() && all_axes_overlap;
-}
-} // namespace
-
 namespace GameEngine::Geometry {
 void forEachEdge(nonstd::span<const glm::vec2> vertices,
                  const std::function<void(const size_t edge_index, const glm::vec2 &edge_start,
@@ -73,12 +47,50 @@ std::pair<float, float> projectVerticesOntoAxisMinMax(nonstd::span<const glm::ve
   return {min, max};
 }
 
-bool checkPolygonCollision(
-    nonstd::span<const glm::vec2> polygon_a,
-    nonstd::span<const ProjectetVerticesMinMax> projected_minmax_values_of_a,
-    nonstd::span<const glm::vec2> polygon_b,
-    nonstd::span<const ProjectetVerticesMinMax> projected_minmax_values_of_b) {
-  return checkPartialSATCollision(projected_minmax_values_of_a, polygon_b) &&
-         checkPartialSATCollision(projected_minmax_values_of_b, polygon_a);
+std::optional<glm::vec2>
+checkPolygonCollision(nonstd::span<const glm::vec2> polygon_a,
+                      nonstd::span<const ProjectetVerticesMinMax> polygon_a_minmax,
+                      nonstd::span<const glm::vec2> polygon_b,
+                      nonstd::span<const ProjectetVerticesMinMax> polygon_b_minmax) {
+  if (polygon_a_minmax.empty() || polygon_b_minmax.empty()) {
+    return std::nullopt;
+  }
+
+  const auto compute_overlap = [](const ProjectetVerticesMinMax &minmax,
+                                  nonstd::span<const glm::vec2> other_polygon) {
+    const auto [min, max] = projectVerticesOntoAxisMinMax(other_polygon, minmax.axis);
+    return glm::min(max - minmax.min, minmax.max - min);
+  };
+
+  auto smallest_overlap = compute_overlap(polygon_a_minmax.front(), polygon_b);
+  auto direction_of_smallest_overlap = polygon_a_minmax.front().axis;
+  if (smallest_overlap < 0) {
+    return std::nullopt;
+  }
+  const auto update_smallest_overlap = [&](const ProjectetVerticesMinMax &minmax,
+                                           nonstd::span<const glm::vec2> other_polygon,
+                                           const float invert_axis_factor) {
+    const auto overlap = compute_overlap(minmax, other_polygon);
+    if (overlap < 0) {
+      return false;
+    }
+    if (overlap < smallest_overlap) {
+      smallest_overlap = overlap;
+      direction_of_smallest_overlap = minmax.axis * invert_axis_factor;
+    }
+    return true;
+  };
+
+  for (size_t index = 1; index < polygon_a_minmax.size(); ++index) {
+    if (!update_smallest_overlap(polygon_a_minmax[index], polygon_b, 1)) {
+      return std::nullopt;
+    }
+  }
+  for (const auto &minmax : polygon_b_minmax) {
+    if (!update_smallest_overlap(minmax, polygon_a, -1)) {
+      return std::nullopt;
+    }
+  }
+  return smallest_overlap * -direction_of_smallest_overlap;
 }
 } // namespace GameEngine::Geometry

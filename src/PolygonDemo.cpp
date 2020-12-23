@@ -181,10 +181,15 @@ void PolygonDemo::handleFrame(SDL_Renderer *renderer, const std::chrono::microse
         projected_rectangle[index] = {axis, min, max};
       });
 
-  const auto collision = Geometry::checkPolygonCollision(moved_rectangle, projected_rectangle,
-                                                         moved_triangle, projected_triangle);
+  const auto displacement_vector = Geometry::checkPolygonCollision(
+      moved_rectangle, projected_rectangle, moved_triangle, projected_triangle);
+  if (displacement_vector.has_value()) {
+    for (auto &point : moved_rectangle) {
+      point += *displacement_vector;
+    }
+  }
 
-  renderPolygon(renderer, moved_rectangle, collision);
-  renderPolygon(renderer, moved_triangle, collision);
+  renderPolygon(renderer, moved_rectangle, displacement_vector.has_value());
+  renderPolygon(renderer, moved_triangle, displacement_vector.has_value());
 }
 } // namespace GameEngine
