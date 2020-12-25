@@ -147,3 +147,10 @@ TEST_CASE("Nested Polygon collision") {
   REQUIRE(displacement->x == doctest::Approx(-1));
   REQUIRE(displacement->y == doctest::Approx(0));
 }
+
+TEST_CASE("Collision check stops on first failed overlap check") {
+  const ConvexBoundingPolygon line{glm::vec2{-1, 1}, glm::vec2{-1, 2}};
+  const ConvexBoundingPolygon point{glm::vec2{1, 1.5}};
+  REQUIRE_FALSE(line.collidesWith(point));
+  REQUIRE_FALSE(point.collidesWith(line));
+}
