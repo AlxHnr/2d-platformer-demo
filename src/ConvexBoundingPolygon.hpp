@@ -10,32 +10,35 @@
 #include <glm/vec2.hpp>
 
 namespace GameEngine {
+/** Polygon which can collide with other polygons.
+ *
+ * Usage example:
+ *
+ * @code
+ * ConvexBoundingPolygon my_triangle{
+ *     glm::vec2{575, 400},
+ *     glm::vec2{792, 515},
+ *     glm::vec2{870, 670},
+ * };
+ *
+ * ConvexBoundingPolygon my_line{
+ *     glm::vec2{575, 400},
+ *     glm::vec2{870, 670},
+ * };
+ *
+ * if(my_triangle.collidesWith(my_line)) {
+ *   ...
+ * }
+ * @endcode
+ *
+ */
 template <size_t VertexCount> class ConvexBoundingPolygon {
 public:
-  /** Constructs a convex bounding polygon for collision detection.
+  /** Construct a convex bounding polygon for collision detection.
    *
    * @tparam T Must be glm::vec2.
    * @param Vertex Zero or more edges/points. E.g. 4 points represent a quad. These points must
    * represent a convex polygon for accurate collision detection.
-   *
-   * Usage examples:
-   *
-   * @code
-   * ConvexBoundingPolygon my_triangle{
-   *     glm::vec2{575, 400},
-   *     glm::vec2{792, 515},
-   *     glm::vec2{870, 670},
-   * };
-   *
-   * ConvexBoundingPolygon my_line{
-   *     glm::vec2{575, 400},
-   *     glm::vec2{870, 670},
-   * };
-   *
-   * ConvexBoundingPolygon my_point{
-   *     glm::vec2{575, 400},
-   * };
-   * @endcode
    */
   template <typename... T> ConvexBoundingPolygon(const T &... vertex) : vertices{vertex...} {
     static_assert(VertexCount == sizeof...(T),
@@ -47,9 +50,13 @@ public:
         });
   }
 
-  /** Overload for points. Uses the Y axis for projection. */
+  /** Construct a polygon with only one vertex (monogon). Can collide with other polygons.
+   *
+   * @param vertex Position of the point.
+   */
   ConvexBoundingPolygon(const glm::vec2 &vertex) : vertices{vertex} {
-    projected_vertices[0] = Geometry::projectVerticesOntoAxisMinMax(vertices, {0, 1});
+    const glm::vec2 y_axis = {0, 1};
+    projected_vertices[0] = Geometry::projectVerticesOntoAxisMinMax(vertices, y_axis);
   }
 
   /** Check if this polygon collides with another polygon.
