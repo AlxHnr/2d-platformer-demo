@@ -146,7 +146,10 @@ void PolygonDemo::handleFrame(SDL_Renderer *renderer, const std::chrono::microse
   const auto displacement_vector = triangle_polygon.collidesWith(rectangle_polygon);
   if (displacement_vector.has_value()) {
     for (auto &point : triangle) {
-      point += *displacement_vector;
+      point += *displacement_vector / 2.0f;
+    }
+    for (auto &point : rectangle) {
+      point -= *displacement_vector / 2.0f;
     }
   }
 
