@@ -30,7 +30,6 @@ namespace GameEngine {
  *   ...
  * }
  * @endcode
- *
  */
 template <size_t VertexCount> class ConvexBoundingPolygon {
 public:
@@ -50,13 +49,13 @@ public:
         });
   }
 
-  /** Construct a polygon with only one vertex (monogon). Can collide with other polygons.
+  /** Construct a polygon with only one vertex (monogon/point). Can collide with other polygons.
    *
    * @param vertex Position of the point.
    */
   ConvexBoundingPolygon(const glm::vec2 &vertex) : vertices{vertex} {
-    const glm::vec2 y_axis = {0, 1};
-    projected_vertices[0] = Geometry::projectVerticesOntoAxisMinMax(vertices, y_axis);
+    const glm::vec2 x_axis{1, 0};
+    projected_vertices[0] = Geometry::projectVerticesOntoAxisMinMax(vertices, x_axis);
   }
 
   /** Check if this polygon collides with another polygon.
@@ -103,7 +102,7 @@ private:
   /** Precomputed normals and projected vertices for all axes of the polygon. */
   std::array<Geometry::ProjectedVertices, edge_count> projected_vertices;
 
-  /** Allow collision check with polygons of other size. */
+  /** Allow collision check with polygons of other sizes. */
   template <size_t OtherVertexCount> friend class ConvexBoundingPolygon;
 };
 
