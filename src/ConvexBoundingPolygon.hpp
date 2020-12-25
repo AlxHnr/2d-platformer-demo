@@ -18,7 +18,7 @@ public:
    * @param Vertex Zero or more edges/points. E.g. 4 points represent a quad. These points must
    * represent a convex polygon for accurate collision detection.
    *
-   * Usage example:
+   * Usage examples:
    *
    * @code
    * ConvexBoundingPolygon my_triangle{
@@ -47,6 +47,31 @@ public:
         });
   }
 
+  /** Check if this polygon collides with another polygon.
+   *
+   * @tparam OtherVertexCount Amount of vertices in the other polygon.
+   * @param other Polygon to check against.
+   *
+   * @return Displacement vector (MTV) for moving this polygon out of the other polygon.
+   *
+   * Usage example:
+   *
+   * @code
+   * ConvexBoundingPolygon my_triangle{...};
+   * ConvexBoundingPolygon my_quad{...};
+   *
+   * if(const auto displacement = my_triangle.collidesWith(my_quad)) {
+   *   // Move object represented by my_triangle out of my_quad by adding *displacement to
+   *   // my_triangles position.
+   * }
+   * @code
+   */
+  template <size_t OtherVertexCount>
+  std::optional<glm::vec2> collidesWith(const ConvexBoundingPolygon<OtherVertexCount> &other) {
+    return Geometry::checkPolygonCollision(vertices, projected_vertices, other.vertices,
+                                           other.projected_vertices);
+  }
+
   const std::array<glm::vec2, VertexCount> &getVertices() const { return vertices; }
 
 private:
@@ -62,14 +87,17 @@ private:
     return VertexCount;
   }();
 
-  /** Precomputed normals and projected vertices for all normal axes of the polygon. */
+  /** Precomputed normals and projected vertices for all axes of the polygon. */
   std::array<Geometry::ProjectedVertices, edge_count> projected_vertices;
+
+  /** Allow collision check with polygons of other size. */
+  template <size_t OtherVertexCount> friend class ConvexBoundingPolygon;
 };
 
 /** Deduction guide for vertex count template parameter. Allows construction without specifying a
  * vertex count. */
 template <typename... T>
-ConvexBoundingPolygon(T &&... vertex) -> ConvexBoundingPolygon<sizeof...(T)>;
+ConvexBoundingPolygon(const T &... vertex) -> ConvexBoundingPolygon<sizeof...(T)>;
 } // namespace GameEngine
 
 #endif
