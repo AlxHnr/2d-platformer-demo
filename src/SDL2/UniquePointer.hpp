@@ -18,9 +18,7 @@ struct Deleter {
 template <typename T> using UniquePointer = std::unique_ptr<T, Deleter>;
 
 /** Wrap the given pointer in a unique pointer using the matching SDL function for releasing. */
-template <typename T> UniquePointer<T> wrapPointer(T *ptr) {
-  return UniquePointer<T>{ptr}; /* Comment */
-}
+template <typename T> UniquePointer<T> wrapPointer(T *ptr) { return UniquePointer<T>{ptr}; }
 } // namespace GameEngine::SDL2
 
 #endif
