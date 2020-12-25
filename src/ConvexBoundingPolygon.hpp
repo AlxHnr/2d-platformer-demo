@@ -47,6 +47,11 @@ public:
         });
   }
 
+  /** Overload for points. Uses the Y axis for projection. */
+  ConvexBoundingPolygon(const glm::vec2 &vertex) : vertices{vertex} {
+    projected_vertices[0] = Geometry::projectVerticesOntoAxisMinMax(vertices, {0, 1});
+  }
+
   /** Check if this polygon collides with another polygon.
    *
    * @tparam OtherVertexCount Amount of vertices in the other polygon.
@@ -67,7 +72,8 @@ public:
    * @code
    */
   template <size_t OtherVertexCount>
-  std::optional<glm::vec2> collidesWith(const ConvexBoundingPolygon<OtherVertexCount> &other) {
+  std::optional<glm::vec2>
+  collidesWith(const ConvexBoundingPolygon<OtherVertexCount> &other) const {
     return Geometry::checkPolygonCollision(vertices, projected_vertices, other.vertices,
                                            other.projected_vertices);
   }
@@ -78,10 +84,10 @@ private:
   std::array<glm::vec2, VertexCount> vertices;
 
   static constexpr size_t edge_count = []() -> size_t {
-    if (VertexCount < 2) {
+    if (VertexCount == 0) {
       return 0;
     }
-    if (VertexCount == 2) {
+    if (VertexCount <= 2) {
       return 1;
     }
     return VertexCount;
