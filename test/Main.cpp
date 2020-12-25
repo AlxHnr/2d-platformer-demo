@@ -8,7 +8,13 @@
 #include <SDL_assert.h>
 
 int main(const int arg_count, char **args) {
-  SDL_SetAssertionHandler([](const SDL_AssertData *, void *) { return SDL_ASSERTION_ABORT; },
-                          nullptr);
+  SDL_SetAssertionHandler(
+      [](const SDL_AssertData *data, void *) -> SDL_AssertState {
+        const auto message = std::string{"Assertion failed: "} + data->condition + ": " +
+                             data->function + "(): " + data->filename + ":" +
+                             std::to_string(data->linenum);
+        throw std::runtime_error{message};
+      },
+      nullptr);
   return doctest::Context{arg_count, args}.run();
 }
