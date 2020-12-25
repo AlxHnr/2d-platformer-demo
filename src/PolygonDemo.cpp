@@ -103,25 +103,23 @@ std::optional<glm::vec2> collidePolygons(SDL_Renderer *renderer, nonstd::span<co
 } // namespace
 
 namespace GameEngine {
-PolygonDemo::PolygonDemo()
-    : rectangle{{
-          {170, 170},
-          {270, 300},
-          {450, 380},
-          {550, 290},
-      }},
-      triangle{{
-          {870, 670},
-          {792, 515},
-          {575, 400},
-      }} {}
-
 void PolygonDemo::handleFrame(SDL_Renderer *renderer, const std::chrono::microseconds) {
   const auto move_factor = (SDL_GetTicks() % 20000) / 100.0f;
   const auto rotation_speed = 0.05f;
 
-  auto moved_rectangle = rectangle;
-  for (auto &point : moved_rectangle) {
+  std::array rectangle = {
+      glm::vec2{170, 170},
+      glm::vec2{270, 300},
+      glm::vec2{450, 380},
+      glm::vec2{550, 290},
+  };
+  std::array triangle{
+      glm::vec2{870, 670},
+      glm::vec2{792, 515},
+      glm::vec2{575, 400},
+  };
+
+  for (auto &point : rectangle) {
     const auto matrix =
         glm::translate(glm::vec3{move_factor, move_factor, 0.0f}) *
         glm::translate(glm::vec3{350.0f, 275.0f, 0.0f}) *
@@ -130,8 +128,7 @@ void PolygonDemo::handleFrame(SDL_Renderer *renderer, const std::chrono::microse
     point = glm::vec2{matrix * glm::vec4{point, 0.0f, 1.0f}};
   }
 
-  auto moved_triangle = triangle;
-  for (auto &point : moved_triangle) {
+  for (auto &point : triangle) {
     const auto matrix =
         glm::translate(-glm::vec3{move_factor / 1.25, move_factor, 0.0f}) *
         glm::translate(glm::vec3{750.0f, 470.0f, 0.0f}) *
@@ -140,32 +137,20 @@ void PolygonDemo::handleFrame(SDL_Renderer *renderer, const std::chrono::microse
     point = glm::vec2{matrix * glm::vec4{point, 0.0f, 1.0f}};
   }
 
-  collidePolygons(renderer, moved_rectangle, moved_triangle, 0);
-  collidePolygons(renderer, moved_triangle, moved_rectangle, 50);
+  collidePolygons(renderer, rectangle, triangle, 0);
+  collidePolygons(renderer, triangle, rectangle, 50);
 
-  std::array<Geometry::ProjectedVertices, 3> projected_triangle;
-  std::array<Geometry::ProjectedVertices, 4> projected_rectangle;
-  Geometry::forEachEdge(
-      moved_triangle, [&](const size_t index, const glm::vec2 &start, const glm::vec2 &end) {
-        const auto axis = Geometry::computeNormalOfEdge(start, end);
-        projected_triangle[index] = Geometry::projectVerticesOntoAxisMinMax(moved_triangle, axis);
-      });
-  Geometry::forEachEdge(
-      moved_rectangle, [&](const size_t index, const glm::vec2 &start, const glm::vec2 &end) {
-        const auto axis = Geometry::computeNormalOfEdge(start, end);
-        projected_rectangle[index] = Geometry::projectVerticesOntoAxisMinMax(moved_rectangle, axis);
-        ;
-      });
+  ConvexBoundingPolygon rectangle_polygon{rectangle[0], rectangle[1], rectangle[2], rectangle[3]};
+  ConvexBoundingPolygon triangle_polygon{triangle[0], triangle[1], triangle[2]};
 
-  const auto displacement_vector = Geometry::checkPolygonCollision(
-      moved_rectangle, projected_rectangle, moved_triangle, projected_triangle);
+  const auto displacement_vector = triangle_polygon.collidesWith(rectangle_polygon);
   if (displacement_vector.has_value()) {
-    for (auto &point : moved_rectangle) {
+    for (auto &point : triangle) {
       point += *displacement_vector;
     }
   }
 
-  renderPolygon(renderer, moved_rectangle, displacement_vector.has_value());
-  renderPolygon(renderer, moved_triangle, displacement_vector.has_value());
+  renderPolygon(renderer, rectangle, displacement_vector.has_value());
+  renderPolygon(renderer, triangle, displacement_vector.has_value());
 }
 } // namespace GameEngine
