@@ -23,51 +23,83 @@ size_t countEdges(nonstd::span<const glm::vec2> polygon) {
 }
 
 /** @return [start, end] positions of a polygons nth edge. */
-std::pair<glm::vec2, glm::vec2> getEdge(nonstd::span<const glm::vec2> polygon, const size_t index) {
+std::pair<glm::vec2, glm::vec2> getEdge(nonstd::span<const glm::vec2> polygon,
+                                        const size_t edge_index) {
   SDL_assert(polygon.size() >= 2);
 
-  if (index == polygon.size() - 1) {
+  if (edge_index == polygon.size() - 1) {
     return {polygon.back(), polygon.front()};
   }
-  return {polygon[index], polygon[index + 1]};
+  return {polygon[edge_index], polygon[edge_index + 1]};
 }
 
-glm::vec2 getEdgeNormalAtIndex(nonstd::span<const glm::vec2> polygon, const size_t index) {
-  const auto [start, end] = getEdge(polygon, index);
-  return computeNormalOfEdge(start, end);
+/** @return Normal vector orthogonal to the polygons nth edge. */
+glm::vec2 getEdgeNormal(nonstd::span<const glm::vec2> polygon, const size_t edge_index) {
+  const auto [start, end] = getEdge(polygon, edge_index);
+  return glm::normalize(glm::vec2{start.y - end.y, end.x - start.x});
 }
 
-float projectOverlap(const glm::vec2 &axis, nonstd::span<const glm::vec2> polygon_a,
-                     nonstd::span<const glm::vec2> polygon_b) {
-  const auto polygon_a_projected = projectVerticesOntoAxisMinMax(polygon_a, axis);
-  const auto polygon_b_projected = projectVerticesOntoAxisMinMax(polygon_b, axis);
+/** Contains the smallest and largest values found while projecting vertices onto an axis. */
+struct ProjectedVertices {
+  glm::vec2 axis; /**< Normalized axis onto which vertices got projected. */
+  float min;      /**< Smallest projected value. */
+  float max;      /**< Largest projected value. */
+};
+
+ProjectedVertices projectVerticesOntoAxis(nonstd::span<const glm::vec2> vertices,
+                                          const glm::vec2 &axis) {
+  SDL_assert(!vertices.empty());
+  SDL_assert(glm::isNormalized(axis, glm::epsilon<float>()));
+
+  const auto first_dot_product = glm::dot(vertices.front(), axis);
+  float min = first_dot_product;
+  float max = first_dot_product;
+
+  for (size_t index = 1; index < vertices.size(); ++index) {
+    const auto dot_product = glm::dot(vertices[index], axis);
+    min = std::min(min, dot_product);
+    max = std::max(max, dot_product);
+  }
+  return {axis, min, max};
+}
+
+/** @return Overlap found while projecting the given polygons onto the specified axis. Will be < 0
+ * if no overlap exists. */
+float getProjectionOverlap(nonstd::span<const glm::vec2> polygon_a,
+                           nonstd::span<const glm::vec2> polygon_b, const glm::vec2 &axis) {
+  const auto polygon_a_projected = projectVerticesOntoAxis(polygon_a, axis);
+  const auto polygon_b_projected = projectVerticesOntoAxis(polygon_b, axis);
   return glm::min(polygon_b_projected.max - polygon_a_projected.min,
                   polygon_a_projected.max - polygon_b_projected.min);
 }
 
-struct Overlap {
-  float magnitude;
+/** Offset for moving one polygon out of another. */
+struct DisplacementVector {
   glm::vec2 direction;
+  float magnitude;
 };
 
-std::optional<Overlap> findSmallestOverlap(nonstd::span<const glm::vec2> polygon_a,
-                                           nonstd::span<const glm::vec2> polygon_b) {
+/** @return Smallest displacement vector (MTV) for moving polygon_a out of polygon_b. Will return
+ * nothing if no collision occurred. */
+std::optional<DisplacementVector>
+findSmallestDisplacementVector(nonstd::span<const glm::vec2> polygon_a,
+                               nonstd::span<const glm::vec2> polygon_b) {
   if (polygon_a.empty()) {
     return std::nullopt;
   }
 
   /** Use X axis as direction for polygons with only one vertex. */
   auto direction_of_smallest_overlap =
-      polygon_a.size() == 1 ? glm::vec2{1, 0} : getEdgeNormalAtIndex(polygon_a, 0);
-  auto smallest_overlap = projectOverlap(direction_of_smallest_overlap, polygon_a, polygon_b);
+      polygon_a.size() == 1 ? glm::vec2{1, 0} : getEdgeNormal(polygon_a, 0);
+  auto smallest_overlap = getProjectionOverlap(polygon_a, polygon_b, direction_of_smallest_overlap);
   if (smallest_overlap < 0) {
     return std::nullopt;
   }
 
   const auto polygon_a_edges = countEdges(polygon_a);
   for (size_t index = 1; index < polygon_a_edges; ++index) {
-    const auto axis = getEdgeNormalAtIndex(polygon_a, index);
-    const auto overlap = projectOverlap(axis, polygon_a, polygon_b);
+    const auto axis = getEdgeNormal(polygon_a, index);
+    const auto overlap = getProjectionOverlap(polygon_a, polygon_b, axis);
     if (overlap < 0) {
       return std::nullopt;
     }
@@ -77,7 +109,7 @@ std::optional<Overlap> findSmallestOverlap(nonstd::span<const glm::vec2> polygon
     }
   }
 
-  return Overlap{smallest_overlap, direction_of_smallest_overlap};
+  return DisplacementVector{direction_of_smallest_overlap, smallest_overlap};
 }
 
 glm::vec2 computeCenterOfPolygon(nonstd::span<const glm::vec2> polygon) {
@@ -97,39 +129,18 @@ void forEachEdge(
   }
 }
 
-glm::vec2 computeNormalOfEdge(const glm::vec2 &edge_start, const glm::vec2 &edge_end) {
-  return glm::normalize(glm::vec2{edge_start.y - edge_end.y, edge_end.x - edge_start.x});
-}
-
-ProjectedVertices projectVerticesOntoAxisMinMax(nonstd::span<const glm::vec2> vertices,
-                                                const glm::vec2 &axis) {
-  SDL_assert(!vertices.empty());
-  SDL_assert(glm::isNormalized(axis, glm::epsilon<float>()));
-
-  const auto first_dot_product = glm::dot(vertices.front(), axis);
-  float min = first_dot_product;
-  float max = first_dot_product;
-
-  for (size_t index = 1; index < vertices.size(); ++index) {
-    const auto dot_product = glm::dot(vertices[index], axis);
-    min = std::min(min, dot_product);
-    max = std::max(max, dot_product);
-  }
-  return {axis, min, max};
-}
-
-std::optional<glm::vec2> checkPolygonCollision(nonstd::span<const glm::vec2> polygon_a,
-                                               nonstd::span<const glm::vec2> polygon_b) {
+std::optional<glm::vec2> checkCollision(nonstd::span<const glm::vec2> polygon_a,
+                                        nonstd::span<const glm::vec2> polygon_b) {
   if (polygon_a.empty() || polygon_b.empty()) {
     return std::nullopt;
   }
 
-  const auto polygon_b_projected_onto_a = findSmallestOverlap(polygon_a, polygon_b);
+  const auto polygon_b_projected_onto_a = findSmallestDisplacementVector(polygon_a, polygon_b);
   if (!polygon_b_projected_onto_a) {
     return std::nullopt;
   }
 
-  const auto polygon_a_projected_onto_b = findSmallestOverlap(polygon_b, polygon_a);
+  const auto polygon_a_projected_onto_b = findSmallestDisplacementVector(polygon_b, polygon_a);
   if (!polygon_a_projected_onto_b) {
     return std::nullopt;
   }
