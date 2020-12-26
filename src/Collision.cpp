@@ -4,8 +4,6 @@
 
 #include "Collision.hpp"
 #include "Geometry.hpp"
-#include <SDL_assert.h>
-#include <glm/gtc/constants.hpp>
 #include <glm/gtx/vector_query.hpp>
 #include <numeric>
 
@@ -31,9 +29,6 @@ struct ProjectedVertices {
 };
 
 ProjectedVertices projectVerticesOntoAxis(ConvexPolygonView polygon, const glm::vec2 &axis) {
-  SDL_assert(!polygon.empty());
-  SDL_assert(glm::isNormalized(axis, glm::epsilon<float>()));
-
   const auto first_dot_product = glm::dot(polygon.front(), axis);
   float min = first_dot_product;
   float max = first_dot_product;
@@ -64,10 +59,6 @@ struct DisplacementVector {
  * nothing if no collision occurred. */
 std::optional<DisplacementVector> findSmallestDisplacementVector(ConvexPolygonView a,
                                                                  ConvexPolygonView b) {
-  if (a.empty()) {
-    return std::nullopt;
-  }
-
   /** Use X axis as direction for polygons with only one vertex. */
   auto direction_of_smallest_overlap = a.size() == 1 ? glm::vec2{1, 0} : getEdgeNormal(a, 0);
   auto smallest_overlap = getProjectionOverlap(a, b, direction_of_smallest_overlap);
