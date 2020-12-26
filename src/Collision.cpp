@@ -10,14 +10,16 @@
 #include <numeric>
 
 namespace {
-glm::vec2 computeCenterOfPolygon(nonstd::span<const glm::vec2> polygon) {
+using namespace GameEngine;
+
+glm::vec2 computeCenterOfPolygon(ConvexPolygonView polygon) {
   return std::accumulate(polygon.begin(), polygon.end(), glm::vec2{}) /
          static_cast<float>(polygon.size());
 }
 
 /** @return Normal vector orthogonal to the polygons nth edge. */
-glm::vec2 getEdgeNormal(nonstd::span<const glm::vec2> polygon, const size_t edge_index) {
-  const auto [start, end] = GameEngine::Geometry::getEdge(polygon, edge_index);
+glm::vec2 getEdgeNormal(ConvexPolygonView polygon, const size_t edge_index) {
+  const auto [start, end] = Geometry::getEdge(polygon, edge_index);
   return glm::normalize(glm::vec2{start.y - end.y, end.x - start.x});
 }
 
@@ -28,17 +30,16 @@ struct ProjectedVertices {
   float max;      /**< Largest projected value. */
 };
 
-ProjectedVertices projectVerticesOntoAxis(nonstd::span<const glm::vec2> vertices,
-                                          const glm::vec2 &axis) {
-  SDL_assert(!vertices.empty());
+ProjectedVertices projectVerticesOntoAxis(ConvexPolygonView polygon, const glm::vec2 &axis) {
+  SDL_assert(!polygon.empty());
   SDL_assert(glm::isNormalized(axis, glm::epsilon<float>()));
 
-  const auto first_dot_product = glm::dot(vertices.front(), axis);
+  const auto first_dot_product = glm::dot(polygon.front(), axis);
   float min = first_dot_product;
   float max = first_dot_product;
 
-  for (size_t index = 1; index < vertices.size(); ++index) {
-    const auto dot_product = glm::dot(vertices[index], axis);
+  for (size_t index = 1; index < polygon.size(); ++index) {
+    const auto dot_product = glm::dot(polygon[index], axis);
     min = std::min(min, dot_product);
     max = std::max(max, dot_product);
   }
@@ -47,8 +48,7 @@ ProjectedVertices projectVerticesOntoAxis(nonstd::span<const glm::vec2> vertices
 
 /** @return Overlap found while projecting the given polygons onto the specified axis. Will be < 0
  * if no overlap exists. */
-float getProjectionOverlap(nonstd::span<const glm::vec2> a, nonstd::span<const glm::vec2> b,
-                           const glm::vec2 &axis) {
+float getProjectionOverlap(ConvexPolygonView a, ConvexPolygonView b, const glm::vec2 &axis) {
   const auto a_projected = projectVerticesOntoAxis(a, axis);
   const auto b_projected = projectVerticesOntoAxis(b, axis);
   return glm::min(b_projected.max - a_projected.min, a_projected.max - b_projected.min);
@@ -62,8 +62,8 @@ struct DisplacementVector {
 
 /** @return Smallest displacement vector (MTV) for moving polygon a out of polygon b. Will return
  * nothing if no collision occurred. */
-std::optional<DisplacementVector> findSmallestDisplacementVector(nonstd::span<const glm::vec2> a,
-                                                                 nonstd::span<const glm::vec2> b) {
+std::optional<DisplacementVector> findSmallestDisplacementVector(ConvexPolygonView a,
+                                                                 ConvexPolygonView b) {
   if (a.empty()) {
     return std::nullopt;
   }
@@ -75,7 +75,7 @@ std::optional<DisplacementVector> findSmallestDisplacementVector(nonstd::span<co
     return std::nullopt;
   }
 
-  const auto a_edges = GameEngine::Geometry::countEdges(a);
+  const auto a_edges = Geometry::countEdges(a);
   for (size_t index = 1; index < a_edges; ++index) {
     const auto axis = getEdgeNormal(a, index);
     const auto overlap = getProjectionOverlap(a, b, axis);
@@ -93,8 +93,7 @@ std::optional<DisplacementVector> findSmallestDisplacementVector(nonstd::span<co
 } // namespace
 
 namespace GameEngine {
-std::optional<glm::vec2> checkCollision(nonstd::span<const glm::vec2> a,
-                                        nonstd::span<const glm::vec2> b) {
+std::optional<glm::vec2> checkCollision(ConvexPolygonView a, ConvexPolygonView b) {
   if (a.empty() || b.empty()) {
     return std::nullopt;
   }
