@@ -14,11 +14,11 @@
 namespace GameEngine::Geometry {
 /** Apply the given function to all edges of specified polygon.
  *
- * @param vertices Represents the polygon which edges should be traversed.
+ * @param polygon Represents the polygon which edges should be traversed.
  * @param function Will be called on each edge. Takes three parameters: Index of the current edge,
  * start position of the current edge end end position of the current edge.
  */
-void forEachEdge(nonstd::span<const glm::vec2> vertices,
+void forEachEdge(nonstd::span<const glm::vec2> polygon,
                  const std::function<void(const size_t edge_index, const glm::vec2 &edge_start,
                                           const glm::vec2 &edge_end)> &function);
 

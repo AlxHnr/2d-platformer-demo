@@ -12,12 +12,72 @@
 namespace {
 using namespace GameEngine::Geometry;
 
-float computeOverlap(const ProjectedVertices &polygon_projected,
-                     nonstd::span<const glm::vec2> other_polygon) {
-  const auto other_polygon_projected =
-      projectVerticesOntoAxisMinMax(other_polygon, polygon_projected.axis);
-  return glm::min(other_polygon_projected.max - polygon_projected.min,
-                  polygon_projected.max - other_polygon_projected.min);
+size_t countEdges(nonstd::span<const glm::vec2> polygon) {
+  if (polygon.size() < 2) {
+    return 0;
+  }
+  if (polygon.size() == 2) {
+    return 1;
+  }
+  return polygon.size();
+}
+
+/** @return [start, end] positions of a polygons nth edge. */
+std::pair<glm::vec2, glm::vec2> getEdge(nonstd::span<const glm::vec2> polygon, const size_t index) {
+  SDL_assert(polygon.size() >= 2);
+
+  if (index == polygon.size() - 1) {
+    return {polygon.back(), polygon.front()};
+  }
+  return {polygon[index], polygon[index + 1]};
+}
+
+glm::vec2 getEdgeNormalAtIndex(nonstd::span<const glm::vec2> polygon, const size_t index) {
+  const auto [start, end] = getEdge(polygon, index);
+  return computeNormalOfEdge(start, end);
+}
+
+float projectOverlap(const glm::vec2 &axis, nonstd::span<const glm::vec2> polygon_a,
+                     nonstd::span<const glm::vec2> polygon_b) {
+  const auto polygon_a_projected = projectVerticesOntoAxisMinMax(polygon_a, axis);
+  const auto polygon_b_projected = projectVerticesOntoAxisMinMax(polygon_b, axis);
+  return glm::min(polygon_b_projected.max - polygon_a_projected.min,
+                  polygon_a_projected.max - polygon_b_projected.min);
+}
+
+struct Overlap {
+  float magnitude;
+  glm::vec2 direction;
+};
+
+std::optional<Overlap> findSmallestOverlap(nonstd::span<const glm::vec2> polygon_a,
+                                           nonstd::span<const glm::vec2> polygon_b) {
+  if (polygon_a.empty()) {
+    return std::nullopt;
+  }
+
+  /** Use X axis as direction for polygons with only one vertex. */
+  auto direction_of_smallest_overlap =
+      polygon_a.size() == 1 ? glm::vec2{1, 0} : getEdgeNormalAtIndex(polygon_a, 0);
+  auto smallest_overlap = projectOverlap(direction_of_smallest_overlap, polygon_a, polygon_b);
+  if (smallest_overlap < 0) {
+    return std::nullopt;
+  }
+
+  const auto polygon_a_edges = countEdges(polygon_a);
+  for (size_t index = 1; index < polygon_a_edges; ++index) {
+    const auto axis = getEdgeNormalAtIndex(polygon_a, index);
+    const auto overlap = projectOverlap(axis, polygon_a, polygon_b);
+    if (overlap < 0) {
+      return std::nullopt;
+    }
+    if (overlap < smallest_overlap) {
+      smallest_overlap = overlap;
+      direction_of_smallest_overlap = axis;
+    }
+  }
+
+  return Overlap{smallest_overlap, direction_of_smallest_overlap};
 }
 
 glm::vec2 computeCenterOfPolygon(nonstd::span<const glm::vec2> polygon) {
@@ -27,17 +87,13 @@ glm::vec2 computeCenterOfPolygon(nonstd::span<const glm::vec2> polygon) {
 } // namespace
 
 namespace GameEngine::Geometry {
-void forEachEdge(nonstd::span<const glm::vec2> vertices,
+void forEachEdge(nonstd::span<const glm::vec2> polygon,
                  const std::function<void(const size_t edge_index, const glm::vec2 &edge_start,
                                           const glm::vec2 &edge_end)> &function) {
-  if (vertices.size() < 2) {
-    return;
-  }
-  for (size_t index = 1; index < vertices.size(); ++index) {
-    function(index - 1, vertices[index - 1], vertices[index]);
-  }
-  if (vertices.size() > 2) {
-    function(vertices.size() - 1, vertices.back(), vertices.front());
+  const auto edge_count = countEdges(polygon);
+  for (size_t index = 0; index < edge_count; ++index) {
+    const auto [start, end] = getEdge(polygon, index);
+    function(index, start, end);
   }
 }
 
@@ -62,50 +118,36 @@ ProjectedVertices projectVerticesOntoAxisMinMax(nonstd::span<const glm::vec2> ve
   return {axis, min, max};
 }
 
-std::optional<glm::vec2>
-checkPolygonCollision(nonstd::span<const glm::vec2> polygon_a,
-                      nonstd::span<const ProjectedVertices> polygon_a_projected,
-                      nonstd::span<const glm::vec2> polygon_b,
-                      nonstd::span<const ProjectedVertices> polygon_b_projected) {
-  if (polygon_a_projected.empty() || polygon_b_projected.empty()) {
+std::optional<glm::vec2> checkPolygonCollision(nonstd::span<const glm::vec2> polygon_a,
+                                               nonstd::span<const ProjectedVertices>,
+                                               nonstd::span<const glm::vec2> polygon_b,
+                                               nonstd::span<const ProjectedVertices>) {
+  if (polygon_a.empty() || polygon_b.empty()) {
     return std::nullopt;
   }
 
-  auto smallest_overlap = computeOverlap(polygon_a_projected.front(), polygon_b);
-  auto direction_of_smallest_overlap = polygon_a_projected.front().axis;
-  if (smallest_overlap < 0) {
+  const auto polygon_b_projected_onto_a = findSmallestOverlap(polygon_a, polygon_b);
+  if (!polygon_b_projected_onto_a) {
     return std::nullopt;
   }
-  const auto update_smallest_overlap = [&](const ProjectedVertices &polygon_projected,
-                                           nonstd::span<const glm::vec2> other_polygon,
-                                           const float invert_axis_factor) {
-    const auto overlap = computeOverlap(polygon_projected, other_polygon);
-    if (overlap < 0) {
-      return false;
-    }
-    if (overlap < smallest_overlap) {
-      smallest_overlap = overlap;
-      direction_of_smallest_overlap = polygon_projected.axis * invert_axis_factor;
-    }
-    return true;
-  };
 
-  for (size_t index = 1; index < polygon_a_projected.size(); ++index) {
-    if (!update_smallest_overlap(polygon_a_projected[index], polygon_b, 1)) {
-      return std::nullopt;
-    }
+  const auto polygon_a_projected_onto_b = findSmallestOverlap(polygon_b, polygon_a);
+  if (!polygon_a_projected_onto_b) {
+    return std::nullopt;
   }
-  for (const auto &projected : polygon_b_projected) {
-    if (!update_smallest_overlap(projected, polygon_a, -1)) {
-      return std::nullopt;
+
+  const auto displacement_vector = [&] {
+    if (polygon_b_projected_onto_a->magnitude < polygon_a_projected_onto_b->magnitude) {
+      return polygon_b_projected_onto_a->direction * polygon_b_projected_onto_a->magnitude;
     }
-  }
+    return -polygon_a_projected_onto_b->direction * polygon_a_projected_onto_b->magnitude;
+  }();
 
   const auto direction_from_a_to_b =
       computeCenterOfPolygon(polygon_b) - computeCenterOfPolygon(polygon_a);
-  if (glm::dot(direction_from_a_to_b, direction_of_smallest_overlap) > 0) {
-    direction_of_smallest_overlap *= -1;
+  if (glm::dot(direction_from_a_to_b, displacement_vector) < 0) {
+    return displacement_vector;
   }
-  return smallest_overlap * direction_of_smallest_overlap;
+  return -displacement_vector;
 }
 } // namespace GameEngine::Geometry
