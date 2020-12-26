@@ -42,7 +42,7 @@ target_link_libraries(GameEngine PUBLIC glm SDL2 span-lite)
 target_include_directories(GameEngine PUBLIC src)
 
 add_executable(Test
-  test/ConvexBoundingPolygon.cpp
+  test/Collision.cpp
   test/Main.cpp
   test/Geometry.cpp
 )
