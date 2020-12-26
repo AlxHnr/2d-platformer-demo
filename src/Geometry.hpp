@@ -48,23 +48,16 @@ struct ProjectedVertices {
 ProjectedVertices projectVerticesOntoAxisMinMax(nonstd::span<const glm::vec2> vertices,
                                                 const glm::vec2 &axis);
 
-/** Check if the given convex polygons collide using the separating axis theorem.
+/** Check if the given polygons collide using the separating axis theorem.
  *
- * @param polygon_a All points of the first polygon.
- * @param polygon_a_projected Contains all normal axes of the first polygon and the minmax values
- * resulting from projecting all points of the first polygon onto these axes.
- * @param polygon_b All points of the second polygon.
- * @param polygon_b_projected Contains all normal axes of the second polygon and the minmax values
- * resulting from projecting all points of the second polygon onto these axes.
+ * @param polygon_a All points of the first polygon. Must be convex.
+ * @param polygon_b All points of the second polygon. Must be convex.
  *
  * @return Displacement vector (MTV) for moving polygon_a out of polygon_b. This function will
  * return nothing if no collision was detected.
  */
-std::optional<glm::vec2>
-checkPolygonCollision(nonstd::span<const glm::vec2> polygon_a,
-                      nonstd::span<const ProjectedVertices> polygon_a_projected,
-                      nonstd::span<const glm::vec2> polygon_b,
-                      nonstd::span<const ProjectedVertices> polygon_b_projected);
+std::optional<glm::vec2> checkPolygonCollision(nonstd::span<const glm::vec2> polygon_a,
+                                               nonstd::span<const glm::vec2> polygon_b);
 } // namespace GameEngine::Geometry
 
 #endif

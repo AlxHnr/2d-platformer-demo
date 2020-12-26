@@ -119,9 +119,7 @@ ProjectedVertices projectVerticesOntoAxisMinMax(nonstd::span<const glm::vec2> ve
 }
 
 std::optional<glm::vec2> checkPolygonCollision(nonstd::span<const glm::vec2> polygon_a,
-                                               nonstd::span<const ProjectedVertices>,
-                                               nonstd::span<const glm::vec2> polygon_b,
-                                               nonstd::span<const ProjectedVertices>) {
+                                               nonstd::span<const glm::vec2> polygon_b) {
   if (polygon_a.empty() || polygon_b.empty()) {
     return std::nullopt;
   }

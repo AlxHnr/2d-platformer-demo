@@ -80,8 +80,7 @@ public:
   template <size_t OtherVertexCount>
   std::optional<glm::vec2>
   collidesWith(const ConvexBoundingPolygon<OtherVertexCount> &other) const {
-    return Geometry::checkPolygonCollision(vertices, projected_vertices, other.vertices,
-                                           other.projected_vertices);
+    return Geometry::checkPolygonCollision(vertices, other.vertices);
   }
 
   const std::array<glm::vec2, VertexCount> &getVertices() const { return vertices; }
