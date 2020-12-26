@@ -18,10 +18,9 @@ void renderPolygon(SDL_Renderer *renderer, nonstd::span<const glm::vec2> points,
   } else {
     SDL_SetRenderDrawColor(renderer, 180, 180, 255, 255);
   }
-  GameEngine::Geometry::forEachEdge(points,
-                                    [&](size_t, const glm::vec2 &start, const glm::vec2 &end) {
-                                      SDL_RenderDrawLine(renderer, start.x, start.y, end.x, end.y);
-                                    });
+  GameEngine::Geometry::forEachEdge(points, [&](const glm::vec2 &start, const glm::vec2 &end) {
+    SDL_RenderDrawLine(renderer, start.x, start.y, end.x, end.y);
+  });
 }
 } // namespace
 

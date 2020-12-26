@@ -87,13 +87,13 @@ glm::vec2 computeCenterOfPolygon(nonstd::span<const glm::vec2> polygon) {
 } // namespace
 
 namespace GameEngine::Geometry {
-void forEachEdge(nonstd::span<const glm::vec2> polygon,
-                 const std::function<void(const size_t edge_index, const glm::vec2 &edge_start,
-                                          const glm::vec2 &edge_end)> &function) {
+void forEachEdge(
+    nonstd::span<const glm::vec2> polygon,
+    const std::function<void(const glm::vec2 &edge_start, const glm::vec2 &edge_end)> &function) {
   const auto edge_count = countEdges(polygon);
   for (size_t index = 0; index < edge_count; ++index) {
     const auto [start, end] = getEdge(polygon, index);
-    function(index, start, end);
+    function(start, end);
   }
 }
 
