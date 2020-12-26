@@ -8,9 +8,27 @@
 #include <functional>
 #include <glm/vec2.hpp>
 #include <nonstd/span.hpp>
-#include <optional>
 
 namespace GameEngine::Geometry {
+/** Count the edges of the given polygon.
+ *
+ * @param polygon Contains zero or more vertices.
+ *
+ * @return Amount of edges in the given polygon. E.g. a triangle with 3 points has 3 edges. A line
+ * with 2 points has one edge.
+ */
+size_t countEdges(nonstd::span<const glm::vec2> polygon);
+
+/** @return [start, end] positions of a polygons nth edge. */
+/** Get the edge from the given polygon specified by the edges index.
+ *
+ * @param polygon Contains at least two vertices representing an edge.
+ * @param edge_index Index of the edge starting at 0. Must be inside the bounds of the given
+ * polygon. See countEdges().
+ */
+std::pair<glm::vec2, glm::vec2> getEdge(nonstd::span<const glm::vec2> polygon,
+                                        const size_t edge_index);
+
 /** Apply the given function to all edges of specified polygon.
  *
  * @param polygon Represents the polygon which edges should be traversed.
@@ -20,17 +38,6 @@ namespace GameEngine::Geometry {
 void forEachEdge(
     nonstd::span<const glm::vec2> polygon,
     const std::function<void(const glm::vec2 &edge_start, const glm::vec2 &edge_end)> &function);
-
-/** Check if the given polygons collide using the separating axis theorem.
- *
- * @param polygon_a All points of the first polygon. Must be convex.
- * @param polygon_b All points of the second polygon. Must be convex.
- *
- * @return Displacement vector (MTV) for moving polygon_a out of polygon_b. This function will
- * return nothing if no collision occurred.
- */
-std::optional<glm::vec2> checkCollision(nonstd::span<const glm::vec2> polygon_a,
-                                        nonstd::span<const glm::vec2> polygon_b);
 } // namespace GameEngine::Geometry
 
 #endif

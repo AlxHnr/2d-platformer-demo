@@ -3,6 +3,7 @@
  */
 
 #include "PolygonDemo.hpp"
+#include "Collision.hpp"
 #include "Geometry.hpp"
 #include <SDL.h>
 #include <glm/geometric.hpp>
@@ -62,7 +63,7 @@ void PolygonDemo::handleFrame(SDL_Renderer *renderer, const std::chrono::microse
   std::array rectangle_polygon{rectangle[0], rectangle[1], rectangle[2], rectangle[3]};
   std::array triangle_polygon{triangle[0], triangle[1], triangle[2]};
 
-  const auto displacement_vector = Geometry::checkCollision(triangle_polygon, rectangle_polygon);
+  const auto displacement_vector = checkCollision(triangle_polygon, rectangle_polygon);
   if (displacement_vector.has_value()) {
     for (auto &point : triangle) {
       point += *displacement_vector / 2.0f;

@@ -2,11 +2,11 @@
  * Tests convex polygon collisions.
  */
 
-#include <Geometry.hpp>
+#include <Collision.hpp>
 #include <doctest/doctest.h>
 
 namespace {
-using namespace GameEngine::Geometry;
+using namespace GameEngine;
 
 /** Basic counterclockwise quad. */
 const std::array quad{
