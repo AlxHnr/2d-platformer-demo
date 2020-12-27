@@ -31,20 +31,24 @@ PolygonDemo::PolygonDemo()
                                                         {270, 300},
                                                         {450, 380},
                                                         {550, 290},
-                                                    } {}
+                                                    } {
+  triangle.setVelocity({-0.8, -0.8});
+}
 
 void PolygonDemo::handleFrame(SDL_Renderer *renderer, const std::chrono::microseconds) {
-  const auto move_factor = (SDL_GetTicks() % 20000) / 100.0f;
   const auto rotation_speed = 0.05f;
 
   rectangle.rotate(rotation_speed);
+  rectangle.setPosition(rectangle.getPosition() + rectangle.getVelocity());
   triangle.rotate(-rotation_speed);
-  triangle.setPosition(triangle.getPosition() - move_factor / 10);
+  triangle.setPosition(triangle.getPosition() + triangle.getVelocity());
 
   const auto displacement_vector =
       Geometry::checkCollision(triangle.getBoundingPolygon(), rectangle.getBoundingPolygon());
   if (displacement_vector.has_value()) {
     triangle.setPosition(triangle.getPosition() + *displacement_vector);
+    triangle.setVelocity({0.8, 0.8});
+    rectangle.setVelocity({-0.8, -0.8});
   }
 
   renderPolygon(renderer, rectangle.getBoundingPolygon(), displacement_vector.has_value());
