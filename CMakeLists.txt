@@ -50,7 +50,11 @@ add_executable(Test
 target_link_libraries(Test GameEngine doctest)
 add_custom_target(test COMMAND Test)
 
-add_executable(Demo src/Main.cpp src/PolygonDemo.cpp)
+add_executable(Demo
+  src/Main.cpp
+  src/PolygonDemo.cpp
+  src/RectangleObject.cpp
+)
 target_link_libraries(Demo GameEngine)
 add_custom_target(run COMMAND Demo)
 
