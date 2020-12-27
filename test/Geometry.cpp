@@ -103,6 +103,26 @@ TEST_CASE("Traverse polygon using Geometry::ForEachEdge()") {
   }
 }
 
+TEST_CASE("Compute center of polygons") {
+  SUBCASE("Polygon with one vertex") {
+    const auto center = computeCenter(std::array{glm::vec2{12, 1}});
+    REQUIRE(center.x == doctest::Approx(12));
+    REQUIRE(center.y == doctest::Approx(1));
+  }
+
+  SUBCASE("Polygon with two vertices") {
+    const auto center = computeCenter(std::array{glm::vec2{-1, 1}, glm::vec2{1, -1}});
+    REQUIRE(center.x == doctest::Approx(0));
+    REQUIRE(center.y == doctest::Approx(0));
+  }
+
+  SUBCASE("Polygon with four vertices") {
+    const auto center = computeCenter(quad);
+    REQUIRE(center.x == doctest::Approx(0));
+    REQUIRE(center.y == doctest::Approx(0));
+  }
+}
+
 TEST_CASE("Polygon collision with zero vertices") {
   const std::array<glm::vec2, 0> empty_polygon{};
   REQUIRE_FALSE(checkCollision(empty_polygon, quad));

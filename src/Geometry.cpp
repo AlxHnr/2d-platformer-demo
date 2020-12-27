@@ -10,11 +10,6 @@
 namespace {
 using namespace GameEngine::Geometry;
 
-glm::vec2 computeCenterOfPolygon(ConvexPolygonView polygon) {
-  return std::accumulate(polygon.begin(), polygon.end(), glm::vec2{}) /
-         static_cast<float>(polygon.size());
-}
-
 /** @return Normal vector orthogonal to the polygons nth edge. */
 glm::vec2 getEdgeNormal(ConvexPolygonView polygon, const size_t edge_index) {
   const auto [start, end] = getEdge(polygon, edge_index);
@@ -114,6 +109,12 @@ void forEachEdge(
   }
 }
 
+glm::vec2 computeCenter(ConvexPolygonView polygon) {
+  SDL_assert(!polygon.empty());
+  return std::accumulate(polygon.begin(), polygon.end(), glm::vec2{}) /
+         static_cast<float>(polygon.size());
+}
+
 std::optional<glm::vec2> checkCollision(ConvexPolygonView a, ConvexPolygonView b) {
   if (a.empty() || b.empty()) {
     return std::nullopt;
@@ -136,7 +137,7 @@ std::optional<glm::vec2> checkCollision(ConvexPolygonView a, ConvexPolygonView b
     return -a_projected_onto_b->direction * a_projected_onto_b->magnitude;
   }();
 
-  const auto direction_from_a_to_b = computeCenterOfPolygon(b) - computeCenterOfPolygon(a);
+  const auto direction_from_a_to_b = computeCenter(b) - computeCenter(a);
   if (glm::dot(direction_from_a_to_b, displacement_vector) < 0) {
     return displacement_vector;
   }

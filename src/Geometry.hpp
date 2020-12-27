@@ -44,6 +44,14 @@ void forEachEdge(
     nonstd::span<const glm::vec2> polygon,
     const std::function<void(const glm::vec2 &edge_start, const glm::vec2 &edge_end)> &function);
 
+/** Compute the center of the given polygon.
+ *
+ * @param polygon Convex polygon with at least one vertex.
+ *
+ * @return Center coordinates of the given convex polygon.
+ */
+glm::vec2 computeCenter(ConvexPolygonView polygon);
+
 /** Check if the given polygons collide using the separating axis theorem.
  *
  * @param a All points of the first polygon. Must be convex.
