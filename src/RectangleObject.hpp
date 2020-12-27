@@ -21,7 +21,7 @@ public:
   void setPosition(const glm::vec2 &new_position) override;
   const glm::vec2 &getVelocity() override;
   void setVelocity(const glm::vec2 &new_velocity) override;
-  ConvexPolygonView getBoundingPolygon() override;
+  Geometry::ConvexPolygonView getBoundingPolygon() override;
 
 private:
   /** Center of this object. */

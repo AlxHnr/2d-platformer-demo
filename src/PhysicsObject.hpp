@@ -5,7 +5,7 @@
 #ifndef GAME_ENGINE_SRC_PHYSICS_OBJECT_HPP
 #define GAME_ENGINE_SRC_PHYSICS_OBJECT_HPP
 
-#include "Collision.hpp"
+#include "Geometry.hpp"
 #include <glm/vec2.hpp>
 
 namespace GameEngine {
@@ -25,7 +25,7 @@ public:
   virtual void setVelocity(const glm::vec2 &new_velocity) = 0;
 
   /** @return Borders of the object in the game world used for collision detection. */
-  virtual ConvexPolygonView getBoundingPolygon() = 0;
+  virtual Geometry::ConvexPolygonView getBoundingPolygon() = 0;
 };
 } // namespace GameEngine
 

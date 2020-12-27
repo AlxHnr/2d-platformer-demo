@@ -32,7 +32,7 @@ const glm::vec2 &RectangleObject::getVelocity() { return velocity; }
 
 void RectangleObject::setVelocity(const glm::vec2 &new_velocity) { velocity = new_velocity; }
 
-ConvexPolygonView RectangleObject::getBoundingPolygon() { return bounding_box; }
+Geometry::ConvexPolygonView RectangleObject::getBoundingPolygon() { return bounding_box; }
 
 void RectangleObject::recomputeBoundingBox() {
   const auto half_width = width / 2;
