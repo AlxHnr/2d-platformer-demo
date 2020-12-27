@@ -111,7 +111,7 @@ void forEachEdge(
 
 glm::vec2 computeCenter(ConvexPolygonView polygon) {
   SDL_assert(!polygon.empty());
-  return std::accumulate(polygon.begin(), polygon.end(), glm::vec2{}) /
+  return std::accumulate(polygon.cbegin(), polygon.cend(), glm::vec2{}) /
          static_cast<float>(polygon.size());
 }
 
