@@ -25,54 +25,29 @@ void renderPolygon(SDL_Renderer *renderer, nonstd::span<const glm::vec2> points,
 } // namespace
 
 namespace GameEngine {
+PolygonDemo::PolygonDemo()
+    : triangle{{870, 670}, {792, 515}, {575, 400}}, rectangle{
+                                                        {170, 170},
+                                                        {270, 300},
+                                                        {450, 380},
+                                                        {550, 290},
+                                                    } {}
+
 void PolygonDemo::handleFrame(SDL_Renderer *renderer, const std::chrono::microseconds) {
   const auto move_factor = (SDL_GetTicks() % 20000) / 100.0f;
   const auto rotation_speed = 0.05f;
 
-  std::array rectangle = {
-      glm::vec2{170, 170},
-      glm::vec2{270, 300},
-      glm::vec2{450, 380},
-      glm::vec2{550, 290},
-  };
-  std::array triangle{
-      glm::vec2{870, 670},
-      glm::vec2{792, 515},
-      glm::vec2{575, 400},
-  };
+  rectangle.rotate(rotation_speed);
+  triangle.rotate(-rotation_speed);
+  triangle.setPosition(triangle.getPosition() - move_factor / 10);
 
-  for (auto &point : rectangle) {
-    const auto matrix =
-        glm::translate(glm::vec3{move_factor, move_factor, 0.0f}) *
-        glm::translate(glm::vec3{350.0f, 275.0f, 0.0f}) *
-        glm::rotate(glm::mat4{1}, rotation_speed * move_factor, glm::vec3{0.0f, 0.0f, 1.0f}) *
-        glm::translate(glm::vec3{-350.0f, -275.0f, 0.0f});
-    point = glm::vec2{matrix * glm::vec4{point, 0.0f, 1.0f}};
-  }
-
-  for (auto &point : triangle) {
-    const auto matrix =
-        glm::translate(-glm::vec3{move_factor / 1.25, move_factor, 0.0f}) *
-        glm::translate(glm::vec3{750.0f, 470.0f, 0.0f}) *
-        glm::rotate(glm::mat4{1}, -rotation_speed * move_factor, glm::vec3{0.0f, 0.0f, 1.0f}) *
-        glm::translate(glm::vec3{-750.0f, -470.0f, 0.0f});
-    point = glm::vec2{matrix * glm::vec4{point, 0.0f, 1.0f}};
-  }
-
-  std::array rectangle_polygon{rectangle[0], rectangle[1], rectangle[2], rectangle[3]};
-  std::array triangle_polygon{triangle[0], triangle[1], triangle[2]};
-
-  const auto displacement_vector = Geometry::checkCollision(triangle_polygon, rectangle_polygon);
+  const auto displacement_vector =
+      Geometry::checkCollision(triangle.getBoundingPolygon(), rectangle.getBoundingPolygon());
   if (displacement_vector.has_value()) {
-    for (auto &point : triangle) {
-      point += *displacement_vector / 2.0f;
-    }
-    for (auto &point : rectangle) {
-      point -= *displacement_vector / 2.0f;
-    }
+    triangle.setPosition(triangle.getPosition() + *displacement_vector);
   }
 
-  renderPolygon(renderer, rectangle, displacement_vector.has_value());
-  renderPolygon(renderer, triangle, displacement_vector.has_value());
+  renderPolygon(renderer, rectangle.getBoundingPolygon(), displacement_vector.has_value());
+  renderPolygon(renderer, triangle.getBoundingPolygon(), displacement_vector.has_value());
 }
 } // namespace GameEngine
