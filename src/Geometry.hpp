@@ -19,12 +19,13 @@ namespace GameEngine::Geometry {
  */
 size_t countEdges(nonstd::span<const glm::vec2> polygon);
 
-/** @return [start, end] positions of a polygons nth edge. */
 /** Get the edge from the given polygon specified by the edges index.
  *
  * @param polygon Contains at least two vertices representing an edge.
  * @param edge_index Index of the edge starting at 0. Must be inside the bounds of the given
  * polygon. See countEdges().
+ *
+ * @return [start, end] positions of the polygons nth edge.
  */
 std::pair<glm::vec2, glm::vec2> getEdge(nonstd::span<const glm::vec2> polygon,
                                         const size_t edge_index);
