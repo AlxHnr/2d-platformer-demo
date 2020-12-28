@@ -39,15 +39,32 @@ Game::Game() : game_character{{50, 300}, {50, 350}, {100, 350}, {100, 300}} {
   objects.push_back(PolygonObject{{1150, 780}, {1270, 780}, {1270, 470}}); /* Steep ramp. */
 }
 
-void Game::integratePhysics() {}
+void Game::integratePhysics() {
+  game_character.setPosition(game_character.getPosition() + game_character.getVelocity());
+
+  for (const auto &object : objects) {
+    const auto displacement_vector =
+        Geometry::checkCollision(game_character.getBoundingPolygon(), object.getBoundingPolygon());
+    if (!displacement_vector) {
+      continue;
+    }
+
+    game_character.setPosition(game_character.getPosition() + *displacement_vector);
+    game_character.setVelocity(game_character.getVelocity() * glm::vec2{0, -0.4});
+    break;
+  }
+
+  const glm::vec2 gravity{0, 0.5};
+  game_character.setVelocity(game_character.getVelocity() + gravity);
+}
 
 void Game::render(SDL_Renderer *renderer) const {
-  SDL_SetRenderDrawColor(renderer, 255, 200, 0, 255);
-  renderPolygon(renderer, game_character.getBoundingPolygon());
-
   SDL_SetRenderDrawColor(renderer, 180, 180, 255, 255);
   for (const auto &object : objects) {
     renderPolygon(renderer, object.getBoundingPolygon());
   }
+
+  SDL_SetRenderDrawColor(renderer, 255, 200, 0, 255);
+  renderPolygon(renderer, game_character.getBoundingPolygon());
 }
 } // namespace GameEngine
