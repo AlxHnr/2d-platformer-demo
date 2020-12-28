@@ -49,8 +49,8 @@ target_link_libraries(Test GameEngine doctest)
 add_custom_target(test COMMAND Test)
 
 add_executable(Demo
+  src/Game.cpp
   src/Main.cpp
-  src/PolygonDemo.cpp
   src/PolygonObject.cpp
 )
 target_link_libraries(Demo GameEngine)

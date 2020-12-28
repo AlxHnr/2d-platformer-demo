@@ -2,7 +2,7 @@
  * Main playground for testing code.
  */
 
-#include "PolygonDemo.hpp"
+#include "Game.hpp"
 #include "SDL2/Error.hpp"
 #include "SDL2/UniquePointer.hpp"
 #include <SDL.h>
@@ -41,7 +41,7 @@ int main() {
   bool program_running = true;
   auto [window, renderer] = makeWindowAndRenderer();
   auto time_delta = 0us;
-  PolygonDemo demo;
+  Game demo;
 
   while (program_running) {
     const auto frame_start_time = std::chrono::steady_clock::now();

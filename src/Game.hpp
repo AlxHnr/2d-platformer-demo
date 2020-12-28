@@ -2,22 +2,22 @@
  * Playground for polygons.
  */
 
-#ifndef GAME_ENGINE_SRC_POLYGON_DEMO_HPP
-#define GAME_ENGINE_SRC_POLYGON_DEMO_HPP
+#ifndef GAME_ENGINE_SRC_GAME_HPP
+#define GAME_ENGINE_SRC_GAME_HPP
 
 #include "PolygonObject.hpp"
 #include <SDL_render.h>
 #include <chrono>
+#include <vector>
 
 namespace GameEngine {
-class PolygonDemo {
+class Game {
 public:
-  PolygonDemo();
+  Game();
   void handleFrame(SDL_Renderer *renderer, std::chrono::microseconds time_delta);
 
 private:
-  PolygonObject triangle;
-  PolygonObject rectangle;
+  std::vector<PolygonObject> objects;
 };
 } // namespace GameEngine
 
