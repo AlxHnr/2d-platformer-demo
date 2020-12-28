@@ -56,6 +56,8 @@ int main() {
       if (event.type == SDL_KEYDOWN) {
         if (event.key.keysym.sym == SDLK_UP) {
           game.scheduleJump();
+        } else if (event.key.keysym.sym == SDLK_r) {
+          game = Game{};
         }
       }
     }

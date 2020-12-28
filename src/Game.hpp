@@ -26,6 +26,9 @@ private:
   bool jump_scheduled{false};
   PolygonObject game_character;
   std::vector<PolygonObject> objects;
+
+  glm::vec2 last_displacement_vector;
+  bool is_touching_floor = false;
 };
 } // namespace GameEngine
 
