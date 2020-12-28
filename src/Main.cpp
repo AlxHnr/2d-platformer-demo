@@ -41,6 +41,7 @@ int main() {
   bool program_running = true;
   auto [window, renderer] = makeWindowAndRenderer();
   auto time_delta = 0us;
+  const auto *buttons = SDL_GetKeyboardState(nullptr);
   Game game;
 
   while (program_running) {
@@ -52,6 +53,17 @@ int main() {
         program_running = false;
         break;
       }
+      if (event.type == SDL_KEYDOWN) {
+        if (event.key.keysym.sym == SDLK_UP) {
+          game.scheduleJump();
+        }
+      }
+    }
+
+    if (buttons[SDL_SCANCODE_LEFT]) {
+      game.accelerateCharacter(Game::Direction::Left);
+    } else if (buttons[SDL_SCANCODE_RIGHT]) {
+      game.accelerateCharacter(Game::Direction::Right);
     }
 
     game.integratePhysics();

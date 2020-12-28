@@ -39,9 +39,29 @@ Game::Game() : game_character{{50, 300}, {50, 350}, {100, 350}, {100, 300}} {
   objects.push_back(PolygonObject{{1150, 780}, {1270, 780}, {1270, 470}}); /* Steep ramp. */
 }
 
+void Game::scheduleJump() { jump_scheduled = true; }
+
+void Game::accelerateCharacter(Direction direction) {
+  const auto velocity = game_character.getVelocity();
+  const float acceleration = 0.2;
+  const float speed_limit = 5.5;
+  if (glm::abs(velocity.x) > speed_limit) {
+    return;
+  }
+
+  if (direction == Direction::Left) {
+    const float new_x_velocity = std::clamp(velocity.x - acceleration, -speed_limit, speed_limit);
+    game_character.setVelocity({new_x_velocity, velocity.y});
+  } else {
+    const float new_x_velocity = std::clamp(velocity.x + acceleration, -speed_limit, speed_limit);
+    game_character.setVelocity({new_x_velocity, velocity.y});
+  }
+}
+
 void Game::integratePhysics() {
   game_character.setPosition(game_character.getPosition() + game_character.getVelocity());
 
+  bool is_touching_floor = false;
   for (const auto &object : objects) {
     const auto displacement_vector =
         Geometry::checkCollision(game_character.getBoundingPolygon(), object.getBoundingPolygon());
@@ -50,12 +70,18 @@ void Game::integratePhysics() {
     }
 
     game_character.setPosition(game_character.getPosition() + *displacement_vector);
-    game_character.setVelocity(game_character.getVelocity() * glm::vec2{0, -0.4});
-    break;
+    game_character.setVelocity(game_character.getVelocity() * glm::vec2{0.95, 0});
+    is_touching_floor = true;
   }
 
-  const glm::vec2 gravity{0, 0.5};
-  game_character.setVelocity(game_character.getVelocity() + gravity);
+  if (!is_touching_floor) {
+    const glm::vec2 gravity{0, 0.5};
+    game_character.setVelocity(game_character.getVelocity() + gravity);
+  } else if (jump_scheduled) {
+    const glm::vec2 jump_strength{0, -10.0};
+    game_character.setVelocity(game_character.getVelocity() + jump_strength);
+  }
+  jump_scheduled = false;
 }
 
 void Game::render(SDL_Renderer *renderer) const {

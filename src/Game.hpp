@@ -13,10 +13,17 @@ namespace GameEngine {
 class Game {
 public:
   Game();
+
+  void scheduleJump();
+
+  enum class Direction { Left, Right };
+  void accelerateCharacter(Direction direction);
+
   void integratePhysics();
   void render(SDL_Renderer *renderer) const;
 
 private:
+  bool jump_scheduled{false};
   PolygonObject game_character;
   std::vector<PolygonObject> objects;
 };
