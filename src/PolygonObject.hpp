@@ -39,7 +39,7 @@ private:
   /** Angle at which the polygon was rotated around its center. */
   float orientation{0.0f};
 
-  /** Speed and direction of this object. */
+  /** Speed * direction of this object. */
   glm::vec2 velocity{0.0f, 0.0f};
 
   /** Vertices of the polygon in the game world used for collision detection. */

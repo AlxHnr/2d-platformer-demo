@@ -120,21 +120,21 @@ std::optional<glm::vec2> checkCollision(ConvexPolygonView a, ConvexPolygonView b
     return std::nullopt;
   }
 
-  const auto b_projected_onto_a = findSmallestDisplacementVector(a, b);
-  if (!b_projected_onto_a) {
+  const auto displacement_a_from_b = findSmallestDisplacementVector(a, b);
+  if (!displacement_a_from_b) {
     return std::nullopt;
   }
 
-  const auto a_projected_onto_b = findSmallestDisplacementVector(b, a);
-  if (!a_projected_onto_b) {
+  const auto displacement_b_from_a = findSmallestDisplacementVector(b, a);
+  if (!displacement_b_from_a) {
     return std::nullopt;
   }
 
   const auto displacement_vector = [&] {
-    if (b_projected_onto_a->magnitude < a_projected_onto_b->magnitude) {
-      return b_projected_onto_a->direction * b_projected_onto_a->magnitude;
+    if (displacement_a_from_b->magnitude < displacement_b_from_a->magnitude) {
+      return displacement_a_from_b->direction * displacement_a_from_b->magnitude;
     }
-    return -a_projected_onto_b->direction * a_projected_onto_b->magnitude;
+    return -displacement_b_from_a->direction * displacement_b_from_a->magnitude;
   }();
 
   const auto direction_from_a_to_b = computeCenter(b) - computeCenter(a);
