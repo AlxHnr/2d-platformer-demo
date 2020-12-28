@@ -12,7 +12,6 @@
 
 namespace {
 void renderPolygon(SDL_Renderer *renderer, nonstd::span<const glm::vec2> points) {
-  SDL_SetRenderDrawColor(renderer, 180, 180, 255, 255);
   GameEngine::Geometry::forEachEdge(points, [&](const glm::vec2 &start, const glm::vec2 &end) {
     SDL_RenderDrawLine(renderer, start.x, start.y, end.x, end.y);
   });
@@ -20,7 +19,7 @@ void renderPolygon(SDL_Renderer *renderer, nonstd::span<const glm::vec2> points)
 } // namespace
 
 namespace GameEngine {
-Game::Game() {
+Game::Game() : game_character{{50, 300}, {50, 350}, {100, 350}, {100, 300}} {
   objects.push_back(PolygonObject{{10, 10}, {10, 780}});     /* Left wall. */
   objects.push_back(PolygonObject{{10, 780}, {1270, 780}});  /* Right wall. */
   objects.push_back(PolygonObject{{1270, 10}, {1270, 780}}); /* Floor. */
@@ -40,7 +39,13 @@ Game::Game() {
   objects.push_back(PolygonObject{{1150, 780}, {1270, 780}, {1270, 470}}); /* Steep ramp. */
 }
 
-void Game::handleFrame(SDL_Renderer *renderer, const std::chrono::microseconds) {
+void Game::integratePhysics() {}
+
+void Game::render(SDL_Renderer *renderer) const {
+  SDL_SetRenderDrawColor(renderer, 255, 200, 0, 255);
+  renderPolygon(renderer, game_character.getBoundingPolygon());
+
+  SDL_SetRenderDrawColor(renderer, 180, 180, 255, 255);
   for (const auto &object : objects) {
     renderPolygon(renderer, object.getBoundingPolygon());
   }

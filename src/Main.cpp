@@ -41,7 +41,7 @@ int main() {
   bool program_running = true;
   auto [window, renderer] = makeWindowAndRenderer();
   auto time_delta = 0us;
-  Game demo;
+  Game game;
 
   while (program_running) {
     const auto frame_start_time = std::chrono::steady_clock::now();
@@ -54,9 +54,11 @@ int main() {
       }
     }
 
+    game.integratePhysics();
+
     SDL_SetRenderDrawColor(renderer.get(), 0, 0, 0, 255);
     SDL_RenderClear(renderer.get());
-    demo.handleFrame(renderer.get(), time_delta);
+    game.render(renderer.get());
     SDL_RenderPresent(renderer.get());
 
     const auto frame_duration = std::chrono::steady_clock::now() - frame_start_time;

@@ -7,16 +7,17 @@
 
 #include "PolygonObject.hpp"
 #include <SDL_render.h>
-#include <chrono>
 #include <vector>
 
 namespace GameEngine {
 class Game {
 public:
   Game();
-  void handleFrame(SDL_Renderer *renderer, std::chrono::microseconds time_delta);
+  void integratePhysics();
+  void render(SDL_Renderer *renderer) const;
 
 private:
+  PolygonObject game_character;
   std::vector<PolygonObject> objects;
 };
 } // namespace GameEngine
