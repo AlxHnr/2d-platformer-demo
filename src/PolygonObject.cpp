@@ -19,18 +19,18 @@ void PolygonObject::rotate(const float angle) {
   recomputeBoundingBox();
 }
 
-const glm::vec2 &PolygonObject::getPosition() { return position; }
+const glm::vec2 &PolygonObject::getPosition() const { return position; }
 
 void PolygonObject::setPosition(const glm::vec2 &new_position) {
   position = new_position;
   recomputeBoundingBox();
 }
 
-const glm::vec2 &PolygonObject::getVelocity() { return velocity; }
+const glm::vec2 &PolygonObject::getVelocity() const { return velocity; }
 
 void PolygonObject::setVelocity(const glm::vec2 &new_velocity) { velocity = new_velocity; }
 
-Geometry::ConvexPolygonView PolygonObject::getBoundingPolygon() { return vertices; }
+Geometry::ConvexPolygonView PolygonObject::getBoundingPolygon() const { return vertices; }
 
 void PolygonObject::recomputeBoundingBox() {
   std::transform(

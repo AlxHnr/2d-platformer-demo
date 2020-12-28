@@ -26,11 +26,11 @@ public:
   void rotate(float angle);
 
   /* PhysicsObject interface functions. */
-  const glm::vec2 &getPosition() override;
+  const glm::vec2 &getPosition() const override;
   void setPosition(const glm::vec2 &new_position) override;
-  const glm::vec2 &getVelocity() override;
+  const glm::vec2 &getVelocity() const override;
   void setVelocity(const glm::vec2 &new_velocity) override;
-  Geometry::ConvexPolygonView getBoundingPolygon() override;
+  Geometry::ConvexPolygonView getBoundingPolygon() const override;
 
 private:
   /** Center of this object. */
