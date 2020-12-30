@@ -3,6 +3,7 @@
  */
 
 #include "Geometry.hpp"
+#include "glm/gtc/constants.hpp"
 #include <SDL_assert.h>
 #include <glm/gtx/vector_query.hpp>
 #include <numeric>
@@ -57,7 +58,7 @@ std::optional<DisplacementVector> findSmallestDisplacementVector(ConvexPolygonVi
   /** Use X axis as direction for polygons with only one vertex. */
   auto direction_of_smallest_overlap = a.size() == 1 ? glm::vec2{1, 0} : getEdgeNormal(a, 0);
   auto smallest_overlap = getProjectionOverlap(a, b, direction_of_smallest_overlap);
-  if (smallest_overlap < 0) {
+  if (smallest_overlap < glm::epsilon<float>()) {
     return std::nullopt;
   }
 
@@ -65,7 +66,7 @@ std::optional<DisplacementVector> findSmallestDisplacementVector(ConvexPolygonVi
   for (size_t index = 1; index < a_edges; ++index) {
     const auto axis = getEdgeNormal(a, index);
     const auto overlap = getProjectionOverlap(a, b, axis);
-    if (overlap < 0) {
+    if (overlap < glm::epsilon<float>()) {
       return std::nullopt;
     }
     if (overlap < smallest_overlap) {
@@ -132,8 +133,10 @@ std::optional<glm::vec2> checkCollision(ConvexPolygonView a, ConvexPolygonView b
 
   const auto displacement_vector = [&] {
     if (displacement_a_from_b->magnitude < displacement_b_from_a->magnitude) {
+      SDL_assert(displacement_a_from_b->magnitude > glm::epsilon<float>());
       return displacement_a_from_b->direction * displacement_a_from_b->magnitude;
     }
+    SDL_assert(displacement_b_from_a->magnitude > glm::epsilon<float>());
     return -displacement_b_from_a->direction * displacement_b_from_a->magnitude;
   }();
 

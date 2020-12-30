@@ -260,3 +260,10 @@ TEST_CASE("Collision check stops on first failed overlap check") {
   REQUIRE_FALSE(checkCollision(line, point));
   REQUIRE_FALSE(checkCollision(point, line));
 }
+
+TEST_CASE("Collision with infinitesimally small displacement vector") {
+  const std::array line1{glm::vec2{0, 1}, glm::vec2{0, 2}};
+  const std::array line2{glm::vec2{0, 2}, glm::vec2{0, 3}};
+  REQUIRE_FALSE(checkCollision(line1, line2));
+  REQUIRE_FALSE(checkCollision(line2, line1));
+}
