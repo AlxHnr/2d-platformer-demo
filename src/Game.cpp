@@ -12,6 +12,18 @@ void renderPolygon(SDL_Renderer *renderer, nonstd::span<const glm::vec2> points)
     SDL_RenderDrawLine(renderer, start.x, start.y, end.x, end.y);
   });
 }
+
+GameEngine::PolygonObject makeBox(const glm::vec2 &center, const float width, const float height) {
+  const glm::vec2 box_half_width = {width / 2, 0};
+  const glm::vec2 box_half_height = {0, height / 2};
+  const glm::vec2 box_center{center.x - box_half_width.x, center.y - box_half_height.y};
+  return {
+      box_center - box_half_width + box_half_height,
+      box_center - box_half_width - box_half_height,
+      box_center + box_half_width - box_half_height,
+      box_center + box_half_width + box_half_height,
+  };
+}
 } // namespace
 
 namespace GameEngine {
@@ -21,18 +33,10 @@ Game::Game() {
 
   objects.push_back(PolygonObject{{10, 10}, {1270, 10}});    /* Ceiling. */
   objects.push_back(PolygonObject{{10, 10}, {10, 780}});     /* Left wall. */
-  objects.push_back(PolygonObject{{10, 780}, {1270, 780}});  /* Right wall. */
-  objects.push_back(PolygonObject{{1270, 10}, {1270, 780}}); /* Floor. */
+  objects.push_back(PolygonObject{{1270, 10}, {1270, 780}}); /* Right wall. */
+  objects.push_back(PolygonObject{{10, 780}, {1270, 780}});  /* Floor. */
 
-  const glm::vec2 box_half_width = {75, 0};
-  const glm::vec2 box_half_height = {0, 75};
-  const glm::vec2 box_center{870, 780 - box_half_height.y};
-  objects.push_back(PolygonObject{
-      box_center - box_half_width + box_half_height,
-      box_center - box_half_width - box_half_height,
-      box_center + box_half_width - box_half_height,
-      box_center + box_half_width + box_half_height,
-  });
+  objects.push_back(makeBox({945, 780}, 150, 150));
 
   objects.push_back(PolygonObject{{450, 780}, {650, 780}, {650, 670}});    /* Ramp. */
   objects.push_back(PolygonObject{{750, 470}, {790, 520}, {620, 470}});    /* Plattform. */
