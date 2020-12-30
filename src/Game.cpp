@@ -6,6 +6,7 @@
 #include "Geometry.hpp"
 #include <SDL.h>
 #include <glm/geometric.hpp>
+#include <glm/gtx/projection.hpp>
 #include <glm/gtx/rotate_vector.hpp>
 #include <nonstd/span.hpp>
 #include <optional>
@@ -60,8 +61,7 @@ void Game::integratePhysics() {
       /* Horizontal collision. */
       const bool character_moves_right = game_character.getVelocity().x > 0;
       const bool object_right_of_character = displacement_vector->x < 0;
-      if ((character_moves_right && object_right_of_character) ||
-          (!character_moves_right && !object_right_of_character)) {
+      if (character_moves_right == object_right_of_character) {
         game_character.setVelocity({0, game_character.getVelocity().y});
       }
     } else {
@@ -90,18 +90,16 @@ void Game::integratePhysics() {
     right_direction = {1, 0};
   }
 
-  /* Air/ground friction. */
-  game_character.setVelocity(game_character.getVelocity() * glm::vec2{0.95, 1});
-
-  switch (acceleration_direction) {
-  case Acceleration::None:
-    break;
-  case Acceleration::Left:
-    game_character.setVelocity(game_character.getVelocity() - right_direction * 0.5f);
-    break;
-  case Acceleration::Right:
-    game_character.setVelocity(game_character.getVelocity() + right_direction * 0.5f);
-    break;
+  const auto acceleration_vector =
+      acceleration_direction == Acceleration::Left ? -right_direction : right_direction;
+  const bool accelerating_in_moving_direction =
+      glm::dot(game_character.getVelocity(), acceleration_vector) > 0;
+  if (acceleration_direction == Acceleration::None) {
+    const glm::vec2 friction_factor{0.95, 1};
+    game_character.setVelocity(game_character.getVelocity() * friction_factor);
+  } else if (!accelerating_in_moving_direction ||
+             glm::length(glm::proj(game_character.getVelocity(), acceleration_vector)) < 10.0) {
+    game_character.setVelocity(game_character.getVelocity() + acceleration_vector);
   }
 
   const glm::vec2 gravity{0, 0.5};
