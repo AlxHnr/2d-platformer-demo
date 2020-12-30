@@ -41,14 +41,13 @@ Game::Game() : game_character{{50, 300}, {50, 350}, {100, 350}, {100, 300}} {
   objects.push_back(PolygonObject{{1150, 780}, {1270, 780}, {1270, 470}}); /* Steep ramp. */
 }
 
-void Game::scheduleJump() { jump_scheduled = true; }
+void Game::scheduleJump() { tick_of_jump_request = current_tick; }
 
 void Game::accelerate(const Acceleration direction) { acceleration_direction = direction; }
 
 void Game::integratePhysics() {
   game_character.setPosition(game_character.getPosition() + game_character.getVelocity());
 
-  frames_since_floor_was_touched++;
   for (const auto &object : objects) {
     const auto displacement_vector =
         Geometry::checkCollision(game_character.getBoundingPolygon(), object.getBoundingPolygon());
@@ -63,7 +62,10 @@ void Game::integratePhysics() {
       const bool object_right_of_character = displacement_vector->x < 0;
       if (character_moves_right == object_right_of_character) {
         game_character.setVelocity({0, game_character.getVelocity().y});
+        tick_of_last_wall_collision = current_tick;
       }
+
+      wall_jump_to_right = !object_right_of_character;
     } else {
       /* Vertical collision. */
       const bool character_falls = game_character.getVelocity().y > 0;
@@ -71,22 +73,29 @@ void Game::integratePhysics() {
 
       if (character_falls && object_below_character) {
         game_character.setVelocity({game_character.getVelocity().x, 0.0});
-        frames_since_floor_was_touched = 0;
         right_direction =
             glm::normalize(glm::vec2{-displacement_vector->y, displacement_vector->x});
+        tick_of_last_floor_collision = current_tick;
       } else if (!character_falls && !object_below_character) {
         game_character.setVelocity({game_character.getVelocity().x, 0.0});
       }
     }
   }
 
-  if (isTouchingFloor()) {
-    if (jump_scheduled) {
-      const glm::vec2 jump_strength{0, -15.0};
-      game_character.setVelocity(game_character.getVelocity() + jump_strength);
-      frames_since_floor_was_touched += 10;
+  if (jumpScheduled()) {
+    if (collidesWithFloor()) {
+      tick_of_jump_request = 0;
+      game_character.setVelocity(game_character.getVelocity() + glm::vec2{0, -15});
+    } else if (collidesWithWall()) {
+      tick_of_jump_request = 0;
+      const auto inversion_factor = wall_jump_to_right ? 1 : -1;
+      const glm::vec2 next_jump_direction = {
+          glm::rotate(glm::vec2{0, -1}, glm::radians(45.0f)).x * inversion_factor, -1};
+      game_character.setVelocity(next_jump_direction * 15.0f);
     }
-  } else {
+  }
+
+  if (!collidesWithFloor()) {
     right_direction = {1, 0};
   }
 
@@ -104,9 +113,8 @@ void Game::integratePhysics() {
 
   const glm::vec2 gravity{0, 0.5};
   game_character.setVelocity(game_character.getVelocity() + gravity);
-
-  jump_scheduled = false;
-}
+  current_tick++;
+} // namespace GameEngine
 
 void Game::render(SDL_Renderer *renderer) const {
   SDL_SetRenderDrawColor(renderer, 180, 180, 255, 255);
@@ -114,7 +122,7 @@ void Game::render(SDL_Renderer *renderer) const {
     renderPolygon(renderer, object.getBoundingPolygon());
   }
 
-  if (isTouchingFloor()) {
+  if (collidesWithFloor() || collidesWithWall()) {
     SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
   } else {
     SDL_SetRenderDrawColor(renderer, 255, 200, 0, 255);
@@ -131,5 +139,7 @@ void Game::render(SDL_Renderer *renderer) const {
                                      game_character.getPosition() + right_direction * 50.0f});
 }
 
-bool Game::isTouchingFloor() const { return frames_since_floor_was_touched < 10; }
+bool Game::jumpScheduled() const { return current_tick - tick_of_jump_request < 5; }
+bool Game::collidesWithFloor() const { return current_tick - tick_of_last_floor_collision < 5; }
+bool Game::collidesWithWall() const { return current_tick - tick_of_last_wall_collision < 5; }
 } // namespace GameEngine

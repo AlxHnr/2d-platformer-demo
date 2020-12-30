@@ -23,13 +23,18 @@ public:
   void render(SDL_Renderer *renderer) const;
 
 private:
-  bool isTouchingFloor() const;
+  bool jumpScheduled() const;
+  bool collidesWithFloor() const;
+  bool collidesWithWall() const;
 
-  bool jump_scheduled{false};
   PolygonObject game_character;
   std::vector<PolygonObject> objects;
 
-  size_t frames_since_floor_was_touched = 0;
+  uint64_t current_tick = 1000;
+  uint64_t tick_of_jump_request = 0;
+  uint64_t tick_of_last_floor_collision = 0;
+  uint64_t tick_of_last_wall_collision = 0;
+  bool wall_jump_to_right = false;
 
   glm::vec2 right_direction{0, 0};
   Acceleration acceleration_direction = Acceleration::None;
