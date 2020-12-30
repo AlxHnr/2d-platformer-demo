@@ -49,9 +49,13 @@ void PolygonObject::update() {
   if (jumpScheduled()) {
     if (collidesWithFloor()) {
       tick_of_jump_request = 0;
+      tick_of_last_floor_collision = 0;
+      tick_of_last_wall_collision = 0;
       velocity.y -= 15;
     } else if (collidesWithWall()) {
       tick_of_jump_request = 0;
+      tick_of_last_floor_collision = 0;
+      tick_of_last_wall_collision = 0;
       const auto inversion_factor = wall_jump_to_right ? 1 : -1;
       const glm::vec2 next_jump_direction = {
           glm::rotate(glm::vec2{0, -1}, glm::radians(45.0f)).x * inversion_factor, -1};
@@ -77,18 +81,11 @@ void PolygonObject::update() {
   const glm::vec2 gravity{0, 0.5};
   velocity += gravity;
   setPosition(position + velocity);
-  recomputeBoundingBox();
   current_tick++;
 }
 
-void PolygonObject::handleCollision(PhysicsObject &other_physics_object,
-                                    const glm::vec2 &displacement_vector) {
+void PolygonObject::handleCollision(PhysicsObject &, const glm::vec2 &displacement_vector) {
   if (!physics_enabled) {
-    return;
-  }
-
-  const auto *other = dynamic_cast<PolygonObject *>(&other_physics_object);
-  if (other == nullptr) {
     return;
   }
   setPosition(position + displacement_vector);
