@@ -21,6 +21,7 @@ void renderPolygon(SDL_Renderer *renderer, nonstd::span<const glm::vec2> points)
 
 namespace GameEngine {
 Game::Game() : game_character{{50, 300}, {50, 350}, {100, 350}, {100, 300}} {
+  objects.push_back(PolygonObject{{10, 10}, {1270, 10}});    /* Ceiling. */
   objects.push_back(PolygonObject{{10, 10}, {10, 780}});     /* Left wall. */
   objects.push_back(PolygonObject{{10, 780}, {1270, 780}});  /* Right wall. */
   objects.push_back(PolygonObject{{1270, 10}, {1270, 780}}); /* Floor. */
@@ -139,7 +140,7 @@ void Game::render(SDL_Renderer *renderer) const {
                                      game_character.getPosition() + right_direction * 50.0f});
 }
 
-bool Game::jumpScheduled() const { return current_tick - tick_of_jump_request < 5; }
-bool Game::collidesWithFloor() const { return current_tick - tick_of_last_floor_collision < 5; }
-bool Game::collidesWithWall() const { return current_tick - tick_of_last_wall_collision < 5; }
+bool Game::jumpScheduled() const { return current_tick - tick_of_jump_request < 6; }
+bool Game::collidesWithFloor() const { return current_tick - tick_of_last_floor_collision < 6; }
+bool Game::collidesWithWall() const { return current_tick - tick_of_last_wall_collision < 6; }
 } // namespace GameEngine
