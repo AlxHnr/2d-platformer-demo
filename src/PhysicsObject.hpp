@@ -26,6 +26,16 @@ public:
 
   /** @return Borders of the object in the game world used for collision detection. */
   virtual Geometry::ConvexPolygonView getBoundingPolygon() const = 0;
+
+  /** Will be called every tick to update the state of the object. */
+  virtual void update() = 0;
+
+  /** Gets called when a collision occurred.
+   *
+   * @param other Object which collided with this object.
+   * @param displacement_vector Offset required to move this object out of the other object.
+   */
+  virtual void handleCollision(PhysicsObject &other, const glm::vec2 &displacement_vector) = 0;
 };
 } // namespace GameEngine
 

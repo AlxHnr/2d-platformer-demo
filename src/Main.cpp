@@ -55,7 +55,7 @@ int main() {
       }
       if (event.type == SDL_KEYDOWN) {
         if (event.key.keysym.sym == SDLK_UP) {
-          game.scheduleJump();
+          game.getGameCharacter().jump();
         } else if (event.key.keysym.sym == SDLK_r) {
           game = Game{};
         }
@@ -63,11 +63,11 @@ int main() {
     }
 
     if (buttons[SDL_SCANCODE_LEFT]) {
-      game.accelerate(Game::Acceleration::Left);
+      game.getGameCharacter().accelerate(PolygonObject::Acceleration::Left);
     } else if (buttons[SDL_SCANCODE_RIGHT]) {
-      game.accelerate(Game::Acceleration::Right);
+      game.getGameCharacter().accelerate(PolygonObject::Acceleration::Right);
     } else {
-      game.accelerate(Game::Acceleration::None);
+      game.getGameCharacter().accelerate(PolygonObject::Acceleration::None);
     }
 
     game.integratePhysics();
