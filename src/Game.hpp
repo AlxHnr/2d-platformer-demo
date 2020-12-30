@@ -16,19 +16,23 @@ public:
 
   void scheduleJump();
 
-  enum class Direction { Left, Right };
-  void accelerateCharacter(Direction direction);
+  enum class Acceleration { None, Left, Right };
+  void accelerate(Acceleration direction);
 
   void integratePhysics();
   void render(SDL_Renderer *renderer) const;
 
 private:
+  bool isTouchingFloor() const;
+
   bool jump_scheduled{false};
   PolygonObject game_character;
   std::vector<PolygonObject> objects;
 
-  glm::vec2 last_displacement_vector;
-  bool is_touching_floor = false;
+  size_t frames_since_floor_was_touched = 0;
+
+  glm::vec2 right_direction{0, 0};
+  Acceleration acceleration_direction = Acceleration::None;
 };
 } // namespace GameEngine
 

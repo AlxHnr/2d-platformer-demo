@@ -42,53 +42,71 @@ Game::Game() : game_character{{50, 300}, {50, 350}, {100, 350}, {100, 300}} {
 
 void Game::scheduleJump() { jump_scheduled = true; }
 
-void Game::accelerateCharacter(Direction direction) {
-  const auto velocity = game_character.getVelocity();
-  const float acceleration = 0.2;
-  const float speed_limit = 5.5;
-
-  if (direction == Direction::Left && velocity.x > -speed_limit) {
-    const float new_x_velocity = glm::max(velocity.x - acceleration, -speed_limit);
-    game_character.setVelocity({new_x_velocity, velocity.y});
-  } else if (direction == Direction::Right && velocity.x < speed_limit) {
-    const float new_x_velocity = glm::min(velocity.x + acceleration, speed_limit);
-    game_character.setVelocity({new_x_velocity, velocity.y});
-  }
-}
+void Game::accelerate(const Acceleration direction) { acceleration_direction = direction; }
 
 void Game::integratePhysics() {
   game_character.setPosition(game_character.getPosition() + game_character.getVelocity());
 
-  is_touching_floor = false;
+  frames_since_floor_was_touched++;
   for (const auto &object : objects) {
     const auto displacement_vector =
         Geometry::checkCollision(game_character.getBoundingPolygon(), object.getBoundingPolygon());
-    if (!displacement_vector) {
+    if (!displacement_vector || glm::length(*displacement_vector) < glm::epsilon<float>()) {
       continue;
     }
-    is_touching_floor = true;
-
     game_character.setPosition(game_character.getPosition() + *displacement_vector);
 
-    if (!glm::epsilonEqual(glm::length(*displacement_vector), glm::zero<float>(),
-                           glm::epsilon<float>())) {
-      last_displacement_vector = *displacement_vector;
+    if (glm::abs(displacement_vector->x) > glm::abs(displacement_vector->y)) {
+      /* Horizontal collision. */
+      const bool character_moves_right = game_character.getVelocity().x > 0;
+      const bool object_right_of_character = displacement_vector->x < 0;
+      if ((character_moves_right && object_right_of_character) ||
+          (!character_moves_right && !object_right_of_character)) {
+        game_character.setVelocity({0, game_character.getVelocity().y});
+      }
+    } else {
+      /* Vertical collision. */
+      const bool character_falls = game_character.getVelocity().y > 0;
+      const bool object_below_character = displacement_vector->y < 0;
+
+      if (character_falls && object_below_character) {
+        game_character.setVelocity({game_character.getVelocity().x, 0.0});
+        frames_since_floor_was_touched = 0;
+        right_direction =
+            glm::normalize(glm::vec2{-displacement_vector->y, displacement_vector->x});
+      } else if (!character_falls && !object_below_character) {
+        game_character.setVelocity({game_character.getVelocity().x, 0.0});
+      }
     }
   }
 
-  if (is_touching_floor) {
-    const auto vertical_velocity = glm::min(game_character.getVelocity().y, 0.0f);
-    game_character.setVelocity({game_character.getVelocity().x * 0.95, vertical_velocity});
-
+  if (isTouchingFloor()) {
     if (jump_scheduled) {
-      const glm::vec2 jump_strength{0, -10.0};
+      const glm::vec2 jump_strength{0, -15.0};
       game_character.setVelocity(game_character.getVelocity() + jump_strength);
-      is_touching_floor = false;
+      frames_since_floor_was_touched += 10;
     }
   } else {
-    const glm::vec2 gravity{0, 0.5};
-    game_character.setVelocity(game_character.getVelocity() + gravity);
+    right_direction = {1, 0};
   }
+
+  /* Air/ground friction. */
+  game_character.setVelocity(game_character.getVelocity() * glm::vec2{0.95, 1});
+
+  switch (acceleration_direction) {
+  case Acceleration::None:
+    break;
+  case Acceleration::Left:
+    game_character.setVelocity(game_character.getVelocity() - right_direction * 0.5f);
+    break;
+  case Acceleration::Right:
+    game_character.setVelocity(game_character.getVelocity() + right_direction * 0.5f);
+    break;
+  }
+
+  const glm::vec2 gravity{0, 0.5};
+  game_character.setVelocity(game_character.getVelocity() + gravity);
+
   jump_scheduled = false;
 }
 
@@ -98,26 +116,22 @@ void Game::render(SDL_Renderer *renderer) const {
     renderPolygon(renderer, object.getBoundingPolygon());
   }
 
-  if (is_touching_floor) {
+  if (isTouchingFloor()) {
     SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
   } else {
     SDL_SetRenderDrawColor(renderer, 255, 200, 0, 255);
   }
   renderPolygon(renderer, game_character.getBoundingPolygon());
 
-  SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-  renderPolygon(renderer,
-                std::array{game_character.getPosition(),
-                           game_character.getPosition() + last_displacement_vector * 50.0f});
   SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
   renderPolygon(renderer,
                 std::array{game_character.getPosition(),
                            game_character.getPosition() + game_character.getVelocity() * 50.0f});
 
-  const auto slope_normal =
-      glm::normalize(glm::vec2{-last_displacement_vector.y, last_displacement_vector.x});
   SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
   renderPolygon(renderer, std::array{game_character.getPosition(),
-                                     game_character.getPosition() + slope_normal * 50.0f});
+                                     game_character.getPosition() + right_direction * 50.0f});
 }
+
+bool Game::isTouchingFloor() const { return frames_since_floor_was_touched < 10; }
 } // namespace GameEngine

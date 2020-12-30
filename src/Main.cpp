@@ -63,9 +63,11 @@ int main() {
     }
 
     if (buttons[SDL_SCANCODE_LEFT]) {
-      game.accelerateCharacter(Game::Direction::Left);
+      game.accelerate(Game::Acceleration::Left);
     } else if (buttons[SDL_SCANCODE_RIGHT]) {
-      game.accelerateCharacter(Game::Direction::Right);
+      game.accelerate(Game::Acceleration::Right);
+    } else {
+      game.accelerate(Game::Acceleration::None);
     }
 
     game.integratePhysics();
