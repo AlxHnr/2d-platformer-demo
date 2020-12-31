@@ -47,12 +47,12 @@ void PolygonObject::update() {
   }
 
   if (jumpScheduled()) {
-    if (collidesWithFloor()) {
+    if (sticksToFloor()) {
       tick_of_jump_request = 0;
       tick_of_last_floor_collision = 0;
       tick_of_last_wall_collision = 0;
       velocity.y -= 15;
-    } else if (collidesWithWall()) {
+    } else if (sticksToWall()) {
       tick_of_jump_request = 0;
       tick_of_last_floor_collision = 0;
       tick_of_last_wall_collision = 0;
@@ -63,7 +63,7 @@ void PolygonObject::update() {
     }
   }
 
-  if (!collidesWithFloor()) {
+  if (!sticksToFloor()) {
     right_direction = {1, 0};
   }
 
@@ -121,10 +121,8 @@ void PolygonObject::recomputeBoundingBox() {
 }
 
 bool PolygonObject::jumpScheduled() const { return current_tick - tick_of_jump_request < 6; }
-bool PolygonObject::collidesWithFloor() const {
+bool PolygonObject::sticksToFloor() const {
   return current_tick - tick_of_last_floor_collision < 6;
 }
-bool PolygonObject::collidesWithWall() const {
-  return current_tick - tick_of_last_wall_collision < 6;
-}
+bool PolygonObject::sticksToWall() const { return current_tick - tick_of_last_wall_collision < 6; }
 } // namespace GameEngine

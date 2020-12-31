@@ -65,14 +65,18 @@ private:
   uint32_t tick_of_jump_request = 0;
   uint32_t tick_of_last_floor_collision = 0;
   uint32_t tick_of_last_wall_collision = 0;
+
+  /** Contains the direction from the colliding wall. */
   bool wall_jump_to_right = false;
 
   Acceleration acceleration_direction = Acceleration::None;
+
+  /** Right direction perpendicular to the slope of the floor. Required for running on slopes. */
   glm::vec2 right_direction{0, 0};
 
   bool jumpScheduled() const;
-  bool collidesWithFloor() const;
-  bool collidesWithWall() const;
+  bool sticksToFloor() const;
+  bool sticksToWall() const;
 };
 } // namespace GameEngine
 
