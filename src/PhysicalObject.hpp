@@ -29,9 +29,6 @@ struct PhysicalObject {
 
   enum class State { Falling, TouchingWall, TouchingGround } state{};
 
-  /** Speed perpendicular to the slope of the current floor. */
-  float vertical_velocity = 0;
-
   /** Speed * direction of this object. */
   glm::vec2 velocity{0.0f, 0.0f};
 
