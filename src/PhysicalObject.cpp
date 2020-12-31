@@ -9,7 +9,8 @@
 #include <glm/gtx/rotate_vector.hpp>
 
 namespace GameEngine {
-PhysicalObject::PhysicalObject(std::initializer_list<glm::vec2> vertices) : polygon{vertices} {}
+PhysicalObject::PhysicalObject(std::initializer_list<glm::vec2> vertices)
+    : bounding_polygon{vertices} {}
 
 void PhysicalObject::jump() { tick_of_jump_request = current_tick; }
 
@@ -54,9 +55,10 @@ void PhysicalObject::update() {
     velocity += acceleration_vector;
   }
 
-  const glm::vec2 gravity{0, 0.5};
+  /* Apply gravity perpendicular to current slope. */
+  const auto gravity = glm::vec2{-right_direction.y, right_direction.x} * 0.5f;
   velocity += gravity;
-  polygon.setPosition(polygon.getPosition() + velocity);
+  bounding_polygon.setPosition(bounding_polygon.getPosition() + velocity);
   current_tick++;
 }
 
@@ -64,7 +66,7 @@ void PhysicalObject::handleCollision(PhysicalObject &, const glm::vec2 &displace
   if (!physics_enabled) {
     return;
   }
-  polygon.setPosition(polygon.getPosition() + displacement_vector);
+  bounding_polygon.setPosition(bounding_polygon.getPosition() + displacement_vector);
 
   if (glm::abs(displacement_vector.x) < glm::abs(displacement_vector.y)) {
     /* Vertical collision. */
@@ -72,8 +74,8 @@ void PhysicalObject::handleCollision(PhysicalObject &, const glm::vec2 &displace
     const bool object_below_character = displacement_vector.y < 0;
 
     if (character_falls && object_below_character) {
-      velocity.y = 0;
       right_direction = glm::normalize(glm::vec2{-displacement_vector.y, displacement_vector.x});
+      velocity = glm::proj(velocity, right_direction);
       tick_of_last_floor_collision = current_tick;
     } else if (!character_falls && !object_below_character) {
       velocity.y = 0;
@@ -92,7 +94,7 @@ void PhysicalObject::handleCollision(PhysicalObject &, const glm::vec2 &displace
 
 bool PhysicalObject::jumpScheduled() const { return current_tick - tick_of_jump_request < 6; }
 bool PhysicalObject::sticksToFloor() const {
-  return current_tick - tick_of_last_floor_collision < 6;
+  return current_tick - tick_of_last_floor_collision < 1;
 }
 bool PhysicalObject::sticksToWall() const { return current_tick - tick_of_last_wall_collision < 6; }
 } // namespace GameEngine

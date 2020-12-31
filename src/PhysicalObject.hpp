@@ -30,7 +30,7 @@ struct PhysicalObject {
 
   bool physics_enabled = false;
 
-  ConvexBoundingPolygon polygon;
+  ConvexBoundingPolygon bounding_polygon;
 
   /** Speed * direction of this object. */
   glm::vec2 velocity{0.0f, 0.0f};

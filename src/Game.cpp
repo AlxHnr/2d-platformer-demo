@@ -42,6 +42,7 @@ Game::Game() {
   }
 
   objects.push_back({{450, 780}, {650, 780}, {795, 630}});    /* Ramp. */
+  objects.push_back({{10, 600}, {10, 780}, {340, 780}});      /* Ramp. */
   objects.push_back({{750, 470}, {790, 520}, {620, 470}});    /* Plattform. */
   objects.push_back({{550, 320}, {590, 370}, {420, 320}});    /* Plattform. */
   objects.push_back({{1150, 780}, {1270, 780}, {1270, 470}}); /* Steep ramp. */
@@ -59,7 +60,8 @@ void Game::integratePhysics() {
       auto &object1 = objects[i];
       auto &object2 = objects[j];
 
-      const auto displacement_vector = object1.polygon.collidesWith(object2.polygon);
+      const auto displacement_vector =
+          object1.bounding_polygon.collidesWith(object2.bounding_polygon);
       if (!displacement_vector) {
         continue;
       }
@@ -73,16 +75,21 @@ void Game::render(SDL_Renderer *renderer) const {
 
   SDL_SetRenderDrawColor(renderer, 180, 180, 255, 255);
   for (size_t index = 1; index < objects.size(); ++index) {
-    renderPolygon(renderer, objects[index].polygon);
+    renderPolygon(renderer, objects[index].bounding_polygon);
   }
 
-  SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-  renderPolygon(renderer, game_character.polygon);
+  if (game_character.sticksToFloor()) {
+    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+  } else {
+    SDL_SetRenderDrawColor(renderer, 255, 200, 0, 255);
+  }
+  renderPolygon(renderer, game_character.bounding_polygon);
 
   SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-  SDL_RenderDrawLine(renderer, game_character.polygon.getPosition().x,
-                     game_character.polygon.getPosition().y,
-                     (game_character.polygon.getPosition() + game_character.velocity * 50.0f).x,
-                     (game_character.polygon.getPosition() + game_character.velocity * 50.0f).y);
+  SDL_RenderDrawLine(
+      renderer, game_character.bounding_polygon.getPosition().x,
+      game_character.bounding_polygon.getPosition().y,
+      (game_character.bounding_polygon.getPosition() + game_character.velocity * 50.0f).x,
+      (game_character.bounding_polygon.getPosition() + game_character.velocity * 50.0f).y);
 }
 } // namespace GameEngine
