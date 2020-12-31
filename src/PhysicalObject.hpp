@@ -10,6 +10,9 @@
 
 namespace GameEngine {
 class PhysicalObject {
+public:
+  virtual ~PhysicalObject() = default;
+
   /** Update the state of the object. This function does not need to apply the objects velocity to
    * its position. This will be done by the physics integrator. Will be called only once per tick.
    * Will be called once before all addVelocityStep() and handleCollisionWith() calls of this tick.
