@@ -56,13 +56,13 @@ void Game::integratePhysics() {
   auto &object = objects.front();
 
   object.update();
-  object.bounding_polygon.setPosition(object.bounding_polygon.getPosition() + object.velocity);
+  object.addVelocityOffset(object.getVelocity());
 
   for (size_t i = 1; i < objects.size(); ++i) {
     auto &other_object = objects[i];
 
     const auto displacement_vector =
-        object.bounding_polygon.collidesWith(other_object.bounding_polygon);
+        object.getBoundingPolygon().collidesWith(other_object.getBoundingPolygon());
     if (displacement_vector) {
       object.handleCollisionWith(other_object, *displacement_vector);
     }

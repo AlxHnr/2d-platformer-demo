@@ -6,11 +6,12 @@
 #define GAME_ENGINE_SRC_GAME_CHARACTER_HPP
 
 #include "ConvexBoundingPolygon.hpp"
+#include "PhysicalObject.hpp"
 #include <glm/vec2.hpp>
 
 namespace GameEngine {
 /** Interactive character which can run, jump and fall. */
-struct GameCharacter {
+struct GameCharacter : public PhysicalObject {
   /** Construct a Polygon from the given vertices.
    *
    * @param vertices Zero or more points representing a convex polygon. If no points are provided,
@@ -18,10 +19,12 @@ struct GameCharacter {
    */
   GameCharacter(std::initializer_list<glm::vec2> vertices);
 
-  const glm::vec2 &getVelocity() const;
-  void update();
-
-  bool handleCollisionWith(GameCharacter &other, const glm::vec2 &displacement_vector);
+  /* PhysicalObject functions. */
+  void update() override;
+  const glm::vec2 &getVelocity() const override;
+  virtual void addVelocityOffset(const glm::vec2 &offset) override;
+  const ConvexBoundingPolygon &getBoundingPolygon() const override;
+  bool handleCollisionWith(PhysicalObject &other, const glm::vec2 &displacement_vector) override;
 
   void jump();
   bool jumpScheduled() const;

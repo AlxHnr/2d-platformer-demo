@@ -19,8 +19,6 @@ void GameCharacter::accelerate(const GameCharacter::VerticalAcceleration directi
 
 bool GameCharacter::jumpScheduled() const { return current_tick - tick_of_jump_request < 6; }
 
-const glm::vec2 &GameCharacter::getVelocity() const { return velocity; }
-
 void GameCharacter::update() {
   current_tick++;
 
@@ -65,7 +63,15 @@ void GameCharacter::update() {
   right_direction = {1, 0};
 }
 
-bool GameCharacter::handleCollisionWith(GameCharacter &, const glm::vec2 &displacement_vector) {
+const glm::vec2 &GameCharacter::getVelocity() const { return velocity; }
+
+void GameCharacter::addVelocityOffset(const glm::vec2 &offset) {
+  bounding_polygon.setPosition(bounding_polygon.getPosition() + offset);
+}
+
+const ConvexBoundingPolygon &GameCharacter::getBoundingPolygon() const { return bounding_polygon; }
+
+bool GameCharacter::handleCollisionWith(PhysicalObject &, const glm::vec2 &displacement_vector) {
   bounding_polygon.setPosition(bounding_polygon.getPosition() + displacement_vector);
 
   if (glm::abs(displacement_vector.x) < glm::abs(displacement_vector.y)) {
