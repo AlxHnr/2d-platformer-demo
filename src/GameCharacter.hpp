@@ -18,6 +18,11 @@ struct GameCharacter {
    */
   GameCharacter(std::initializer_list<glm::vec2> vertices);
 
+  const glm::vec2 &getVelocity() const;
+  void update();
+
+  bool handleCollisionWith(GameCharacter &other, const glm::vec2 &displacement_vector);
+
   void jump();
   bool jumpScheduled() const;
   bool sticksToWall() const;
@@ -42,6 +47,8 @@ struct GameCharacter {
 
   /** Right direction perpendicular to the slope of the floor. Required for running on slopes. */
   glm::vec2 right_direction{1, 0};
+  bool touching_ground = false;
+  bool touching_wall = false;
 };
 } // namespace GameEngine
 
