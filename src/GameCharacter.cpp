@@ -22,13 +22,6 @@ bool GameCharacter::jumpScheduled() const { return current_tick - tick_of_jump_r
 const glm::vec2 &GameCharacter::getVelocity() const { return velocity; }
 
 void GameCharacter::update() {
-  if (touching_ground) {
-    state = GameCharacter::State::TouchingGround;
-  } else if (touching_wall) {
-    state = GameCharacter::State::TouchingWall;
-  } else {
-    state = GameCharacter::State::Falling;
-  }
   current_tick++;
 
   const auto acceleration_vector =
@@ -45,9 +38,9 @@ void GameCharacter::update() {
 
   /* Apply gravity perpendicular to current slope. */
   glm::vec2 down{-right_direction.y, right_direction.x};
-  if (state == GameCharacter::State::TouchingGround) {
+  if (is_touching_ground) {
     bounding_polygon.setPosition(bounding_polygon.getPosition() + down);
-  } else if (state == GameCharacter::State::TouchingWall) {
+  } else if (is_touching_wall) {
     velocity.x = wall_jump_to_right ? -0.5 : 0.5;
     velocity += down * 0.5f;
   } else {
@@ -55,10 +48,10 @@ void GameCharacter::update() {
   }
 
   if (jumpScheduled()) {
-    if (state == GameCharacter::State::TouchingGround) {
+    if (is_touching_ground) {
       tick_of_jump_request = 0;
       velocity.y -= 15;
-    } else if (state == GameCharacter::State::TouchingWall) {
+    } else if (is_touching_wall) {
       tick_of_jump_request = 0;
       const auto inversion_factor = wall_jump_to_right ? 1 : -1;
       const glm::vec2 next_jump_direction = {
@@ -67,8 +60,8 @@ void GameCharacter::update() {
     }
   }
 
-  touching_ground = false;
-  touching_wall = false;
+  is_touching_ground = false;
+  is_touching_wall = false;
   right_direction = {1, 0};
 }
 
@@ -83,7 +76,7 @@ bool GameCharacter::handleCollisionWith(GameCharacter &, const glm::vec2 &displa
     if (object_below_character) {
       right_direction = glm::normalize(glm::vec2{-displacement_vector.y, displacement_vector.x});
       velocity = glm::proj(velocity, right_direction);
-      touching_ground = true;
+      is_touching_ground = true;
     } else if (!character_falls && !object_below_character) {
       velocity.y = 0;
     }
@@ -92,7 +85,7 @@ bool GameCharacter::handleCollisionWith(GameCharacter &, const glm::vec2 &displa
     const bool character_moves_right = velocity.x > 0;
     const bool object_right_of_character = displacement_vector.x < 0;
     if (character_moves_right == object_right_of_character) {
-      touching_wall = true;
+      is_touching_wall = true;
     }
     wall_jump_to_right = !object_right_of_character;
   }

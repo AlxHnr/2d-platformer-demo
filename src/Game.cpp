@@ -77,9 +77,9 @@ void Game::render(SDL_Renderer *renderer) const {
     renderPolygon(renderer, objects[index].bounding_polygon);
   }
 
-  if (game_character.state == GameCharacter::State::TouchingGround) {
+  if (game_character.is_touching_ground) {
     SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-  } else if (game_character.state == GameCharacter::State::TouchingWall) {
+  } else if (game_character.is_touching_wall) {
     SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
   } else {
     SDL_SetRenderDrawColor(renderer, 255, 200, 0, 255);

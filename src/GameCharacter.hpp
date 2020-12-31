@@ -32,8 +32,6 @@ struct GameCharacter {
 
   ConvexBoundingPolygon bounding_polygon;
 
-  enum class State { Falling, TouchingWall, TouchingGround } state{};
-
   /** Speed * direction of this object. */
   glm::vec2 velocity{0.0f, 0.0f};
 
@@ -47,8 +45,8 @@ struct GameCharacter {
 
   /** Right direction perpendicular to the slope of the floor. Required for running on slopes. */
   glm::vec2 right_direction{1, 0};
-  bool touching_ground = false;
-  bool touching_wall = false;
+  bool is_touching_ground = false;
+  bool is_touching_wall = false;
 };
 } // namespace GameEngine
 
