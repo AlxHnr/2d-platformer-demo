@@ -56,7 +56,8 @@ void Game::integratePhysics() {
   auto &object = objects.front();
   object.update();
 
-  bool still_stuck_to_floor = false;
+  bool touching_ground = false;
+  bool touching_wall = false;
   for (size_t i = 1; i < objects.size(); ++i) {
     auto &other_object = objects[i];
 
@@ -77,7 +78,7 @@ void Game::integratePhysics() {
         object.right_direction =
             glm::normalize(glm::vec2{-displacement_vector->y, displacement_vector->x});
         object.velocity = glm::proj(object.velocity, object.right_direction);
-        still_stuck_to_floor = true;
+        touching_ground = true;
       } else if (!character_falls && !object_below_character) {
         object.velocity.y = 0;
       }
@@ -86,17 +87,16 @@ void Game::integratePhysics() {
       const bool character_moves_right = object.velocity.x > 0;
       const bool object_right_of_character = displacement_vector->x < 0;
       if (character_moves_right == object_right_of_character) {
-        if (object.state != PhysicalObject::State::StuckToGround) {
-          object.velocity.x = 0;
-        }
-        object.tick_of_last_wall_collision = object.current_tick;
+        touching_wall = true;
       }
       object.wall_jump_to_right = !object_right_of_character;
     }
   }
 
-  if (still_stuck_to_floor) {
-    object.state = PhysicalObject::State::StuckToGround;
+  if (touching_ground) {
+    object.state = PhysicalObject::State::TouchingGround;
+  } else if (touching_wall) {
+    object.state = PhysicalObject::State::TouchingWall;
   } else {
     object.state = PhysicalObject::State::Falling;
   }
@@ -110,8 +110,10 @@ void Game::render(SDL_Renderer *renderer) const {
     renderPolygon(renderer, objects[index].bounding_polygon);
   }
 
-  if (game_character.state == PhysicalObject::State::StuckToGround) {
+  if (game_character.state == PhysicalObject::State::TouchingGround) {
     SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+  } else if (game_character.state == PhysicalObject::State::TouchingWall) {
+    SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
   } else {
     SDL_SetRenderDrawColor(renderer, 255, 200, 0, 255);
   }

@@ -28,7 +28,7 @@ struct PhysicalObject {
 
   ConvexBoundingPolygon bounding_polygon;
 
-  enum class State { Falling, StuckToGround } state{};
+  enum class State { Falling, TouchingWall, TouchingGround } state{};
 
   /** Speed perpendicular to the slope of the current floor. */
   float vertical_velocity = 0;
@@ -38,7 +38,6 @@ struct PhysicalObject {
 
   uint32_t current_tick = 1000;
   uint32_t tick_of_jump_request = 0;
-  uint32_t tick_of_last_wall_collision = 0;
 
   /** Contains the direction from the colliding wall. */
   bool wall_jump_to_right = false;

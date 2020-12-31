@@ -18,22 +18,7 @@ void PhysicalObject::accelerate(const PhysicalObject::Acceleration direction) {
 }
 
 void PhysicalObject::update() {
-  if (jumpScheduled()) {
-    if (state == State::StuckToGround) {
-      tick_of_jump_request = 0;
-      tick_of_last_wall_collision = 0;
-      velocity.y -= 15;
-    } else if (sticksToWall()) {
-      tick_of_jump_request = 0;
-      tick_of_last_wall_collision = 0;
-      const auto inversion_factor = wall_jump_to_right ? 1 : -1;
-      const glm::vec2 next_jump_direction = {
-          glm::rotate(glm::vec2{0, -1}, glm::radians(45.0f)).x * inversion_factor, -1};
-      velocity = next_jump_direction * 15.0f;
-    }
-  }
-
-  if (state != State::StuckToGround) {
+  if (state != State::TouchingGround) {
     right_direction = {1, 0};
   }
 
@@ -50,15 +35,31 @@ void PhysicalObject::update() {
 
   /* Apply gravity perpendicular to current slope. */
   glm::vec2 down{-right_direction.y, right_direction.x};
-  if (state == State::StuckToGround) {
+  if (state == State::TouchingGround) {
     bounding_polygon.setPosition(bounding_polygon.getPosition() + down);
+  } else if (state == State::TouchingWall) {
+    velocity.x = wall_jump_to_right ? -0.5 : 0.5;
+    velocity += down * 0.5f;
   } else {
     velocity += down * 0.5f;
   }
+
+  if (jumpScheduled()) {
+    if (state == State::TouchingGround) {
+      tick_of_jump_request = 0;
+      velocity.y -= 15;
+    } else if (state == State::TouchingWall) {
+      tick_of_jump_request = 0;
+      const auto inversion_factor = wall_jump_to_right ? 1 : -1;
+      const glm::vec2 next_jump_direction = {
+          glm::rotate(glm::vec2{0, -1}, glm::radians(45.0f)).x * inversion_factor, -1};
+      velocity = next_jump_direction * 15.0f;
+    }
+  }
+
   bounding_polygon.setPosition(bounding_polygon.getPosition() + velocity);
   current_tick++;
 }
 
 bool PhysicalObject::jumpScheduled() const { return current_tick - tick_of_jump_request < 6; }
-bool PhysicalObject::sticksToWall() const { return current_tick - tick_of_last_wall_collision < 6; }
 } // namespace GameEngine
