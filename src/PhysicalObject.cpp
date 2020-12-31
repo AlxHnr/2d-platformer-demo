@@ -13,7 +13,7 @@ PhysicalObject::PhysicalObject(std::initializer_list<glm::vec2> vertices)
 
 void PhysicalObject::jump() { tick_of_jump_request = current_tick; }
 
-void PhysicalObject::accelerate(const PhysicalObject::Acceleration direction) {
+void PhysicalObject::accelerate(const PhysicalObject::VerticalAcceleration direction) {
   acceleration_direction = direction;
 }
 

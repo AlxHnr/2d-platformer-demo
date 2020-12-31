@@ -22,8 +22,8 @@ struct PhysicalObject {
   bool jumpScheduled() const;
   bool sticksToWall() const;
 
-  enum class Acceleration { None, Left, Right };
-  void accelerate(Acceleration direction);
+  enum class VerticalAcceleration { None, Left, Right };
+  void accelerate(VerticalAcceleration direction);
 
   ConvexBoundingPolygon bounding_polygon;
 
@@ -38,7 +38,7 @@ struct PhysicalObject {
   /** Contains the direction from the colliding wall. */
   bool wall_jump_to_right = false;
 
-  Acceleration acceleration_direction = Acceleration::None;
+  VerticalAcceleration acceleration_direction = VerticalAcceleration::None;
 
   /** Right direction perpendicular to the slope of the floor. Required for running on slopes. */
   glm::vec2 right_direction{1, 0};

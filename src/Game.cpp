@@ -56,10 +56,11 @@ void Game::integratePhysics() {
   auto &object = objects.front();
 
   const auto acceleration_vector =
-      object.acceleration_direction == PhysicalObject::Acceleration::Left ? -object.right_direction
-                                                                          : object.right_direction;
+      object.acceleration_direction == PhysicalObject::VerticalAcceleration::Left
+          ? -object.right_direction
+          : object.right_direction;
   const bool accelerating_in_moving_direction = glm::dot(object.velocity, acceleration_vector) > 0;
-  if (object.acceleration_direction == PhysicalObject::Acceleration::None) {
+  if (object.acceleration_direction == PhysicalObject::VerticalAcceleration::None) {
     const glm::vec2 friction_factor{0.95, 1};
     object.velocity *= friction_factor;
   } else if (!accelerating_in_moving_direction ||

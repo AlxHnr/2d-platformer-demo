@@ -63,11 +63,11 @@ int main() {
     }
 
     if (buttons[SDL_SCANCODE_LEFT]) {
-      game.getGameCharacter().accelerate(PhysicalObject::Acceleration::Left);
+      game.getGameCharacter().accelerate(PhysicalObject::VerticalAcceleration::Left);
     } else if (buttons[SDL_SCANCODE_RIGHT]) {
-      game.getGameCharacter().accelerate(PhysicalObject::Acceleration::Right);
+      game.getGameCharacter().accelerate(PhysicalObject::VerticalAcceleration::Right);
     } else {
-      game.getGameCharacter().accelerate(PhysicalObject::Acceleration::None);
+      game.getGameCharacter().accelerate(PhysicalObject::VerticalAcceleration::None);
     }
 
     game.integratePhysics();
