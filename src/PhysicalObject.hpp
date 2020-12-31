@@ -19,7 +19,6 @@ struct PhysicalObject {
   PhysicalObject(std::initializer_list<glm::vec2> vertices);
 
   void jump();
-  void update();
   bool jumpScheduled() const;
   bool sticksToWall() const;
 
@@ -45,7 +44,7 @@ struct PhysicalObject {
   Acceleration acceleration_direction = Acceleration::None;
 
   /** Right direction perpendicular to the slope of the floor. Required for running on slopes. */
-  glm::vec2 right_direction{0, 0};
+  glm::vec2 right_direction{1, 0};
 };
 } // namespace GameEngine
 

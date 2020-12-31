@@ -54,10 +54,48 @@ PhysicalObject &Game::getGameCharacter() { return objects.front(); }
 
 void Game::integratePhysics() {
   auto &object = objects.front();
-  object.update();
+
+  const auto acceleration_vector =
+      object.acceleration_direction == PhysicalObject::Acceleration::Left ? -object.right_direction
+                                                                          : object.right_direction;
+  const bool accelerating_in_moving_direction = glm::dot(object.velocity, acceleration_vector) > 0;
+  if (object.acceleration_direction == PhysicalObject::Acceleration::None) {
+    const glm::vec2 friction_factor{0.95, 1};
+    object.velocity *= friction_factor;
+  } else if (!accelerating_in_moving_direction ||
+             glm::length(glm::proj(object.velocity, acceleration_vector)) < 10.0) {
+    object.velocity += acceleration_vector;
+  }
+
+  /* Apply gravity perpendicular to current slope. */
+  glm::vec2 down{-object.right_direction.y, object.right_direction.x};
+  if (object.state == PhysicalObject::State::TouchingGround) {
+    object.bounding_polygon.setPosition(object.bounding_polygon.getPosition() + down);
+  } else if (object.state == PhysicalObject::State::TouchingWall) {
+    object.velocity.x = object.wall_jump_to_right ? -0.5 : 0.5;
+    object.velocity += down * 0.5f;
+  } else {
+    object.velocity += down * 0.5f;
+  }
+
+  if (object.jumpScheduled()) {
+    if (object.state == PhysicalObject::State::TouchingGround) {
+      object.tick_of_jump_request = 0;
+      object.velocity.y -= 15;
+    } else if (object.state == PhysicalObject::State::TouchingWall) {
+      object.tick_of_jump_request = 0;
+      const auto inversion_factor = object.wall_jump_to_right ? 1 : -1;
+      const glm::vec2 next_jump_direction = {
+          glm::rotate(glm::vec2{0, -1}, glm::radians(45.0f)).x * inversion_factor, -1};
+      object.velocity = next_jump_direction * 15.0f;
+    }
+  }
+
+  object.bounding_polygon.setPosition(object.bounding_polygon.getPosition() + object.velocity);
 
   bool touching_ground = false;
   bool touching_wall = false;
+  object.right_direction = {1, 0};
   for (size_t i = 1; i < objects.size(); ++i) {
     auto &other_object = objects[i];
 
@@ -100,6 +138,8 @@ void Game::integratePhysics() {
   } else {
     object.state = PhysicalObject::State::Falling;
   }
+
+  object.current_tick++;
 }
 
 void Game::render(SDL_Renderer *renderer) const {
