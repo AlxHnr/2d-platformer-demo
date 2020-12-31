@@ -3,7 +3,6 @@
  */
 
 #include "Game.hpp"
-#include "Geometry.hpp"
 #include <nonstd/span.hpp>
 
 namespace {

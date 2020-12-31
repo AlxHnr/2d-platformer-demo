@@ -1,5 +1,5 @@
 /** @file
- * Contains a polygon class.
+ * Contains a polygon class representing collision boundaries.
  */
 
 #ifndef GAME_ENGINE_SRC_CONVEX_BOUNDING_POLYGON_HPP
@@ -10,13 +10,13 @@
 #include <vector>
 
 namespace GameEngine {
-/** Represents a polygon in the game world which can be moved and rotated. */
+/** Represents a convex bounding polygon in the game world for collision detection. */
 class ConvexBoundingPolygon {
 public:
   /** Construct a polygon from the given vertices.
    *
-   * @param vertices Zero or more points representing a convex polygon. If no points are provided,
-   * it will behave like a non-existing dummy.
+   * @param vertices Zero or more points representing a convex polygon in the game world. If no
+   * points are provided, it will behave like a non-existing dummy.
    */
   ConvexBoundingPolygon(std::initializer_list<glm::vec2> vertices);
 

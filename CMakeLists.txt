@@ -31,7 +31,7 @@ CPMAddPackage(NAME doctest VERSION 2.4.3
   GIT_TAG 352589e5c3bcce53bcbc05da2f2611d614348f3d)
 
 add_library(GameEngine
-  src/Geometry.cpp
+  src/ConvexBoundingPolygon.cpp
   src/SDL2/Error.cpp
 )
 if(GAME_ENGINE_CXX_FLAGS)
@@ -42,14 +42,13 @@ target_link_libraries(GameEngine PUBLIC glm SDL2 span-lite)
 target_include_directories(GameEngine PUBLIC src)
 
 add_executable(Test
+  test/ConvexBoundingPolygon.cpp
   test/Main.cpp
-  test/Geometry.cpp
 )
 target_link_libraries(Test GameEngine doctest)
 add_custom_target(test COMMAND Test)
 
 add_executable(Demo
-  src/ConvexBoundingPolygon.cpp
   src/Game.cpp
   src/Main.cpp
   src/PhysicalObject.cpp
