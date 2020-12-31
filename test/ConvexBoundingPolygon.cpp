@@ -13,6 +13,26 @@ using namespace GameEngine;
 const ConvexBoundingPolygon quad{{-1, 1}, {-1, -1}, {1, -1}, {1, 1}};
 } // namespace
 
+TEST_CASE("Compute center of polygons") {
+  SUBCASE("Polygon with one vertex") {
+    const auto center = ConvexBoundingPolygon{{12, 1}}.getPosition();
+    REQUIRE(center.x == doctest::Approx(12));
+    REQUIRE(center.y == doctest::Approx(1));
+  }
+
+  SUBCASE("Polygon with two vertices") {
+    const auto center = ConvexBoundingPolygon{{-1, 1}, {1, -1}}.getPosition();
+    REQUIRE(center.x == doctest::Approx(0));
+    REQUIRE(center.y == doctest::Approx(0));
+  }
+
+  SUBCASE("Polygon with four vertices") {
+    const auto center = quad.getPosition();
+    REQUIRE(center.x == doctest::Approx(0));
+    REQUIRE(center.y == doctest::Approx(0));
+  }
+}
+
 TEST_CASE("Traverse polygon using Geometry::ForEachEdge()") {
   SUBCASE("Zero vertices") {
     ConvexBoundingPolygon{}.forEachEdge(
@@ -92,26 +112,6 @@ TEST_CASE("Traverse polygon using Geometry::ForEachEdge()") {
       edges_traversed++;
     });
     REQUIRE(edges_traversed == 4);
-  }
-}
-
-TEST_CASE("Compute center of polygons") {
-  SUBCASE("Polygon with one vertex") {
-    const auto center = ConvexBoundingPolygon{{12, 1}}.getPosition();
-    REQUIRE(center.x == doctest::Approx(12));
-    REQUIRE(center.y == doctest::Approx(1));
-  }
-
-  SUBCASE("Polygon with two vertices") {
-    const auto center = ConvexBoundingPolygon{{-1, 1}, {1, -1}}.getPosition();
-    REQUIRE(center.x == doctest::Approx(0));
-    REQUIRE(center.y == doctest::Approx(0));
-  }
-
-  SUBCASE("Polygon with four vertices") {
-    const auto center = quad.getPosition();
-    REQUIRE(center.x == doctest::Approx(0));
-    REQUIRE(center.y == doctest::Approx(0));
   }
 }
 
