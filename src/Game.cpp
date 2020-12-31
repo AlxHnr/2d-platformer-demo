@@ -30,7 +30,7 @@ GameEngine::PhysicalObject makeBox(const glm::vec2 &center, const float width, c
 
 namespace GameEngine {
 Game::Game() {
-  objects.push_back(makeBox({65, 305}, 50, 50));
+  objects.push_back(makeBox({65, 305}, 40, 40));
 
   objects.push_back({{10, 10}, {1270, 10}});    /* Ceiling. */
   objects.push_back({{10, 10}, {10, 780}});     /* Left wall. */
@@ -77,7 +77,6 @@ void Game::integratePhysics() {
         object.right_direction =
             glm::normalize(glm::vec2{-displacement_vector->y, displacement_vector->x});
         object.velocity = glm::proj(object.velocity, object.right_direction);
-        object.tick_of_last_floor_collision = object.current_tick;
         still_stuck_to_floor = true;
       } else if (!character_falls && !object_below_character) {
         object.velocity.y = 0;
@@ -87,9 +86,7 @@ void Game::integratePhysics() {
       const bool character_moves_right = object.velocity.x > 0;
       const bool object_right_of_character = displacement_vector->x < 0;
       if (character_moves_right == object_right_of_character) {
-        if (object.state == PhysicalObject::State::StuckToGround) {
-          /* object.velocity = glm::proj(object.velocity, *displacement_vector); */
-        } else {
+        if (object.state != PhysicalObject::State::StuckToGround) {
           object.velocity.x = 0;
         }
         object.tick_of_last_wall_collision = object.current_tick;

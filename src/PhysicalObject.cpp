@@ -19,14 +19,12 @@ void PhysicalObject::accelerate(const PhysicalObject::Acceleration direction) {
 
 void PhysicalObject::update() {
   if (jumpScheduled()) {
-    if (sticksToFloor()) {
+    if (state == State::StuckToGround) {
       tick_of_jump_request = 0;
-      tick_of_last_floor_collision = 0;
       tick_of_last_wall_collision = 0;
       velocity.y -= 15;
     } else if (sticksToWall()) {
       tick_of_jump_request = 0;
-      tick_of_last_floor_collision = 0;
       tick_of_last_wall_collision = 0;
       const auto inversion_factor = wall_jump_to_right ? 1 : -1;
       const glm::vec2 next_jump_direction = {
@@ -35,7 +33,7 @@ void PhysicalObject::update() {
     }
   }
 
-  if (!sticksToFloor()) {
+  if (state != State::StuckToGround) {
     right_direction = {1, 0};
   }
 
@@ -62,8 +60,5 @@ void PhysicalObject::update() {
 }
 
 bool PhysicalObject::jumpScheduled() const { return current_tick - tick_of_jump_request < 6; }
-bool PhysicalObject::sticksToFloor() const {
-  return current_tick - tick_of_last_floor_collision < 1;
-}
 bool PhysicalObject::sticksToWall() const { return current_tick - tick_of_last_wall_collision < 6; }
 } // namespace GameEngine

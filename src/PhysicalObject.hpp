@@ -21,7 +21,6 @@ struct PhysicalObject {
   void jump();
   void update();
   bool jumpScheduled() const;
-  bool sticksToFloor() const;
   bool sticksToWall() const;
 
   enum class Acceleration { None, Left, Right };
@@ -39,7 +38,6 @@ struct PhysicalObject {
 
   uint32_t current_tick = 1000;
   uint32_t tick_of_jump_request = 0;
-  uint32_t tick_of_last_floor_collision = 0;
   uint32_t tick_of_last_wall_collision = 0;
 
   /** Contains the direction from the colliding wall. */
