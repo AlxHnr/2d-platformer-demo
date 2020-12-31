@@ -1,10 +1,12 @@
 /** @file
- * Tests functions in src/Geometry.hpp
+ * Tests ConvexBoundingPolygon class.
  */
 
 #include <ConvexBoundingPolygon.hpp>
 #include <doctest/doctest.h>
 #include <glm/geometric.hpp>
+#include <glm/gtc/constants.hpp>
+#include <glm/trigonometric.hpp>
 
 namespace {
 using namespace GameEngine;
@@ -33,7 +35,56 @@ TEST_CASE("Compute center of polygons") {
   }
 }
 
-TEST_CASE("Traverse polygon using Geometry::ForEachEdge()") {
+TEST_CASE("Update position of polygon") {
+  SUBCASE("Polygon with two vertices") {
+    ConvexBoundingPolygon line{{-1, 1}, {1, -1}};
+    line.setPosition({2, 3});
+    REQUIRE(line.getPosition().x == doctest::Approx(2));
+    REQUIRE(line.getPosition().y == doctest::Approx(3));
+    REQUIRE(line.getVertices().at(0).x == doctest::Approx(1));
+    REQUIRE(line.getVertices().at(0).y == doctest::Approx(4));
+    REQUIRE(line.getVertices().at(1).x == doctest::Approx(3));
+    REQUIRE(line.getVertices().at(1).y == doctest::Approx(2));
+  }
+
+  SUBCASE("Polygon with four vertices") {
+    ConvexBoundingPolygon moved_quad = quad;
+    moved_quad.setPosition({10, 20});
+    REQUIRE(moved_quad.getPosition().x == doctest::Approx(10));
+    REQUIRE(moved_quad.getPosition().y == doctest::Approx(20));
+    REQUIRE(moved_quad.getVertices().at(0).x == doctest::Approx(9));
+    REQUIRE(moved_quad.getVertices().at(0).y == doctest::Approx(21));
+    REQUIRE(moved_quad.getVertices().at(1).x == doctest::Approx(9));
+    REQUIRE(moved_quad.getVertices().at(1).y == doctest::Approx(19));
+    REQUIRE(moved_quad.getVertices().at(2).x == doctest::Approx(11));
+    REQUIRE(moved_quad.getVertices().at(2).y == doctest::Approx(19));
+    REQUIRE(moved_quad.getVertices().at(3).x == doctest::Approx(11));
+    REQUIRE(moved_quad.getVertices().at(3).y == doctest::Approx(21));
+  }
+}
+
+TEST_CASE("Get and set orientation of polygon") {
+  ConvexBoundingPolygon rotated_quad = quad;
+  REQUIRE(rotated_quad.getOrientation() == doctest::Approx(0));
+
+  rotated_quad.setOrientation(glm::radians(40.0f));
+  REQUIRE(rotated_quad.getOrientation() == doctest::Approx(glm::radians(40.0f)));
+}
+
+TEST_CASE("Rotate polygon") {
+  ConvexBoundingPolygon rotated_quad = quad;
+  rotated_quad.setOrientation(glm::radians(45.0f));
+  REQUIRE(rotated_quad.getVertices().at(0).x == doctest::Approx(-glm::root_two<float>()));
+  REQUIRE(rotated_quad.getVertices().at(0).y == doctest::Approx(0));
+  REQUIRE(rotated_quad.getVertices().at(1).x == doctest::Approx(0));
+  REQUIRE(rotated_quad.getVertices().at(1).y == doctest::Approx(-glm::root_two<float>()));
+  REQUIRE(rotated_quad.getVertices().at(2).x == doctest::Approx(glm::root_two<float>()));
+  REQUIRE(rotated_quad.getVertices().at(2).y == doctest::Approx(0));
+  REQUIRE(rotated_quad.getVertices().at(3).x == doctest::Approx(0));
+  REQUIRE(rotated_quad.getVertices().at(3).y == doctest::Approx(glm::root_two<float>()));
+}
+
+TEST_CASE("Traverse polygon using forEachEdge()") {
   SUBCASE("Zero vertices") {
     ConvexBoundingPolygon{}.forEachEdge(
         [](const glm::vec2 &, const glm::vec2 &) { REQUIRE(false); });

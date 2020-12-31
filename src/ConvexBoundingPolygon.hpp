@@ -35,6 +35,9 @@ public:
    */
   void setOrientation(float orientation);
 
+  /** @return Vertices of this polygon in the game world. */
+  const std::vector<glm::vec2> &getVertices() const;
+
   /** Apply the given function to all edges of this polygon.
    *
    * @param function Will be called on each edge. Takes the start and end position of the current

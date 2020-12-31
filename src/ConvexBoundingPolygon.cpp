@@ -139,6 +139,10 @@ void ConvexBoundingPolygon::setOrientation(float orientation) {
   recomputeBoundingPolygon();
 }
 
+const std::vector<glm::vec2> &ConvexBoundingPolygon::getVertices() const {
+  return bounding_polygon;
+}
+
 void ConvexBoundingPolygon::forEachEdge(
     const std::function<void(const glm::vec2 &edge_start, const glm::vec2 &edge_end)> &function)
     const {
