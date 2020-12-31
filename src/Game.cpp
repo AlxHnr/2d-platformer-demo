@@ -3,6 +3,9 @@
  */
 
 #include "Game.hpp"
+#include <glm/gtc/constants.hpp>
+#include <glm/gtx/projection.hpp>
+#include <glm/gtx/rotate_vector.hpp>
 #include <nonstd/span.hpp>
 
 namespace {
@@ -27,8 +30,7 @@ GameEngine::PhysicalObject makeBox(const glm::vec2 &center, const float width, c
 
 namespace GameEngine {
 Game::Game() {
-  objects.push_back({{50, 300}, {50, 350}, {100, 350}, {100, 300}});
-  objects.front().physics_enabled = true;
+  objects.push_back(makeBox({65, 305}, 50, 50));
 
   objects.push_back({{10, 10}, {1270, 10}});    /* Ceiling. */
   objects.push_back({{10, 10}, {10, 780}});     /* Left wall. */
@@ -51,22 +53,55 @@ Game::Game() {
 PhysicalObject &Game::getGameCharacter() { return objects.front(); }
 
 void Game::integratePhysics() {
-  for (auto &object : objects) {
-    object.update();
+  auto &object = objects.front();
+  object.update();
+
+  bool still_stuck_to_floor = false;
+  for (size_t i = 1; i < objects.size(); ++i) {
+    auto &other_object = objects[i];
+
+    const auto displacement_vector =
+        object.bounding_polygon.collidesWith(other_object.bounding_polygon);
+    if (!displacement_vector) {
+      continue;
+    }
+    object.bounding_polygon.setPosition(object.bounding_polygon.getPosition() +
+                                        *displacement_vector);
+
+    if (glm::abs(displacement_vector->x) < glm::abs(displacement_vector->y)) {
+      /* Vertical collision. */
+      const bool character_falls = object.velocity.y > 0;
+      const bool object_below_character = displacement_vector->y < 0;
+
+      if (object_below_character) {
+        object.right_direction =
+            glm::normalize(glm::vec2{-displacement_vector->y, displacement_vector->x});
+        object.velocity = glm::proj(object.velocity, object.right_direction);
+        object.tick_of_last_floor_collision = object.current_tick;
+        still_stuck_to_floor = true;
+      } else if (!character_falls && !object_below_character) {
+        object.velocity.y = 0;
+      }
+    } else {
+      /* Horizontal collision. */
+      const bool character_moves_right = object.velocity.x > 0;
+      const bool object_right_of_character = displacement_vector->x < 0;
+      if (character_moves_right == object_right_of_character) {
+        if (object.state == PhysicalObject::State::StuckToGround) {
+          /* object.velocity = glm::proj(object.velocity, *displacement_vector); */
+        } else {
+          object.velocity.x = 0;
+        }
+        object.tick_of_last_wall_collision = object.current_tick;
+      }
+      object.wall_jump_to_right = !object_right_of_character;
+    }
   }
 
-  for (size_t i = 0; i < objects.size(); ++i) {
-    for (size_t j = i + 1; j < objects.size(); ++j) {
-      auto &object1 = objects[i];
-      auto &object2 = objects[j];
-
-      const auto displacement_vector =
-          object1.bounding_polygon.collidesWith(object2.bounding_polygon);
-      if (!displacement_vector) {
-        continue;
-      }
-      object1.handleCollision(object2, *displacement_vector);
-    }
+  if (still_stuck_to_floor) {
+    object.state = PhysicalObject::State::StuckToGround;
+  } else {
+    object.state = PhysicalObject::State::Falling;
   }
 }
 
@@ -78,12 +113,19 @@ void Game::render(SDL_Renderer *renderer) const {
     renderPolygon(renderer, objects[index].bounding_polygon);
   }
 
-  if (game_character.sticksToFloor()) {
+  if (game_character.state == PhysicalObject::State::StuckToGround) {
     SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
   } else {
     SDL_SetRenderDrawColor(renderer, 255, 200, 0, 255);
   }
   renderPolygon(renderer, game_character.bounding_polygon);
+
+  SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+  SDL_RenderDrawLine(
+      renderer, game_character.bounding_polygon.getPosition().x,
+      game_character.bounding_polygon.getPosition().y,
+      (game_character.bounding_polygon.getPosition() + game_character.right_direction * 50.0f).x,
+      (game_character.bounding_polygon.getPosition() + game_character.right_direction * 50.0f).y);
 
   SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
   SDL_RenderDrawLine(

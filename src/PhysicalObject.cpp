@@ -4,7 +4,6 @@
 
 #include "PhysicalObject.hpp"
 #include <glm/common.hpp>
-#include <glm/gtc/constants.hpp>
 #include <glm/gtx/projection.hpp>
 #include <glm/gtx/rotate_vector.hpp>
 
@@ -19,10 +18,6 @@ void PhysicalObject::accelerate(const PhysicalObject::Acceleration direction) {
 }
 
 void PhysicalObject::update() {
-  if (!physics_enabled) {
-    return;
-  }
-
   if (jumpScheduled()) {
     if (sticksToFloor()) {
       tick_of_jump_request = 0;
@@ -56,40 +51,14 @@ void PhysicalObject::update() {
   }
 
   /* Apply gravity perpendicular to current slope. */
-  const auto gravity = glm::vec2{-right_direction.y, right_direction.x} * 0.5f;
-  velocity += gravity;
+  glm::vec2 down{-right_direction.y, right_direction.x};
+  if (state == State::StuckToGround) {
+    bounding_polygon.setPosition(bounding_polygon.getPosition() + down);
+  } else {
+    velocity += down * 0.5f;
+  }
   bounding_polygon.setPosition(bounding_polygon.getPosition() + velocity);
   current_tick++;
-}
-
-void PhysicalObject::handleCollision(PhysicalObject &, const glm::vec2 &displacement_vector) {
-  if (!physics_enabled) {
-    return;
-  }
-  bounding_polygon.setPosition(bounding_polygon.getPosition() + displacement_vector);
-
-  if (glm::abs(displacement_vector.x) < glm::abs(displacement_vector.y)) {
-    /* Vertical collision. */
-    const bool character_falls = velocity.y > 0;
-    const bool object_below_character = displacement_vector.y < 0;
-
-    if (character_falls && object_below_character) {
-      right_direction = glm::normalize(glm::vec2{-displacement_vector.y, displacement_vector.x});
-      velocity = glm::proj(velocity, right_direction);
-      tick_of_last_floor_collision = current_tick;
-    } else if (!character_falls && !object_below_character) {
-      velocity.y = 0;
-    }
-  } else {
-    /* Horizontal collision. */
-    const bool character_moves_right = velocity.x > 0;
-    const bool object_right_of_character = displacement_vector.x < 0;
-    if (character_moves_right == object_right_of_character) {
-      velocity.x = 0;
-      tick_of_last_wall_collision = current_tick;
-    }
-    wall_jump_to_right = !object_right_of_character;
-  }
 }
 
 bool PhysicalObject::jumpScheduled() const { return current_tick - tick_of_jump_request < 6; }

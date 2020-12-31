@@ -23,14 +23,16 @@ struct PhysicalObject {
   bool jumpScheduled() const;
   bool sticksToFloor() const;
   bool sticksToWall() const;
-  void handleCollision(PhysicalObject &other, const glm::vec2 &displacement_vector);
 
   enum class Acceleration { None, Left, Right };
   void accelerate(Acceleration direction);
 
-  bool physics_enabled = false;
-
   ConvexBoundingPolygon bounding_polygon;
+
+  enum class State { Falling, StuckToGround } state{};
+
+  /** Speed perpendicular to the slope of the current floor. */
+  float vertical_velocity = 0;
 
   /** Speed * direction of this object. */
   glm::vec2 velocity{0.0f, 0.0f};
