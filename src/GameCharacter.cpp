@@ -88,7 +88,7 @@ bool GameCharacter::handleCollisionWith(PhysicalObject &, const glm::vec2 &displ
     wall_jump_to_right = !object_right_of_character;
   }
 
-  return true;
+  return false;
 }
 
 void GameCharacter::jump() { tick_of_jump_request = current_tick; }
