@@ -11,14 +11,6 @@ namespace GameEngine {
 GameCharacter::GameCharacter(std::initializer_list<glm::vec2> vertices)
     : bounding_polygon{vertices} {}
 
-void GameCharacter::jump() { tick_of_jump_request = current_tick; }
-
-void GameCharacter::accelerate(const GameCharacter::VerticalAcceleration direction) {
-  acceleration_direction = direction;
-}
-
-bool GameCharacter::jumpScheduled() const { return current_tick - tick_of_jump_request < 6; }
-
 void GameCharacter::update() {
   current_tick++;
 
@@ -98,4 +90,18 @@ bool GameCharacter::handleCollisionWith(PhysicalObject &, const glm::vec2 &displ
 
   return true;
 }
+
+void GameCharacter::jump() { tick_of_jump_request = current_tick; }
+
+void GameCharacter::accelerate(const GameCharacter::VerticalAcceleration direction) {
+  acceleration_direction = direction;
+}
+
+bool GameCharacter::isTouchingGround() const { return is_touching_ground; }
+
+bool GameCharacter::isTouchingWall() const { return is_touching_wall; }
+
+const glm::vec2 &GameCharacter::getRightDirection() const { return right_direction; }
+
+bool GameCharacter::jumpScheduled() const { return current_tick - tick_of_jump_request < 6; }
 } // namespace GameEngine

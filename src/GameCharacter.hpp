@@ -11,7 +11,8 @@
 
 namespace GameEngine {
 /** Interactive character which can run, jump and fall. */
-struct GameCharacter : public PhysicalObject {
+class GameCharacter : public PhysicalObject {
+public:
   /** Construct a Polygon from the given vertices.
    *
    * @param vertices Zero or more points representing a convex polygon. If no points are provided,
@@ -27,12 +28,18 @@ struct GameCharacter : public PhysicalObject {
   bool handleCollisionWith(PhysicalObject &other, const glm::vec2 &displacement_vector) override;
 
   void jump();
-  bool jumpScheduled() const;
-  bool sticksToWall() const;
 
   enum class VerticalAcceleration { None, Left, Right };
   void accelerate(VerticalAcceleration direction);
 
+  bool isTouchingGround() const;
+  bool isTouchingWall() const;
+
+  /** @return Right direction perpendicular to the slope of the ground on which this object stands.
+   * Will contain the X axis if the object is falling. */
+  const glm::vec2 &getRightDirection() const;
+
+private:
   ConvexBoundingPolygon bounding_polygon;
 
   /** Speed * direction of this object. */
@@ -41,12 +48,15 @@ struct GameCharacter : public PhysicalObject {
   uint32_t current_tick = 1000;
   uint32_t tick_of_jump_request = 0;
 
+  bool jumpScheduled() const;
+
   /** Contains the direction from the colliding wall. */
   bool wall_jump_to_right = false;
 
   VerticalAcceleration acceleration_direction = VerticalAcceleration::None;
 
-  /** Right direction perpendicular to the slope of the floor. Required for running on slopes. */
+  /** Right direction perpendicular to the slope of the floor. Required for running on slopes.
+   * Contains the X axis if the object is falling. */
   glm::vec2 right_direction{1, 0};
   bool is_touching_ground = false;
   bool is_touching_wall = false;

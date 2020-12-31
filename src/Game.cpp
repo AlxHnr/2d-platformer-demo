@@ -74,30 +74,33 @@ void Game::render(SDL_Renderer *renderer) const {
 
   SDL_SetRenderDrawColor(renderer, 180, 180, 255, 255);
   for (size_t index = 1; index < objects.size(); ++index) {
-    renderPolygon(renderer, objects[index].bounding_polygon);
+    renderPolygon(renderer, objects[index].getBoundingPolygon());
   }
 
-  if (game_character.is_touching_ground) {
+  if (game_character.isTouchingGround()) {
     SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-  } else if (game_character.is_touching_wall) {
+  } else if (game_character.isTouchingWall()) {
     SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
   } else {
     SDL_SetRenderDrawColor(renderer, 255, 200, 0, 255);
   }
-  renderPolygon(renderer, game_character.bounding_polygon);
+  renderPolygon(renderer, game_character.getBoundingPolygon());
 
   SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-  SDL_RenderDrawLine(
-      renderer, game_character.bounding_polygon.getPosition().x,
-      game_character.bounding_polygon.getPosition().y,
-      (game_character.bounding_polygon.getPosition() + game_character.right_direction * 50.0f).x,
-      (game_character.bounding_polygon.getPosition() + game_character.right_direction * 50.0f).y);
+  SDL_RenderDrawLine(renderer, game_character.getBoundingPolygon().getPosition().x,
+                     game_character.getBoundingPolygon().getPosition().y,
+                     (game_character.getBoundingPolygon().getPosition() +
+                      game_character.getRightDirection() * 50.0f)
+                         .x,
+                     (game_character.getBoundingPolygon().getPosition() +
+                      game_character.getRightDirection() * 50.0f)
+                         .y);
 
   SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
   SDL_RenderDrawLine(
-      renderer, game_character.bounding_polygon.getPosition().x,
-      game_character.bounding_polygon.getPosition().y,
-      (game_character.bounding_polygon.getPosition() + game_character.velocity * 50.0f).x,
-      (game_character.bounding_polygon.getPosition() + game_character.velocity * 50.0f).y);
+      renderer, game_character.getBoundingPolygon().getPosition().x,
+      game_character.getBoundingPolygon().getPosition().y,
+      (game_character.getBoundingPolygon().getPosition() + game_character.getVelocity() * 50.0f).x,
+      (game_character.getBoundingPolygon().getPosition() + game_character.getVelocity() * 50.0f).y);
 }
 } // namespace GameEngine
