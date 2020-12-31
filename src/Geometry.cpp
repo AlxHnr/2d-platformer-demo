@@ -11,6 +11,38 @@
 namespace {
 using namespace GameEngine::Geometry;
 
+/** Count the edges of the given polygon.
+ *
+ * @param polygon Contains zero or more vertices.
+ *
+ * @return Amount of edges in the given polygon. E.g. a triangle with 3 points has 3 edges. A line
+ * with 2 points has one edge.
+ */
+size_t countEdges(nonstd::span<const glm::vec2> polygon) {
+  if (polygon.size() < 2) {
+    return 0;
+  }
+  if (polygon.size() == 2) {
+    return 1;
+  }
+  return polygon.size();
+}
+/** Get the edge from the given polygon specified by the edges index.
+ *
+ * @param polygon Contains at least two vertices representing an edge.
+ * @param edge_index Index of the edge starting at 0. Must be inside the bounds of the given
+ * polygon. See countEdges().
+ *
+ * @return [start, end] positions of the polygons nth edge.
+ */
+std::pair<glm::vec2, glm::vec2> getEdge(nonstd::span<const glm::vec2> polygon,
+                                        const size_t edge_index) {
+  if (edge_index == polygon.size() - 1) {
+    return {polygon.back(), polygon.front()};
+  }
+  return {polygon[edge_index], polygon[edge_index + 1]};
+}
+
 /** @return Normal vector orthogonal to the polygons nth edge. */
 glm::vec2 getEdgeNormal(ConvexPolygonView polygon, const size_t edge_index) {
   const auto [start, end] = getEdge(polygon, edge_index);
@@ -80,26 +112,6 @@ std::optional<DisplacementVector> findSmallestDisplacementVector(ConvexPolygonVi
 } // namespace
 
 namespace GameEngine::Geometry {
-size_t countEdges(nonstd::span<const glm::vec2> polygon) {
-  if (polygon.size() < 2) {
-    return 0;
-  }
-  if (polygon.size() == 2) {
-    return 1;
-  }
-  return polygon.size();
-}
-
-std::pair<glm::vec2, glm::vec2> getEdge(nonstd::span<const glm::vec2> polygon,
-                                        const size_t edge_index) {
-  SDL_assert(polygon.size() >= 2);
-
-  if (edge_index == polygon.size() - 1) {
-    return {polygon.back(), polygon.front()};
-  }
-  return {polygon[edge_index], polygon[edge_index + 1]};
-}
-
 void forEachEdge(
     nonstd::span<const glm::vec2> polygon,
     const std::function<void(const glm::vec2 &edge_start, const glm::vec2 &edge_end)> &function) {

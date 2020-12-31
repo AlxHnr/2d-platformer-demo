@@ -14,26 +14,6 @@ namespace GameEngine::Geometry {
 /** Represents a convex polygon used for collision detection. */
 using ConvexPolygonView = nonstd::span<const glm::vec2>;
 
-/** Count the edges of the given polygon.
- *
- * @param polygon Contains zero or more vertices.
- *
- * @return Amount of edges in the given polygon. E.g. a triangle with 3 points has 3 edges. A line
- * with 2 points has one edge.
- */
-size_t countEdges(nonstd::span<const glm::vec2> polygon);
-
-/** Get the edge from the given polygon specified by the edges index.
- *
- * @param polygon Contains at least two vertices representing an edge.
- * @param edge_index Index of the edge starting at 0. Must be inside the bounds of the given
- * polygon. See countEdges().
- *
- * @return [start, end] positions of the polygons nth edge.
- */
-std::pair<glm::vec2, glm::vec2> getEdge(nonstd::span<const glm::vec2> polygon,
-                                        const size_t edge_index);
-
 /** Apply the given function to all edges of specified polygon.
  *
  * @param polygon Represents the polygon which edges should be traversed.
