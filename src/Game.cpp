@@ -3,57 +3,69 @@
  */
 
 #include "Game.hpp"
+#include "StaticObject.hpp"
 #include <glm/gtc/constants.hpp>
 #include <glm/gtx/projection.hpp>
 #include <glm/gtx/rotate_vector.hpp>
 #include <nonstd/span.hpp>
 
 namespace {
-void renderPolygon(SDL_Renderer *renderer, const GameEngine::ConvexBoundingPolygon &polygon) {
+using namespace GameEngine;
+
+void renderPolygon(SDL_Renderer *renderer, const ConvexBoundingPolygon &polygon) {
   polygon.forEachEdge([&](const glm::vec2 &start, const glm::vec2 &end) {
     SDL_RenderDrawLine(renderer, start.x, start.y, end.x, end.y);
   });
 }
 
-GameEngine::GameCharacter makeBox(const glm::vec2 &center, const float width, const float height) {
+template <typename T>
+std::unique_ptr<T> makeBox(const glm::vec2 &center, const float width, const float height) {
   const glm::vec2 box_half_width = {width / 2, 0};
   const glm::vec2 box_half_height = {0, height / 2};
   const glm::vec2 box_center{center.x - box_half_width.x, center.y - box_half_height.y};
-  return {
-      box_center - box_half_width + box_half_height,
-      box_center - box_half_width - box_half_height,
+  return std::make_unique<T>(std::initializer_list<glm::vec2>{
+      box_center - box_half_width + box_half_height, box_center - box_half_width - box_half_height,
       box_center + box_half_width - box_half_height,
-      box_center + box_half_width + box_half_height,
-  };
+      box_center + box_half_width + box_half_height});
+}
+
+std::unique_ptr<StaticObject> makeStaticObject(std::initializer_list<glm::vec2> vertices) {
+  return std::make_unique<StaticObject>(vertices);
 }
 } // namespace
 
 namespace GameEngine {
 Game::Game() {
-  objects.push_back(makeBox({65, 305}, 40, 40));
+  objects.push_back(makeBox<GameCharacter>({65, 305}, 40, 40));
 
-  objects.push_back({{10, 10}, {1270, 10}});    /* Ceiling. */
-  objects.push_back({{10, 10}, {10, 780}});     /* Left wall. */
-  objects.push_back({{1270, 10}, {1270, 780}}); /* Right wall. */
-  objects.push_back({{10, 780}, {1270, 780}});  /* Floor. */
+  objects.push_back(makeStaticObject({{10, 10}, {1270, 10}}));    /* Ceiling. */
+  objects.push_back(makeStaticObject({{10, 10}, {10, 780}}));     /* Left wall. */
+  objects.push_back(makeStaticObject({{1270, 10}, {1270, 780}})); /* Right wall. */
+  objects.push_back(makeStaticObject({{10, 780}, {1270, 780}}));  /* Floor. */
 
-  objects.push_back(makeBox({945, 780}, 150, 150));
+  objects.push_back(makeBox<StaticObject>({945, 780}, 150, 150));
   for (size_t index = 0; index < 24; ++index) {
     const float width = 15;
-    objects.push_back({{745 + width * index, 320}, {745 + width * index, 325}});
+    objects.push_back(makeStaticObject({{745 + width * index, 320}, {745 + width * index, 325}}));
   }
 
-  objects.push_back({{450, 780}, {650, 780}, {795, 630}});    /* Ramp. */
-  objects.push_back({{10, 600}, {10, 780}, {340, 780}});      /* Ramp. */
-  objects.push_back({{750, 470}, {790, 520}, {620, 470}});    /* Plattform. */
-  objects.push_back({{550, 320}, {590, 370}, {420, 320}});    /* Plattform. */
-  objects.push_back({{1150, 780}, {1270, 780}, {1270, 470}}); /* Steep ramp. */
+  objects.push_back(makeStaticObject({{450, 780}, {650, 780}, {795, 630}}));    /* Ramp. */
+  objects.push_back(makeStaticObject({{10, 600}, {10, 780}, {340, 780}}));      /* Ramp. */
+  objects.push_back(makeStaticObject({{750, 470}, {790, 520}, {620, 470}}));    /* Plattform. */
+  objects.push_back(makeStaticObject({{550, 320}, {590, 370}, {420, 320}}));    /* Plattform. */
+  objects.push_back(makeStaticObject({{1150, 780}, {1270, 780}, {1270, 470}})); /* Steep ramp. */
 }
 
-GameCharacter &Game::getGameCharacter() { return objects.front(); }
+GameCharacter &Game::getGameCharacter() {
+  return *dynamic_cast<GameCharacter *>(objects.front().get());
+}
+
+const GameCharacter &Game::getGameCharacter() const {
+  return *dynamic_cast<GameCharacter *>(objects.front().get());
+}
 
 void Game::integratePhysics() {
-  auto &object = objects.front();
+  auto &object = getGameCharacter();
 
   object.update();
   object.addVelocityOffset(object.getVelocity());
@@ -62,19 +74,19 @@ void Game::integratePhysics() {
     auto &other_object = objects[i];
 
     const auto displacement_vector =
-        object.getBoundingPolygon().collidesWith(other_object.getBoundingPolygon());
+        object.getBoundingPolygon().collidesWith(other_object->getBoundingPolygon());
     if (displacement_vector) {
-      object.handleCollisionWith(other_object, *displacement_vector);
+      object.handleCollisionWith(*other_object, *displacement_vector);
     }
   }
 }
 
 void Game::render(SDL_Renderer *renderer) const {
-  const auto &game_character = objects.front();
+  const auto &game_character = getGameCharacter();
 
   SDL_SetRenderDrawColor(renderer, 180, 180, 255, 255);
   for (size_t index = 1; index < objects.size(); ++index) {
-    renderPolygon(renderer, objects[index].getBoundingPolygon());
+    renderPolygon(renderer, objects[index]->getBoundingPolygon());
   }
 
   if (game_character.isTouchingGround()) {
