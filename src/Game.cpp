@@ -15,7 +15,7 @@ void renderPolygon(SDL_Renderer *renderer, const GameEngine::ConvexBoundingPolyg
   });
 }
 
-GameEngine::PhysicalObject makeBox(const glm::vec2 &center, const float width, const float height) {
+GameEngine::GameCharacter makeBox(const glm::vec2 &center, const float width, const float height) {
   const glm::vec2 box_half_width = {width / 2, 0};
   const glm::vec2 box_half_height = {0, height / 2};
   const glm::vec2 box_center{center.x - box_half_width.x, center.y - box_half_height.y};
@@ -50,17 +50,17 @@ Game::Game() {
   objects.push_back({{1150, 780}, {1270, 780}, {1270, 470}}); /* Steep ramp. */
 }
 
-PhysicalObject &Game::getGameCharacter() { return objects.front(); }
+GameCharacter &Game::getGameCharacter() { return objects.front(); }
 
 void Game::integratePhysics() {
   auto &object = objects.front();
 
   const auto acceleration_vector =
-      object.acceleration_direction == PhysicalObject::VerticalAcceleration::Left
+      object.acceleration_direction == GameCharacter::VerticalAcceleration::Left
           ? -object.right_direction
           : object.right_direction;
   const bool accelerating_in_moving_direction = glm::dot(object.velocity, acceleration_vector) > 0;
-  if (object.acceleration_direction == PhysicalObject::VerticalAcceleration::None) {
+  if (object.acceleration_direction == GameCharacter::VerticalAcceleration::None) {
     const glm::vec2 friction_factor{0.95, 1};
     object.velocity *= friction_factor;
   } else if (!accelerating_in_moving_direction ||
@@ -70,9 +70,9 @@ void Game::integratePhysics() {
 
   /* Apply gravity perpendicular to current slope. */
   glm::vec2 down{-object.right_direction.y, object.right_direction.x};
-  if (object.state == PhysicalObject::State::TouchingGround) {
+  if (object.state == GameCharacter::State::TouchingGround) {
     object.bounding_polygon.setPosition(object.bounding_polygon.getPosition() + down);
-  } else if (object.state == PhysicalObject::State::TouchingWall) {
+  } else if (object.state == GameCharacter::State::TouchingWall) {
     object.velocity.x = object.wall_jump_to_right ? -0.5 : 0.5;
     object.velocity += down * 0.5f;
   } else {
@@ -80,10 +80,10 @@ void Game::integratePhysics() {
   }
 
   if (object.jumpScheduled()) {
-    if (object.state == PhysicalObject::State::TouchingGround) {
+    if (object.state == GameCharacter::State::TouchingGround) {
       object.tick_of_jump_request = 0;
       object.velocity.y -= 15;
-    } else if (object.state == PhysicalObject::State::TouchingWall) {
+    } else if (object.state == GameCharacter::State::TouchingWall) {
       object.tick_of_jump_request = 0;
       const auto inversion_factor = object.wall_jump_to_right ? 1 : -1;
       const glm::vec2 next_jump_direction = {
@@ -133,11 +133,11 @@ void Game::integratePhysics() {
   }
 
   if (touching_ground) {
-    object.state = PhysicalObject::State::TouchingGround;
+    object.state = GameCharacter::State::TouchingGround;
   } else if (touching_wall) {
-    object.state = PhysicalObject::State::TouchingWall;
+    object.state = GameCharacter::State::TouchingWall;
   } else {
-    object.state = PhysicalObject::State::Falling;
+    object.state = GameCharacter::State::Falling;
   }
 
   object.current_tick++;
@@ -151,9 +151,9 @@ void Game::render(SDL_Renderer *renderer) const {
     renderPolygon(renderer, objects[index].bounding_polygon);
   }
 
-  if (game_character.state == PhysicalObject::State::TouchingGround) {
+  if (game_character.state == GameCharacter::State::TouchingGround) {
     SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-  } else if (game_character.state == PhysicalObject::State::TouchingWall) {
+  } else if (game_character.state == GameCharacter::State::TouchingWall) {
     SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
   } else {
     SDL_SetRenderDrawColor(renderer, 255, 200, 0, 255);

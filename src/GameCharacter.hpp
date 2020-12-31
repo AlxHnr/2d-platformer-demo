@@ -1,22 +1,22 @@
 /** @file
- * Declares an interactive polygon.
+ * Contains an interactive character which can run, jump and fall.
  */
 
-#ifndef GAME_ENGINE_SRC_PHYSICAL_OBJECT_HPP
-#define GAME_ENGINE_SRC_PHYSICAL_OBJECT_HPP
+#ifndef GAME_ENGINE_SRC_GAME_CHARACTER_HPP
+#define GAME_ENGINE_SRC_GAME_CHARACTER_HPP
 
 #include "ConvexBoundingPolygon.hpp"
 #include <glm/vec2.hpp>
 
 namespace GameEngine {
-/** Basic convex polygon to which physics and collisions can be applied. */
-struct PhysicalObject {
+/** Interactive character which can run, jump and fall. */
+struct GameCharacter {
   /** Construct a Polygon from the given vertices.
    *
    * @param vertices Zero or more points representing a convex polygon. If no points are provided,
    * it will behave like a non-existing dummy.
    */
-  PhysicalObject(std::initializer_list<glm::vec2> vertices);
+  GameCharacter(std::initializer_list<glm::vec2> vertices);
 
   void jump();
   bool jumpScheduled() const;
