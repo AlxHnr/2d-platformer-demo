@@ -139,20 +139,6 @@ void ConvexBoundingPolygon::setOrientation(float orientation) {
   recomputeBoundingPolygon();
 }
 
-const std::vector<glm::vec2> &ConvexBoundingPolygon::getVertices() const {
-  return bounding_polygon;
-}
-
-void ConvexBoundingPolygon::forEachEdge(
-    const std::function<void(const glm::vec2 &edge_start, const glm::vec2 &edge_end)> &function)
-    const {
-  const auto edge_count = countEdges(bounding_polygon);
-  for (size_t index = 0; index < edge_count; ++index) {
-    const auto [start, end] = getEdge(bounding_polygon, index);
-    function(start, end);
-  }
-}
-
 std::optional<glm::vec2>
 ConvexBoundingPolygon::collidesWith(const ConvexBoundingPolygon &other) const {
   if (this->bounding_polygon.empty() || other.bounding_polygon.empty()) {
@@ -193,5 +179,19 @@ void ConvexBoundingPolygon::recomputeBoundingPolygon() {
       bounding_polygon_relative_to_center.cbegin(), bounding_polygon_relative_to_center.cend(),
       bounding_polygon.begin(),
       [this](const glm::vec2 &vertex) { return glm::rotate(vertex, orientation) + position; });
+}
+
+const std::vector<glm::vec2> &ConvexBoundingPolygon::getVertices() const {
+  return bounding_polygon;
+}
+
+void ConvexBoundingPolygon::forEachEdge(
+    const std::function<void(const glm::vec2 &edge_start, const glm::vec2 &edge_end)> &function)
+    const {
+  const auto edge_count = countEdges(bounding_polygon);
+  for (size_t index = 0; index < edge_count; ++index) {
+    const auto [start, end] = getEdge(bounding_polygon, index);
+    function(start, end);
+  }
 }
 } // namespace GameEngine
