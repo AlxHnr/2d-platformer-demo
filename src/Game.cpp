@@ -37,8 +37,12 @@ Game::Game() {
   objects.push_back(PolygonObject{{10, 780}, {1270, 780}});  /* Floor. */
 
   objects.push_back(makeBox({945, 780}, 150, 150));
+  for (size_t index = 0; index < 24; ++index) {
+    const float width = 15;
+    objects.push_back(PolygonObject{{745 + width * index, 320}, {745 + width * index, 325}});
+  }
 
-  objects.push_back(PolygonObject{{450, 780}, {650, 780}, {650, 670}});    /* Ramp. */
+  objects.push_back(PolygonObject{{450, 780}, {650, 780}, {795, 630}});    /* Ramp. */
   objects.push_back(PolygonObject{{750, 470}, {790, 520}, {620, 470}});    /* Plattform. */
   objects.push_back(PolygonObject{{550, 320}, {590, 370}, {420, 320}});    /* Plattform. */
   objects.push_back(PolygonObject{{1150, 780}, {1270, 780}, {1270, 470}}); /* Steep ramp. */
