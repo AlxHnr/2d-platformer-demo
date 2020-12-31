@@ -9,37 +9,13 @@
 #include <glm/gtx/rotate_vector.hpp>
 
 namespace GameEngine {
-PhysicalObject::PhysicalObject(std::initializer_list<glm::vec2> vertices) : vertices{vertices} {
-  position = vertices.size() == 0 ? glm::vec2{0, 0} : Geometry::computeCenter(vertices);
-  std::transform(vertices.begin(), vertices.end(), std::back_inserter(vertices_relative_to_center),
-                 [this](const glm::vec2 &vertex) { return vertex - position; });
-}
-
-void PhysicalObject::enablePhysics() { physics_enabled = true; }
-
-void PhysicalObject::rotate(const float angle) {
-  orientation = glm::mod(orientation + angle, glm::pi<float>() * 2);
-  recomputeBoundingBox();
-}
+PhysicalObject::PhysicalObject(std::initializer_list<glm::vec2> vertices) : polygon{vertices} {}
 
 void PhysicalObject::jump() { tick_of_jump_request = current_tick; }
 
 void PhysicalObject::accelerate(const PhysicalObject::Acceleration direction) {
   acceleration_direction = direction;
 }
-
-const glm::vec2 &PhysicalObject::getPosition() const { return position; }
-
-void PhysicalObject::setPosition(const glm::vec2 &new_position) {
-  position = new_position;
-  recomputeBoundingBox();
-}
-
-const glm::vec2 &PhysicalObject::getVelocity() const { return velocity; }
-
-void PhysicalObject::setVelocity(const glm::vec2 &new_velocity) { velocity = new_velocity; }
-
-Geometry::ConvexPolygonView PhysicalObject::getBoundingPolygon() const { return vertices; }
 
 void PhysicalObject::update() {
   if (!physics_enabled) {
@@ -80,7 +56,7 @@ void PhysicalObject::update() {
 
   const glm::vec2 gravity{0, 0.5};
   velocity += gravity;
-  setPosition(position + velocity);
+  polygon.setPosition(polygon.getPosition() + velocity);
   current_tick++;
 }
 
@@ -88,7 +64,7 @@ void PhysicalObject::handleCollision(PhysicalObject &, const glm::vec2 &displace
   if (!physics_enabled) {
     return;
   }
-  setPosition(position + displacement_vector);
+  polygon.setPosition(polygon.getPosition() + displacement_vector);
 
   if (glm::abs(displacement_vector.x) < glm::abs(displacement_vector.y)) {
     /* Vertical collision. */
@@ -112,12 +88,6 @@ void PhysicalObject::handleCollision(PhysicalObject &, const glm::vec2 &displace
     }
     wall_jump_to_right = !object_right_of_character;
   }
-}
-
-void PhysicalObject::recomputeBoundingBox() {
-  std::transform(
-      vertices_relative_to_center.cbegin(), vertices_relative_to_center.cend(), vertices.begin(),
-      [this](const glm::vec2 &vertex) { return glm::rotate(vertex, orientation) + position; });
 }
 
 bool PhysicalObject::jumpScheduled() const { return current_tick - tick_of_jump_request < 6; }

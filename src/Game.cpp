@@ -29,7 +29,7 @@ GameEngine::PhysicalObject makeBox(const glm::vec2 &center, const float width, c
 namespace GameEngine {
 Game::Game() {
   objects.push_back({{50, 300}, {50, 350}, {100, 350}, {100, 300}});
-  objects.front().enablePhysics();
+  objects.front().physics_enabled = true;
 
   objects.push_back({{10, 10}, {1270, 10}});    /* Ceiling. */
   objects.push_back({{10, 10}, {10, 780}});     /* Left wall. */
@@ -60,8 +60,8 @@ void Game::integratePhysics() {
       auto &object1 = objects[i];
       auto &object2 = objects[j];
 
-      const auto displacement_vector =
-          Geometry::checkCollision(object1.getBoundingPolygon(), object2.getBoundingPolygon());
+      const auto displacement_vector = Geometry::checkCollision(
+          object1.polygon.getBoundingPolygon(), object2.polygon.getBoundingPolygon());
       if (!displacement_vector) {
         continue;
       }
@@ -75,15 +75,15 @@ void Game::render(SDL_Renderer *renderer) const {
 
   SDL_SetRenderDrawColor(renderer, 180, 180, 255, 255);
   for (size_t index = 1; index < objects.size(); ++index) {
-    renderPolygon(renderer, objects[index].getBoundingPolygon());
+    renderPolygon(renderer, objects[index].polygon.getBoundingPolygon());
   }
 
   SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-  renderPolygon(renderer, game_character.getBoundingPolygon());
+  renderPolygon(renderer, game_character.polygon.getBoundingPolygon());
 
   SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
   renderPolygon(renderer,
-                std::array{game_character.getPosition(),
-                           game_character.getPosition() + game_character.getVelocity() * 50.0f});
+                std::array{game_character.polygon.getPosition(),
+                           game_character.polygon.getPosition() + game_character.velocity * 50.0f});
 }
 } // namespace GameEngine
