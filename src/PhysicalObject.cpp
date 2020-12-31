@@ -2,46 +2,46 @@
  * Implements an interactive polygon compatible with the physics engine.
  */
 
-#include "PolygonObject.hpp"
+#include "PhysicalObject.hpp"
 #include <glm/common.hpp>
 #include <glm/gtc/constants.hpp>
 #include <glm/gtx/projection.hpp>
 #include <glm/gtx/rotate_vector.hpp>
 
 namespace GameEngine {
-PolygonObject::PolygonObject(std::initializer_list<glm::vec2> vertices) : vertices{vertices} {
+PhysicalObject::PhysicalObject(std::initializer_list<glm::vec2> vertices) : vertices{vertices} {
   position = vertices.size() == 0 ? glm::vec2{0, 0} : Geometry::computeCenter(vertices);
   std::transform(vertices.begin(), vertices.end(), std::back_inserter(vertices_relative_to_center),
                  [this](const glm::vec2 &vertex) { return vertex - position; });
 }
 
-void PolygonObject::enablePhysics() { physics_enabled = true; }
+void PhysicalObject::enablePhysics() { physics_enabled = true; }
 
-void PolygonObject::rotate(const float angle) {
+void PhysicalObject::rotate(const float angle) {
   orientation = glm::mod(orientation + angle, glm::pi<float>() * 2);
   recomputeBoundingBox();
 }
 
-void PolygonObject::jump() { tick_of_jump_request = current_tick; }
+void PhysicalObject::jump() { tick_of_jump_request = current_tick; }
 
-void PolygonObject::accelerate(const PolygonObject::Acceleration direction) {
+void PhysicalObject::accelerate(const PhysicalObject::Acceleration direction) {
   acceleration_direction = direction;
 }
 
-const glm::vec2 &PolygonObject::getPosition() const { return position; }
+const glm::vec2 &PhysicalObject::getPosition() const { return position; }
 
-void PolygonObject::setPosition(const glm::vec2 &new_position) {
+void PhysicalObject::setPosition(const glm::vec2 &new_position) {
   position = new_position;
   recomputeBoundingBox();
 }
 
-const glm::vec2 &PolygonObject::getVelocity() const { return velocity; }
+const glm::vec2 &PhysicalObject::getVelocity() const { return velocity; }
 
-void PolygonObject::setVelocity(const glm::vec2 &new_velocity) { velocity = new_velocity; }
+void PhysicalObject::setVelocity(const glm::vec2 &new_velocity) { velocity = new_velocity; }
 
-Geometry::ConvexPolygonView PolygonObject::getBoundingPolygon() const { return vertices; }
+Geometry::ConvexPolygonView PhysicalObject::getBoundingPolygon() const { return vertices; }
 
-void PolygonObject::update() {
+void PhysicalObject::update() {
   if (!physics_enabled) {
     return;
   }
@@ -84,7 +84,7 @@ void PolygonObject::update() {
   current_tick++;
 }
 
-void PolygonObject::handleCollision(PhysicsObject &, const glm::vec2 &displacement_vector) {
+void PhysicalObject::handleCollision(PhysicalObject &, const glm::vec2 &displacement_vector) {
   if (!physics_enabled) {
     return;
   }
@@ -114,15 +114,15 @@ void PolygonObject::handleCollision(PhysicsObject &, const glm::vec2 &displaceme
   }
 }
 
-void PolygonObject::recomputeBoundingBox() {
+void PhysicalObject::recomputeBoundingBox() {
   std::transform(
       vertices_relative_to_center.cbegin(), vertices_relative_to_center.cend(), vertices.begin(),
       [this](const glm::vec2 &vertex) { return glm::rotate(vertex, orientation) + position; });
 }
 
-bool PolygonObject::jumpScheduled() const { return current_tick - tick_of_jump_request < 6; }
-bool PolygonObject::sticksToFloor() const {
+bool PhysicalObject::jumpScheduled() const { return current_tick - tick_of_jump_request < 6; }
+bool PhysicalObject::sticksToFloor() const {
   return current_tick - tick_of_last_floor_collision < 6;
 }
-bool PolygonObject::sticksToWall() const { return current_tick - tick_of_last_wall_collision < 6; }
+bool PhysicalObject::sticksToWall() const { return current_tick - tick_of_last_wall_collision < 6; }
 } // namespace GameEngine

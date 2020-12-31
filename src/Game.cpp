@@ -13,7 +13,7 @@ void renderPolygon(SDL_Renderer *renderer, nonstd::span<const glm::vec2> points)
   });
 }
 
-GameEngine::PolygonObject makeBox(const glm::vec2 &center, const float width, const float height) {
+GameEngine::PhysicalObject makeBox(const glm::vec2 &center, const float width, const float height) {
   const glm::vec2 box_half_width = {width / 2, 0};
   const glm::vec2 box_half_height = {0, height / 2};
   const glm::vec2 box_center{center.x - box_half_width.x, center.y - box_half_height.y};
@@ -28,27 +28,27 @@ GameEngine::PolygonObject makeBox(const glm::vec2 &center, const float width, co
 
 namespace GameEngine {
 Game::Game() {
-  objects.push_back(PolygonObject{{50, 300}, {50, 350}, {100, 350}, {100, 300}});
+  objects.push_back({{50, 300}, {50, 350}, {100, 350}, {100, 300}});
   objects.front().enablePhysics();
 
-  objects.push_back(PolygonObject{{10, 10}, {1270, 10}});    /* Ceiling. */
-  objects.push_back(PolygonObject{{10, 10}, {10, 780}});     /* Left wall. */
-  objects.push_back(PolygonObject{{1270, 10}, {1270, 780}}); /* Right wall. */
-  objects.push_back(PolygonObject{{10, 780}, {1270, 780}});  /* Floor. */
+  objects.push_back({{10, 10}, {1270, 10}});    /* Ceiling. */
+  objects.push_back({{10, 10}, {10, 780}});     /* Left wall. */
+  objects.push_back({{1270, 10}, {1270, 780}}); /* Right wall. */
+  objects.push_back({{10, 780}, {1270, 780}});  /* Floor. */
 
   objects.push_back(makeBox({945, 780}, 150, 150));
   for (size_t index = 0; index < 24; ++index) {
     const float width = 15;
-    objects.push_back(PolygonObject{{745 + width * index, 320}, {745 + width * index, 325}});
+    objects.push_back({{745 + width * index, 320}, {745 + width * index, 325}});
   }
 
-  objects.push_back(PolygonObject{{450, 780}, {650, 780}, {795, 630}});    /* Ramp. */
-  objects.push_back(PolygonObject{{750, 470}, {790, 520}, {620, 470}});    /* Plattform. */
-  objects.push_back(PolygonObject{{550, 320}, {590, 370}, {420, 320}});    /* Plattform. */
-  objects.push_back(PolygonObject{{1150, 780}, {1270, 780}, {1270, 470}}); /* Steep ramp. */
+  objects.push_back({{450, 780}, {650, 780}, {795, 630}});    /* Ramp. */
+  objects.push_back({{750, 470}, {790, 520}, {620, 470}});    /* Plattform. */
+  objects.push_back({{550, 320}, {590, 370}, {420, 320}});    /* Plattform. */
+  objects.push_back({{1150, 780}, {1270, 780}, {1270, 470}}); /* Steep ramp. */
 }
 
-PolygonObject &Game::getGameCharacter() { return objects.front(); }
+PhysicalObject &Game::getGameCharacter() { return objects.front(); }
 
 void Game::integratePhysics() {
   for (auto &object : objects) {

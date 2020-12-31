@@ -5,7 +5,7 @@
 #ifndef GAME_ENGINE_SRC_GAME_HPP
 #define GAME_ENGINE_SRC_GAME_HPP
 
-#include "PolygonObject.hpp"
+#include "PhysicalObject.hpp"
 #include <SDL_render.h>
 #include <vector>
 
@@ -14,12 +14,12 @@ class Game {
 public:
   Game();
 
-  PolygonObject &getGameCharacter();
+  PhysicalObject &getGameCharacter();
   void integratePhysics();
   void render(SDL_Renderer *renderer) const;
 
 private:
-  std::vector<PolygonObject> objects;
+  std::vector<PhysicalObject> objects;
 };
 } // namespace GameEngine
 

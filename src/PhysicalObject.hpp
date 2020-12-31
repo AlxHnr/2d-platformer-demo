@@ -2,22 +2,23 @@
  * Declares an interactive polygon.
  */
 
-#ifndef GAME_ENGINE_SRC_POLYGON_OBJECT_HPP
-#define GAME_ENGINE_SRC_POLYGON_OBJECT_HPP
+#ifndef GAME_ENGINE_SRC_PHYSICAL_OBJECT_HPP
+#define GAME_ENGINE_SRC_PHYSICAL_OBJECT_HPP
 
-#include "PhysicsObject.hpp"
+#include "Geometry.hpp"
+#include <glm/vec2.hpp>
 #include <vector>
 
 namespace GameEngine {
 /** Basic convex polygon to which physics and collisions can be applied. */
-class PolygonObject : public PhysicsObject {
+class PhysicalObject {
 public:
   /** Construct a polygon from the given vertices.
    *
    * @param vertices Zero or more points representing a convex polygon. If no points are provided,
    * it will behave like a non-existing dummy.
    */
-  PolygonObject(std::initializer_list<glm::vec2> vertices);
+  PhysicalObject(std::initializer_list<glm::vec2> vertices);
 
   void enablePhysics();
 
@@ -32,14 +33,30 @@ public:
   enum class Acceleration { None, Left, Right };
   void accelerate(Acceleration direction);
 
-  /* PhysicsObject interface functions. */
-  const glm::vec2 &getPosition() const override;
-  void setPosition(const glm::vec2 &new_position) override;
-  const glm::vec2 &getVelocity() const override;
-  void setVelocity(const glm::vec2 &new_velocity) override;
-  Geometry::ConvexPolygonView getBoundingPolygon() const override;
-  void update() override;
-  void handleCollision(PhysicsObject &other, const glm::vec2 &displacement_vector) override;
+  /** @return Center of the object in the game world. */
+  const glm::vec2 &getPosition() const;
+
+  /** @param new_position New position (center) of the object in the game world. */
+  void setPosition(const glm::vec2 &new_position);
+
+  /** @return Velocity of the object. */
+  const glm::vec2 &getVelocity() const;
+
+  /** @param new_velocity New velocity of the object. */
+  void setVelocity(const glm::vec2 &new_velocity);
+
+  /** @return Borders of the object in the game world used for collision detection. */
+  Geometry::ConvexPolygonView getBoundingPolygon() const;
+
+  /** Will be called every tick to update the state of the object. */
+  void update();
+
+  /** Gets called when a collision occurred.
+   *
+   * @param other Object which collided with this object.
+   * @param displacement_vector Offset required to move this object out of the other object.
+   */
+  void handleCollision(PhysicalObject &other, const glm::vec2 &displacement_vector);
 
 private:
   bool physics_enabled = false;

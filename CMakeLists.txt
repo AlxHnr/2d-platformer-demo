@@ -51,7 +51,7 @@ add_custom_target(test COMMAND Test)
 add_executable(Demo
   src/Game.cpp
   src/Main.cpp
-  src/PolygonObject.cpp
+  src/PhysicalObject.cpp
 )
 target_link_libraries(Demo GameEngine)
 add_custom_target(run COMMAND Demo)
