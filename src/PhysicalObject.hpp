@@ -5,7 +5,7 @@
 #ifndef GAME_ENGINE_SRC_PHYSICAL_OBJECT_HPP
 #define GAME_ENGINE_SRC_PHYSICAL_OBJECT_HPP
 
-#include "Polygon.hpp"
+#include "ConvexBoundingPolygon.hpp"
 #include <glm/vec2.hpp>
 
 namespace GameEngine {
@@ -30,7 +30,7 @@ struct PhysicalObject {
 
   bool physics_enabled = false;
 
-  Polygon polygon;
+  ConvexBoundingPolygon polygon;
 
   /** Speed * direction of this object. */
   glm::vec2 velocity{0.0f, 0.0f};

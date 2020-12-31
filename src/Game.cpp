@@ -7,8 +7,8 @@
 #include <nonstd/span.hpp>
 
 namespace {
-void renderPolygon(SDL_Renderer *renderer, nonstd::span<const glm::vec2> points) {
-  GameEngine::Geometry::forEachEdge(points, [&](const glm::vec2 &start, const glm::vec2 &end) {
+void renderPolygon(SDL_Renderer *renderer, const GameEngine::ConvexBoundingPolygon &polygon) {
+  polygon.forEachEdge([&](const glm::vec2 &start, const glm::vec2 &end) {
     SDL_RenderDrawLine(renderer, start.x, start.y, end.x, end.y);
   });
 }
@@ -60,8 +60,7 @@ void Game::integratePhysics() {
       auto &object1 = objects[i];
       auto &object2 = objects[j];
 
-      const auto displacement_vector = Geometry::checkCollision(
-          object1.polygon.getBoundingPolygon(), object2.polygon.getBoundingPolygon());
+      const auto displacement_vector = object1.polygon.collidesWith(object2.polygon);
       if (!displacement_vector) {
         continue;
       }
@@ -75,15 +74,16 @@ void Game::render(SDL_Renderer *renderer) const {
 
   SDL_SetRenderDrawColor(renderer, 180, 180, 255, 255);
   for (size_t index = 1; index < objects.size(); ++index) {
-    renderPolygon(renderer, objects[index].polygon.getBoundingPolygon());
+    renderPolygon(renderer, objects[index].polygon);
   }
 
   SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-  renderPolygon(renderer, game_character.polygon.getBoundingPolygon());
+  renderPolygon(renderer, game_character.polygon);
 
   SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-  renderPolygon(renderer,
-                std::array{game_character.polygon.getPosition(),
-                           game_character.polygon.getPosition() + game_character.velocity * 50.0f});
+  SDL_RenderDrawLine(renderer, game_character.polygon.getPosition().x,
+                     game_character.polygon.getPosition().y,
+                     (game_character.polygon.getPosition() + game_character.velocity * 50.0f).x,
+                     (game_character.polygon.getPosition() + game_character.velocity * 50.0f).y);
 }
 } // namespace GameEngine
