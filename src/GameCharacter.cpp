@@ -27,9 +27,9 @@ void GameCharacter::update() {
   }
 
   /* Apply gravity perpendicular to current slope. */
-  glm::vec2 down{-right_direction.y, right_direction.x};
+  const glm::vec2 down{-right_direction.y, right_direction.x};
   if (is_touching_ground) {
-    bounding_polygon.setPosition(bounding_polygon.getPosition() + down);
+    addVelocityOffset(down);
   } else if (is_touching_wall) {
     velocity.x = wall_jump_to_right ? -0.5 : 0.5;
     velocity += down * 0.5f;
@@ -64,7 +64,7 @@ void GameCharacter::addVelocityOffset(const glm::vec2 &offset) {
 const ConvexBoundingPolygon &GameCharacter::getBoundingPolygon() const { return bounding_polygon; }
 
 bool GameCharacter::handleCollisionWith(PhysicalObject &, const glm::vec2 &displacement_vector) {
-  bounding_polygon.setPosition(bounding_polygon.getPosition() + displacement_vector);
+  addVelocityOffset(displacement_vector);
 
   if (glm::abs(displacement_vector.x) < glm::abs(displacement_vector.y)) {
     /* Vertical collision. */
@@ -88,7 +88,7 @@ bool GameCharacter::handleCollisionWith(PhysicalObject &, const glm::vec2 &displ
     wall_jump_to_right = !object_right_of_character;
   }
 
-  return false;
+  return true;
 }
 
 void GameCharacter::jump() { tick_of_jump_request = current_tick; }
