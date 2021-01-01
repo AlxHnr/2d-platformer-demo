@@ -14,6 +14,11 @@ GameCharacter::GameCharacter(std::initializer_list<glm::vec2> vertices)
 void GameCharacter::update() {
   current_tick++;
 
+  const auto right_direction = getRightDirection();
+  if (ground_normal.has_value()) {
+    velocity = glm::proj(velocity, right_direction);
+  }
+
   const auto acceleration_vector =
       acceleration_direction == GameCharacter::VerticalAcceleration::Left ? -right_direction
                                                                           : right_direction;
@@ -27,18 +32,18 @@ void GameCharacter::update() {
   }
 
   /* Apply gravity perpendicular to current slope. */
+  const float gravity = 0.5;
   const glm::vec2 down{-right_direction.y, right_direction.x};
-  if (is_touching_ground) {
-    addVelocityOffset(down);
-  } else if (is_touching_wall) {
-    velocity.x = wall_jump_to_right ? -0.5 : 0.5;
-    velocity += down * 0.5f;
-  } else {
-    velocity += down * 0.5f;
+  if (is_touching_ceiling) {
+    velocity.y = 0;
   }
+  if (is_touching_wall) {
+    velocity.x = wall_jump_to_right ? -gravity : gravity;
+  }
+  velocity += down * gravity;
 
   if (jumpScheduled()) {
-    if (is_touching_ground) {
+    if (ground_normal.has_value()) {
       tick_of_jump_request = 0;
       velocity.y -= 15;
     } else if (is_touching_wall) {
@@ -50,9 +55,9 @@ void GameCharacter::update() {
     }
   }
 
-  is_touching_ground = false;
+  ground_normal.reset();
   is_touching_wall = false;
-  right_direction = {1, 0};
+  is_touching_ceiling = false;
 }
 
 const glm::vec2 &GameCharacter::getVelocity() const { return velocity; }
@@ -72,11 +77,9 @@ bool GameCharacter::handleCollisionWith(PhysicalObject &, const glm::vec2 &displ
     const bool object_below_character = displacement_vector.y < 0;
 
     if (object_below_character) {
-      right_direction = glm::normalize(glm::vec2{-displacement_vector.y, displacement_vector.x});
-      velocity = glm::proj(velocity, right_direction);
-      is_touching_ground = true;
+      ground_normal = glm::normalize(displacement_vector);
     } else if (!character_falls && !object_below_character) {
-      velocity.y = 0;
+      is_touching_ceiling = true;
     }
   } else {
     /* Horizontal collision. */
@@ -88,7 +91,7 @@ bool GameCharacter::handleCollisionWith(PhysicalObject &, const glm::vec2 &displ
     wall_jump_to_right = !object_right_of_character;
   }
 
-  return true;
+  return false;
 }
 
 void GameCharacter::jump() { tick_of_jump_request = current_tick; }
@@ -97,11 +100,17 @@ void GameCharacter::accelerate(const GameCharacter::VerticalAcceleration directi
   acceleration_direction = direction;
 }
 
-bool GameCharacter::isTouchingGround() const { return is_touching_ground; }
+bool GameCharacter::isTouchingGround() const { return ground_normal.has_value(); }
 
 bool GameCharacter::isTouchingWall() const { return is_touching_wall; }
 
-const glm::vec2 &GameCharacter::getRightDirection() const { return right_direction; }
+const glm::vec2 GameCharacter::getRightDirection() const {
+  if (!ground_normal.has_value()) {
+    /* Fall back to X axis. */
+    return {1, 0};
+  }
+  return {-ground_normal->y, ground_normal->x};
+}
 
 bool GameCharacter::jumpScheduled() const { return current_tick - tick_of_jump_request < 6; }
 } // namespace GameEngine

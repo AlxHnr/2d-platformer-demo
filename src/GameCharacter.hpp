@@ -8,6 +8,7 @@
 #include "ConvexBoundingPolygon.hpp"
 #include "PhysicalObject.hpp"
 #include <glm/vec2.hpp>
+#include <optional>
 
 namespace GameEngine {
 /** Interactive character which can run, jump and fall. */
@@ -37,7 +38,7 @@ public:
 
   /** @return Right direction perpendicular to the slope of the ground on which this object stands.
    * Will contain the X axis if the object is falling. */
-  const glm::vec2 &getRightDirection() const;
+  const glm::vec2 getRightDirection() const;
 
 private:
   ConvexBoundingPolygon bounding_polygon;
@@ -55,11 +56,11 @@ private:
 
   VerticalAcceleration acceleration_direction = VerticalAcceleration::None;
 
-  /** Right direction perpendicular to the slope of the floor. Required for running on slopes.
-   * Contains the X axis if the object is falling. */
-  glm::vec2 right_direction{1, 0};
-  bool is_touching_ground = false;
+  /** Contains the normal of the ground if the character is standing on it. */
+  std::optional<glm::vec2> ground_normal{};
+
   bool is_touching_wall = false;
+  bool is_touching_ceiling = false;
 };
 } // namespace GameEngine
 
