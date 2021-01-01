@@ -28,17 +28,15 @@ void GameCharacter::update() {
     velocity *= friction_factor;
   } else if (!accelerating_in_moving_direction ||
              glm::length(glm::proj(velocity, acceleration_vector)) < 10.0) {
-    velocity += acceleration_vector;
+    const float horizontal_speed = 1;
+    velocity += acceleration_vector * horizontal_speed;
   }
 
   /* Apply gravity perpendicular to current slope. */
   const float gravity = 0.5;
   const glm::vec2 down{-right_direction.y, right_direction.x};
   if (is_touching_ceiling) {
-    velocity.y = 0;
-  }
-  if (current_sticky_wall_direction != HorizontalDirection::None) {
-    /* velocity.x = wall_jump_to_right ? -0.1 : 0.1; */
+    velocity.y = glm::max(velocity.y, 0.0f);
   }
   velocity += down * gravity;
 
