@@ -69,8 +69,8 @@ ProjectedVertices projectVerticesOntoAxis(Vertices polygon, const glm::vec2 &axi
 
   for (size_t index = 1; index < polygon.size(); ++index) {
     const auto dot_product = glm::dot(polygon[index], axis);
-    min = std::min(min, dot_product);
-    max = std::max(max, dot_product);
+    min = glm::min(min, dot_product);
+    max = glm::max(max, dot_product);
   }
   return {axis, min, max};
 }
