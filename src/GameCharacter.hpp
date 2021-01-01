@@ -51,15 +51,13 @@ private:
 
   bool jumpScheduled() const;
 
-  /** Contains the direction from the colliding wall. */
-  bool wall_jump_to_right = false;
-
   HorizontalDirection acceleration_direction = HorizontalDirection::None;
 
   /** Contains the normal of the ground if the character is standing on it. */
   std::optional<glm::vec2> ground_normal{};
 
-  bool is_touching_wall = false;
+  HorizontalDirection current_sticky_wall_direction{};
+
   bool is_touching_ceiling = false;
 };
 } // namespace GameEngine

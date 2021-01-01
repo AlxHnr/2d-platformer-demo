@@ -37,7 +37,7 @@ void GameCharacter::update() {
   if (is_touching_ceiling) {
     velocity.y = 0;
   }
-  if (is_touching_wall) {
+  if (current_sticky_wall_direction != HorizontalDirection::None) {
     /* velocity.x = wall_jump_to_right ? -0.1 : 0.1; */
   }
   velocity += down * gravity;
@@ -46,9 +46,10 @@ void GameCharacter::update() {
     if (ground_normal.has_value()) {
       tick_of_jump_request = 0;
       velocity.y -= 15;
-    } else if (is_touching_wall) {
+    } else if (current_sticky_wall_direction != HorizontalDirection::None) {
       tick_of_jump_request = 0;
-      const auto inversion_factor = wall_jump_to_right ? 1 : -1;
+      const auto inversion_factor =
+          current_sticky_wall_direction == HorizontalDirection::Left ? 1 : -1;
       const glm::vec2 next_jump_direction = {
           glm::rotate(glm::vec2{0, -1}, glm::radians(45.0f)).x * inversion_factor, -1};
       velocity = next_jump_direction * 15.0f;
@@ -56,7 +57,7 @@ void GameCharacter::update() {
   }
 
   ground_normal.reset();
-  is_touching_wall = false;
+  current_sticky_wall_direction = HorizontalDirection::None;
   is_touching_ceiling = false;
 }
 
@@ -86,9 +87,9 @@ void GameCharacter::handleCollisionWith(PhysicalObject &, const glm::vec2 &displ
     const bool character_moves_right = velocity.x > 0;
     const bool object_right_of_character = displacement_vector.x < 0;
     if (character_moves_right == object_right_of_character) {
-      is_touching_wall = true;
+      current_sticky_wall_direction =
+          object_right_of_character ? HorizontalDirection::Right : HorizontalDirection::Left;
     }
-    wall_jump_to_right = !object_right_of_character;
   }
 }
 
@@ -100,7 +101,9 @@ void GameCharacter::accelerate(const GameCharacter::HorizontalDirection directio
 
 bool GameCharacter::isTouchingGround() const { return ground_normal.has_value(); }
 
-bool GameCharacter::isTouchingWall() const { return is_touching_wall; }
+bool GameCharacter::isTouchingWall() const {
+  return current_sticky_wall_direction != HorizontalDirection::None;
+}
 
 const glm::vec2 GameCharacter::getRightDirection() const {
   if (!ground_normal.has_value()) {
