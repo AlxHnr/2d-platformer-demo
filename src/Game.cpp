@@ -94,7 +94,7 @@ void Game::render(SDL_Renderer *renderer) const {
   } else if (game_character.isTouchingWall()) {
     SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
   } else {
-    SDL_SetRenderDrawColor(renderer, 255, 200, 0, 255);
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
   }
   renderPolygon(renderer, game_character.getBoundingPolygon());
 
