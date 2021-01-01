@@ -6,6 +6,7 @@
 #include <glm/common.hpp>
 #include <glm/gtx/projection.hpp>
 #include <glm/gtx/rotate_vector.hpp>
+#include <glm/gtx/vector_angle.hpp>
 
 namespace GameEngine {
 GameCharacter::GameCharacter(std::initializer_list<glm::vec2> vertices)
@@ -15,7 +16,10 @@ void GameCharacter::update() {
   current_tick++;
 
   const auto right_direction = getRightDirection();
-  if (ground_normal.has_value()) {
+
+  /* Align velocity parallel to ground when moving towards ground. */
+  if (ground_normal.has_value() &&
+      glm::angle(*ground_normal, glm::normalize(velocity)) > glm::half_pi<float>()) {
     velocity = glm::proj(velocity, right_direction);
   }
 
