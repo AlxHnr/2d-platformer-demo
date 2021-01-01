@@ -32,6 +32,49 @@ std::unique_ptr<T> makeBox(const glm::vec2 &center, const float width, const flo
 std::unique_ptr<StaticObject> makeStaticObject(std::initializer_list<glm::vec2> vertices) {
   return std::make_unique<StaticObject>(vertices);
 }
+
+/* Represents an object which may require processing the velocity in multiple substeps for fast
+ * objects. */
+struct UnprocessedObject {
+  PhysicalObject *object;
+  glm::vec2 direction;
+  float remaining_velocity_length;
+};
+
+const float max_velocity_length = 50;
+const float velocity_length_per_step = 3.5;
+
+/** Apply a single velocity/collision substep to the given object.
+ *
+ * @param unprocessed_object Object which should be moved by its velocity.
+ * @param objects All other objects which may collide with the given moving object.
+ *
+ * @return True if the object was processed completely. False if some unapplied velocity is
+ * remaining.
+ */
+bool processObject(UnprocessedObject &unprocessed_object,
+                   nonstd::span<const std::unique_ptr<PhysicalObject>> objects) {
+  const auto length_of_this_step =
+      glm::min(unprocessed_object.remaining_velocity_length, velocity_length_per_step);
+  unprocessed_object.object->addVelocityOffset(unprocessed_object.direction * length_of_this_step);
+
+  for (const auto &other_object : objects) {
+    if (other_object.get() == unprocessed_object.object) {
+      continue;
+    }
+
+    const auto displacement_vector = unprocessed_object.object->getBoundingPolygon().collidesWith(
+        other_object->getBoundingPolygon());
+    if (!displacement_vector) {
+      continue;
+    }
+    unprocessed_object.object->handleCollisionWith(*other_object, *displacement_vector);
+    other_object->handleCollisionWith(*unprocessed_object.object, -*displacement_vector);
+  }
+
+  unprocessed_object.remaining_velocity_length -= length_of_this_step;
+  return unprocessed_object.remaining_velocity_length < glm::epsilon<float>();
+}
 } // namespace
 
 namespace GameEngine {
@@ -65,19 +108,28 @@ const GameCharacter &Game::getGameCharacter() const {
 }
 
 void Game::integratePhysics() {
-  auto &object = getGameCharacter();
+  for (const auto &object : objects) {
+    object->update();
+  }
 
-  object.update();
-  object.addVelocityOffset(object.getVelocity());
+  std::vector<UnprocessedObject> unprocessed_objects{};
 
-  for (size_t i = 1; i < objects.size(); ++i) {
-    auto &other_object = objects[i];
+  for (const auto &object : objects) {
+    UnprocessedObject unprocessed_object{
+        object.get(), glm::normalize(object->getVelocity()),
+        glm::min(glm::length(object->getVelocity()), max_velocity_length)};
 
-    const auto displacement_vector =
-        object.getBoundingPolygon().collidesWith(other_object->getBoundingPolygon());
-    if (displacement_vector) {
-      object.handleCollisionWith(*other_object, *displacement_vector);
+    if (!processObject(unprocessed_object, objects)) {
+      unprocessed_objects.push_back(unprocessed_object);
     }
+  }
+
+  while (!unprocessed_objects.empty()) {
+    unprocessed_objects.erase(std::remove_if(unprocessed_objects.begin(), unprocessed_objects.end(),
+                                             [&](UnprocessedObject &unprocessed_object) {
+                                               return processObject(unprocessed_object, objects);
+                                             }),
+                              unprocessed_objects.end());
   }
 }
 
