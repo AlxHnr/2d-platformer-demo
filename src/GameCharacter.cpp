@@ -20,10 +20,10 @@ void GameCharacter::update() {
   }
 
   const auto acceleration_vector =
-      acceleration_direction == GameCharacter::VerticalAcceleration::Left ? -right_direction
-                                                                          : right_direction;
+      acceleration_direction == GameCharacter::HorizontalDirection::Left ? -right_direction
+                                                                         : right_direction;
   const bool accelerating_in_moving_direction = glm::dot(velocity, acceleration_vector) > 0;
-  if (acceleration_direction == GameCharacter::VerticalAcceleration::None) {
+  if (acceleration_direction == GameCharacter::HorizontalDirection::None) {
     const glm::vec2 friction_factor{0.95, 1};
     velocity *= friction_factor;
   } else if (!accelerating_in_moving_direction ||
@@ -38,7 +38,7 @@ void GameCharacter::update() {
     velocity.y = 0;
   }
   if (is_touching_wall) {
-    velocity.x = wall_jump_to_right ? -gravity : gravity;
+    /* velocity.x = wall_jump_to_right ? -0.1 : 0.1; */
   }
   velocity += down * gravity;
 
@@ -94,7 +94,7 @@ void GameCharacter::handleCollisionWith(PhysicalObject &, const glm::vec2 &displ
 
 void GameCharacter::jump() { tick_of_jump_request = current_tick; }
 
-void GameCharacter::accelerate(const GameCharacter::VerticalAcceleration direction) {
+void GameCharacter::accelerate(const GameCharacter::HorizontalDirection direction) {
   acceleration_direction = direction;
 }
 

@@ -30,8 +30,8 @@ public:
 
   void jump();
 
-  enum class VerticalAcceleration { None, Left, Right };
-  void accelerate(VerticalAcceleration direction);
+  enum class HorizontalDirection { None, Left, Right };
+  void accelerate(HorizontalDirection direction);
 
   bool isTouchingGround() const;
   bool isTouchingWall() const;
@@ -54,7 +54,7 @@ private:
   /** Contains the direction from the colliding wall. */
   bool wall_jump_to_right = false;
 
-  VerticalAcceleration acceleration_direction = VerticalAcceleration::None;
+  HorizontalDirection acceleration_direction = HorizontalDirection::None;
 
   /** Contains the normal of the ground if the character is standing on it. */
   std::optional<glm::vec2> ground_normal{};
