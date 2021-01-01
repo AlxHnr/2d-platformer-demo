@@ -68,7 +68,7 @@ void GameCharacter::addVelocityOffset(const glm::vec2 &offset) {
 
 const ConvexBoundingPolygon &GameCharacter::getBoundingPolygon() const { return bounding_polygon; }
 
-bool GameCharacter::handleCollisionWith(PhysicalObject &, const glm::vec2 &displacement_vector) {
+void GameCharacter::handleCollisionWith(PhysicalObject &, const glm::vec2 &displacement_vector) {
   addVelocityOffset(displacement_vector);
 
   if (glm::abs(displacement_vector.x) < glm::abs(displacement_vector.y)) {
@@ -90,8 +90,6 @@ bool GameCharacter::handleCollisionWith(PhysicalObject &, const glm::vec2 &displ
     }
     wall_jump_to_right = !object_right_of_character;
   }
-
-  return false;
 }
 
 void GameCharacter::jump() { tick_of_jump_request = current_tick; }

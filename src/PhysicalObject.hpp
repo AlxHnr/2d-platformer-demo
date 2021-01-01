@@ -36,12 +36,8 @@ public:
    *
    * @param other Object which collided with this object.
    * @param displacement_vector Offset for moving this object out of the other object.
-   *
-   * @return True to stop the physics engine from applying velocity/movement, e.g. object has hit a
-   * wall. This is used to stop multisampling during collision detection. If this function returns
-   * true, it may still cause collisions occurred during the rest of the current multisampling run.
    */
-  virtual bool handleCollisionWith(PhysicalObject &other, const glm::vec2 &displacement_vector) = 0;
+  virtual void handleCollisionWith(PhysicalObject &other, const glm::vec2 &displacement_vector) = 0;
 };
 } // namespace GameEngine
 

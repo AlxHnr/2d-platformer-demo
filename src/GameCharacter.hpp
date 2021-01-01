@@ -26,7 +26,7 @@ public:
   const glm::vec2 &getVelocity() const override;
   virtual void addVelocityOffset(const glm::vec2 &offset) override;
   const ConvexBoundingPolygon &getBoundingPolygon() const override;
-  bool handleCollisionWith(PhysicalObject &other, const glm::vec2 &displacement_vector) override;
+  void handleCollisionWith(PhysicalObject &other, const glm::vec2 &displacement_vector) override;
 
   void jump();
 

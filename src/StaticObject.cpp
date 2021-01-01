@@ -16,5 +16,5 @@ void StaticObject::addVelocityOffset(const glm::vec2 &) { return; }
 
 const ConvexBoundingPolygon &StaticObject::getBoundingPolygon() const { return bounding_polygon; }
 
-bool StaticObject::handleCollisionWith(PhysicalObject &, const glm::vec2 &) { return true; }
+void StaticObject::handleCollisionWith(PhysicalObject &, const glm::vec2 &) {}
 } // namespace GameEngine
