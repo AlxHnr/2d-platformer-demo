@@ -36,7 +36,7 @@ void GameCharacter::update() {
     velocity += acceleration_vector * horizontal_speed;
   }
 
-  /* Apply gravity perpendicular to current slope. */
+  /* Apply gravity orthogonal to current slope. */
   const float gravity = 0.5;
   const glm::vec2 down{-right_direction.y, right_direction.x};
   if (is_touching_ceiling) {

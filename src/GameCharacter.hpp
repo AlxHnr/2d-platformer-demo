@@ -36,7 +36,7 @@ public:
   bool isTouchingGround() const;
   bool isTouchingWall() const;
 
-  /** @return Right direction perpendicular to the slope of the ground on which this object stands.
+  /** @return Right direction orthogonal to the slope of the ground on which this object stands.
    * Will contain the X axis if the object is falling. */
   const glm::vec2 getRightDirection() const;
 
