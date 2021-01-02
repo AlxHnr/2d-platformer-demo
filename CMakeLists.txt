@@ -52,7 +52,7 @@ add_executable(Demo
   src/GameCharacter.cpp
   src/Game.cpp
   src/Main.cpp
-  src/StaticObject.cpp
+  src/Physics/StaticObject.cpp
 )
 target_link_libraries(Demo GameEngine)
 add_custom_target(run COMMAND Demo)

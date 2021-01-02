@@ -4,7 +4,7 @@
 
 #include "StaticObject.hpp"
 
-namespace GameEngine {
+namespace GameEngine::Physics {
 StaticObject::StaticObject(std::initializer_list<glm::vec2> vertices)
     : bounding_polygon{vertices} {}
 
@@ -17,4 +17,4 @@ void StaticObject::addVelocityOffset(const glm::vec2 &) { return; }
 const ConvexBoundingPolygon &StaticObject::getBoundingPolygon() const { return bounding_polygon; }
 
 void StaticObject::handleCollisionWith(Physics::Object &, const glm::vec2 &) {}
-} // namespace GameEngine
+} // namespace GameEngine::Physics

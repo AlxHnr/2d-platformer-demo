@@ -2,16 +2,15 @@
  * Contains a class representing static world geometry.
  */
 
-#ifndef GAME_ENGINE_SRC_STATIC_OBJECT_HPP
-#define GAME_ENGINE_SRC_STATIC_OBJECT_HPP
+#ifndef GAME_ENGINE_SRC_PHYSICS_STATIC_OBJECT_HPP
+#define GAME_ENGINE_SRC_PHYSICS_STATIC_OBJECT_HPP
 
-#include "ConvexBoundingPolygon.hpp"
 #include "Physics/Object.hpp"
 #include <glm/vec2.hpp>
 #include <utility>
 
-namespace GameEngine {
-/** Static object making up the wolds geometry. */
+namespace GameEngine::Physics {
+/** Solid non-interactive geometric object making up the game world. */
 class StaticObject : public Physics::Object {
 public:
   /** Construct a solid object from the given vertices.
@@ -31,6 +30,6 @@ private:
   glm::vec2 velocity{};
   ConvexBoundingPolygon bounding_polygon;
 };
-} // namespace GameEngine
+} // namespace GameEngine::Physics
 
 #endif

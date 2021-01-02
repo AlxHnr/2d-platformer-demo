@@ -3,7 +3,7 @@
  */
 
 #include "Game.hpp"
-#include "StaticObject.hpp"
+#include "Physics/StaticObject.hpp"
 #include <glm/gtc/constants.hpp>
 #include <glm/gtx/projection.hpp>
 #include <glm/gtx/rotate_vector.hpp>
@@ -29,8 +29,8 @@ std::unique_ptr<T> makeBox(const glm::vec2 &center, const float width, const flo
       box_center + box_half_width + box_half_height});
 }
 
-std::unique_ptr<StaticObject> makeStaticObject(std::initializer_list<glm::vec2> vertices) {
-  return std::make_unique<StaticObject>(vertices);
+std::unique_ptr<Physics::StaticObject> makeStaticObject(std::initializer_list<glm::vec2> vertices) {
+  return std::make_unique<Physics::StaticObject>(vertices);
 }
 
 /* Represents an object which may require processing the velocity in multiple substeps for fast
@@ -86,7 +86,7 @@ Game::Game() {
   objects.push_back(makeStaticObject({{1270, 10}, {1270, 780}})); /* Right wall. */
   objects.push_back(makeStaticObject({{10, 780}, {1270, 780}}));  /* Floor. */
 
-  objects.push_back(makeBox<StaticObject>({945, 780}, 150, 150));
+  objects.push_back(makeBox<Physics::StaticObject>({945, 780}, 150, 150));
   for (size_t index = 0; index < 24; ++index) {
     const float width = 15;
     objects.push_back(makeStaticObject({{745 + width * index, 320}, {745 + width * index, 325}}));
