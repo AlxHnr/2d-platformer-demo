@@ -9,10 +9,10 @@
 #include <glm/gtx/vector_angle.hpp>
 
 namespace GameEngine {
-GameCharacter::GameCharacter(std::initializer_list<glm::vec2> vertices)
+DynamicObject::DynamicObject(std::initializer_list<glm::vec2> vertices)
     : bounding_polygon{vertices} {}
 
-void GameCharacter::update() {
+void DynamicObject::update() {
   current_tick++;
 
   const auto right_direction = getRightDirection();
@@ -24,10 +24,10 @@ void GameCharacter::update() {
   }
 
   const auto acceleration_vector =
-      acceleration_direction == GameCharacter::HorizontalDirection::Left ? -right_direction
+      acceleration_direction == DynamicObject::HorizontalDirection::Left ? -right_direction
                                                                          : right_direction;
   const bool accelerating_in_moving_direction = glm::dot(velocity, acceleration_vector) > 0;
-  if (acceleration_direction == GameCharacter::HorizontalDirection::None) {
+  if (acceleration_direction == DynamicObject::HorizontalDirection::None) {
     const glm::vec2 friction_factor{0.95, 1};
     velocity *= friction_factor;
   } else if (!accelerating_in_moving_direction ||
@@ -63,15 +63,15 @@ void GameCharacter::update() {
   is_touching_ceiling = false;
 }
 
-const glm::vec2 &GameCharacter::getVelocity() const { return velocity; }
+const glm::vec2 &DynamicObject::getVelocity() const { return velocity; }
 
-void GameCharacter::addVelocityOffset(const glm::vec2 &offset) {
+void DynamicObject::addVelocityOffset(const glm::vec2 &offset) {
   bounding_polygon.setPosition(bounding_polygon.getPosition() + offset);
 }
 
-const ConvexBoundingPolygon &GameCharacter::getBoundingPolygon() const { return bounding_polygon; }
+const ConvexBoundingPolygon &DynamicObject::getBoundingPolygon() const { return bounding_polygon; }
 
-void GameCharacter::handleCollisionWith(Physics::Object &, const glm::vec2 &displacement_vector) {
+void DynamicObject::handleCollisionWith(Physics::Object &, const glm::vec2 &displacement_vector) {
   addVelocityOffset(displacement_vector);
 
   if (glm::abs(displacement_vector.x) < glm::abs(displacement_vector.y)) {
@@ -95,19 +95,19 @@ void GameCharacter::handleCollisionWith(Physics::Object &, const glm::vec2 &disp
   }
 }
 
-void GameCharacter::jump() { tick_of_jump_request = current_tick; }
+void DynamicObject::jump() { tick_of_jump_request = current_tick; }
 
-void GameCharacter::accelerate(const GameCharacter::HorizontalDirection direction) {
+void DynamicObject::accelerate(const DynamicObject::HorizontalDirection direction) {
   acceleration_direction = direction;
 }
 
-bool GameCharacter::isTouchingGround() const { return ground_normal.has_value(); }
+bool DynamicObject::isTouchingGround() const { return ground_normal.has_value(); }
 
-bool GameCharacter::isTouchingWall() const {
+bool DynamicObject::isTouchingWall() const {
   return current_sticky_wall_direction != HorizontalDirection::None;
 }
 
-const glm::vec2 GameCharacter::getRightDirection() const {
+const glm::vec2 DynamicObject::getRightDirection() const {
   if (!ground_normal.has_value()) {
     /* Fall back to X axis. */
     return {1, 0};
@@ -115,5 +115,5 @@ const glm::vec2 GameCharacter::getRightDirection() const {
   return {-ground_normal->y, ground_normal->x};
 }
 
-bool GameCharacter::jumpScheduled() const { return current_tick - tick_of_jump_request < 6; }
+bool DynamicObject::jumpScheduled() const { return current_tick - tick_of_jump_request < 6; }
 } // namespace GameEngine

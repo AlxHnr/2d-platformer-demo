@@ -16,8 +16,8 @@ class Game {
 public:
   Game();
 
-  GameCharacter &getGameCharacter();
-  const GameCharacter &getGameCharacter() const;
+  DynamicObject &getGameCharacter();
+  const DynamicObject &getGameCharacter() const;
   void integratePhysics();
   void render(SDL_Renderer *renderer) const;
 

@@ -63,11 +63,11 @@ int main() {
     }
 
     if (buttons[SDL_SCANCODE_LEFT]) {
-      game.getGameCharacter().accelerate(GameCharacter::HorizontalDirection::Left);
+      game.getGameCharacter().accelerate(DynamicObject::HorizontalDirection::Left);
     } else if (buttons[SDL_SCANCODE_RIGHT]) {
-      game.getGameCharacter().accelerate(GameCharacter::HorizontalDirection::Right);
+      game.getGameCharacter().accelerate(DynamicObject::HorizontalDirection::Right);
     } else {
-      game.getGameCharacter().accelerate(GameCharacter::HorizontalDirection::None);
+      game.getGameCharacter().accelerate(DynamicObject::HorizontalDirection::None);
     }
 
     game.integratePhysics();

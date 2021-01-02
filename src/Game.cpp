@@ -79,7 +79,7 @@ bool processObject(UnprocessedObject &unprocessed_object,
 
 namespace GameEngine {
 Game::Game() {
-  objects.push_back(makeBox<GameCharacter>({65, 305}, 40, 40));
+  objects.push_back(makeBox<DynamicObject>({65, 305}, 40, 40));
 
   objects.push_back(makeStaticObject({{10, 10}, {1270, 10}}));    /* Ceiling. */
   objects.push_back(makeStaticObject({{10, 10}, {10, 780}}));     /* Left wall. */
@@ -99,12 +99,12 @@ Game::Game() {
   objects.push_back(makeStaticObject({{1150, 780}, {1270, 780}, {1270, 470}})); /* Steep ramp. */
 }
 
-GameCharacter &Game::getGameCharacter() {
-  return *dynamic_cast<GameCharacter *>(objects.front().get());
+DynamicObject &Game::getGameCharacter() {
+  return *dynamic_cast<DynamicObject *>(objects.front().get());
 }
 
-const GameCharacter &Game::getGameCharacter() const {
-  return *dynamic_cast<GameCharacter *>(objects.front().get());
+const DynamicObject &Game::getGameCharacter() const {
+  return *dynamic_cast<DynamicObject *>(objects.front().get());
 }
 
 void Game::integratePhysics() {

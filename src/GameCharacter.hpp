@@ -1,27 +1,25 @@
 /** @file
- * Contains an interactive character which can run, jump and fall.
+ * Contains a physical object subject to gravity and horizontal acceleration.
  */
 
 #ifndef GAME_ENGINE_SRC_GAME_CHARACTER_HPP
 #define GAME_ENGINE_SRC_GAME_CHARACTER_HPP
 
-#include "ConvexBoundingPolygon.hpp"
 #include "Physics/Object.hpp"
 #include <glm/vec2.hpp>
 #include <optional>
 
 namespace GameEngine {
-/** Interactive character which can run, jump and fall. */
-class GameCharacter : public Physics::Object {
+/** Interactive object subject to gravity and horizontal acceleration. */
+class DynamicObject : public Physics::Object {
 public:
-  /** Construct a Polygon from the given vertices.
+  /** Construct a dynamic object with the boundaries of the given polygon.
    *
    * @param vertices Zero or more points representing a convex polygon. If no points are provided,
    * it will behave like a non-existing dummy.
    */
-  GameCharacter(std::initializer_list<glm::vec2> vertices);
+  DynamicObject(std::initializer_list<glm::vec2> vertices);
 
-  /* PhysicalObject functions. */
   void update() override;
   const glm::vec2 &getVelocity() const override;
   virtual void addVelocityOffset(const glm::vec2 &offset) override;
