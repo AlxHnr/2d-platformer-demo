@@ -49,9 +49,9 @@ target_link_libraries(Test GameEngine doctest)
 add_custom_target(test COMMAND Test)
 
 add_executable(Demo
-  src/GameCharacter.cpp
   src/Game.cpp
   src/Main.cpp
+  src/Physics/DynamicObject.cpp
   src/Physics/StaticObject.cpp
 )
 target_link_libraries(Demo GameEngine)

@@ -2,14 +2,14 @@
  * Contains a physical object subject to gravity and horizontal acceleration.
  */
 
-#ifndef GAME_ENGINE_SRC_GAME_CHARACTER_HPP
-#define GAME_ENGINE_SRC_GAME_CHARACTER_HPP
+#ifndef GAME_ENGINE_SRC_PHYSICS_DYNAMIC_OBJECT_HPP
+#define GAME_ENGINE_SRC_PHYSICS_DYNAMIC_OBJECT_HPP
 
 #include "Physics/Object.hpp"
 #include <glm/vec2.hpp>
 #include <optional>
 
-namespace GameEngine {
+namespace GameEngine::Physics {
 /** Interactive object subject to gravity and horizontal acceleration. */
 class DynamicObject : public Physics::Object {
 public:
@@ -58,6 +58,6 @@ private:
 
   bool is_touching_ceiling = false;
 };
-} // namespace GameEngine
+} // namespace GameEngine::Physics
 
 #endif

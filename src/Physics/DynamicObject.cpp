@@ -2,13 +2,13 @@
  * Implements an interactive character which can run, jump and fall.
  */
 
-#include "GameCharacter.hpp"
+#include "DynamicObject.hpp"
 #include <glm/common.hpp>
 #include <glm/gtx/projection.hpp>
 #include <glm/gtx/rotate_vector.hpp>
 #include <glm/gtx/vector_angle.hpp>
 
-namespace GameEngine {
+namespace GameEngine::Physics {
 DynamicObject::DynamicObject(std::initializer_list<glm::vec2> vertices)
     : bounding_polygon{vertices} {}
 
@@ -116,4 +116,4 @@ const glm::vec2 DynamicObject::getRightDirection() const {
 }
 
 bool DynamicObject::jumpScheduled() const { return current_tick - tick_of_jump_request < 6; }
-} // namespace GameEngine
+} // namespace GameEngine::Physics
