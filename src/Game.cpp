@@ -36,7 +36,7 @@ std::unique_ptr<StaticObject> makeStaticObject(std::initializer_list<glm::vec2> 
 /* Represents an object which may require processing the velocity in multiple substeps for fast
  * objects. */
 struct UnprocessedObject {
-  PhysicalObject *object;
+  Physics::Object *object;
   glm::vec2 direction;
   float remaining_velocity_length;
 };
@@ -53,7 +53,7 @@ const float velocity_length_per_step = 3.5;
  * remaining.
  */
 bool processObject(UnprocessedObject &unprocessed_object,
-                   nonstd::span<const std::unique_ptr<PhysicalObject>> objects) {
+                   nonstd::span<const std::unique_ptr<Physics::Object>> objects) {
   const auto length_of_this_step =
       glm::min(unprocessed_object.remaining_velocity_length, velocity_length_per_step);
   unprocessed_object.object->addVelocityOffset(unprocessed_object.direction * length_of_this_step);

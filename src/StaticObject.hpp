@@ -6,13 +6,13 @@
 #define GAME_ENGINE_SRC_STATIC_OBJECT_HPP
 
 #include "ConvexBoundingPolygon.hpp"
-#include "PhysicalObject.hpp"
+#include "Physics/Object.hpp"
 #include <glm/vec2.hpp>
 #include <utility>
 
 namespace GameEngine {
 /** Static object making up the wolds geometry. */
-class StaticObject : public PhysicalObject {
+class StaticObject : public Physics::Object {
 public:
   /** Construct a solid object from the given vertices.
    *
@@ -25,7 +25,7 @@ public:
   const glm::vec2 &getVelocity() const override;
   virtual void addVelocityOffset(const glm::vec2 &) override;
   const ConvexBoundingPolygon &getBoundingPolygon() const override;
-  void handleCollisionWith(PhysicalObject &, const glm::vec2 &) override;
+  void handleCollisionWith(Physics::Object &, const glm::vec2 &) override;
 
 private:
   glm::vec2 velocity{};

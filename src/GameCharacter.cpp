@@ -71,7 +71,7 @@ void GameCharacter::addVelocityOffset(const glm::vec2 &offset) {
 
 const ConvexBoundingPolygon &GameCharacter::getBoundingPolygon() const { return bounding_polygon; }
 
-void GameCharacter::handleCollisionWith(PhysicalObject &, const glm::vec2 &displacement_vector) {
+void GameCharacter::handleCollisionWith(Physics::Object &, const glm::vec2 &displacement_vector) {
   addVelocityOffset(displacement_vector);
 
   if (glm::abs(displacement_vector.x) < glm::abs(displacement_vector.y)) {
