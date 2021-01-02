@@ -115,10 +115,15 @@ void Game::integratePhysics() {
   std::vector<UnprocessedObject> unprocessed_objects{};
 
   for (const auto &object : objects) {
-    UnprocessedObject unprocessed_object{
-        object.get(), glm::normalize(object->getVelocity()),
-        glm::min(glm::length(object->getVelocity()), max_velocity_length)};
+    const auto remaining_velocity_length =
+        glm::min(glm::length(object->getVelocity()), max_velocity_length);
 
+    /* Prevent normalizing vector with zero length. */
+    const auto direction = remaining_velocity_length > glm::epsilon<float>()
+                               ? glm::normalize(object->getVelocity())
+                               : glm::vec2{};
+
+    UnprocessedObject unprocessed_object{object.get(), direction, remaining_velocity_length};
     if (!processObject(unprocessed_object, objects)) {
       unprocessed_objects.push_back(unprocessed_object);
     }
