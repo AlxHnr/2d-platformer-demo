@@ -36,7 +36,7 @@ public:
 
   /** @return Right direction orthogonal to the slope of the ground on which this object stands.
    * Will contain the X axis if the object is falling. */
-  const glm::vec2 getRightDirection() const;
+  glm::vec2 getRightDirection() const;
 
 private:
   ConvexBoundingPolygon bounding_polygon;

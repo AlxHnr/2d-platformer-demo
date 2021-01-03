@@ -6,13 +6,10 @@
 #include <SDL_assert.h>
 #include <glm/gtc/constants.hpp>
 #include <glm/gtx/rotate_vector.hpp>
-#include <nonstd/span.hpp>
 #include <numeric>
 
 namespace {
-using Vertices = nonstd::span<const glm::vec2>;
-
-glm::vec2 computeCenter(Vertices polygon) {
+glm::vec2 computeCenter(const std::vector<glm::vec2> &polygon) {
   return std::accumulate(polygon.cbegin(), polygon.cend(), glm::vec2{}) /
          static_cast<float>(polygon.size());
 }
@@ -24,7 +21,7 @@ glm::vec2 computeCenter(Vertices polygon) {
  * @return Amount of edges in the given polygon. E.g. a triangle with 3 points has 3 edges. A line
  * with 2 points has one edge.
  */
-size_t countEdges(nonstd::span<const glm::vec2> polygon) {
+size_t countEdges(const std::vector<glm::vec2> &polygon) {
   if (polygon.size() < 2) {
     return 0;
   }
@@ -41,7 +38,7 @@ size_t countEdges(nonstd::span<const glm::vec2> polygon) {
  *
  * @return [start, end] positions of the polygons nth edge.
  */
-std::pair<glm::vec2, glm::vec2> getEdge(nonstd::span<const glm::vec2> polygon,
+std::pair<glm::vec2, glm::vec2> getEdge(const std::vector<glm::vec2> &polygon,
                                         const size_t edge_index) {
   if (edge_index == polygon.size() - 1) {
     return {polygon.back(), polygon.front()};
@@ -50,7 +47,7 @@ std::pair<glm::vec2, glm::vec2> getEdge(nonstd::span<const glm::vec2> polygon,
 }
 
 /** @return Normal vector orthogonal to the polygons nth edge. */
-glm::vec2 getEdgeNormal(Vertices polygon, const size_t edge_index) {
+glm::vec2 getEdgeNormal(const std::vector<glm::vec2> &polygon, const size_t edge_index) {
   const auto [start, end] = getEdge(polygon, edge_index);
   return glm::normalize(glm::vec2{start.y - end.y, end.x - start.x});
 }
@@ -62,7 +59,8 @@ struct ProjectedVertices {
   float max;      /**< Largest projected value. */
 };
 
-ProjectedVertices projectVerticesOntoAxis(Vertices polygon, const glm::vec2 &axis) {
+ProjectedVertices projectVerticesOntoAxis(const std::vector<glm::vec2> &polygon,
+                                          const glm::vec2 &axis) {
   const auto first_dot_product = glm::dot(polygon.front(), axis);
   float min = first_dot_product;
   float max = first_dot_product;
@@ -77,7 +75,8 @@ ProjectedVertices projectVerticesOntoAxis(Vertices polygon, const glm::vec2 &axi
 
 /** @return Overlap found while projecting the given polygons onto the specified axis. Will be < 0
  * if no overlap exists. */
-float getProjectionOverlap(Vertices a, Vertices b, const glm::vec2 &axis) {
+float getProjectionOverlap(const std::vector<glm::vec2> &a, const std::vector<glm::vec2> &b,
+                           const glm::vec2 &axis) {
   const auto a_projected = projectVerticesOntoAxis(a, axis);
   const auto b_projected = projectVerticesOntoAxis(b, axis);
   return glm::min(b_projected.max - a_projected.min, a_projected.max - b_projected.min);
@@ -91,7 +90,8 @@ struct DisplacementVector {
 
 /** @return Smallest displacement vector (MTV) for moving polygon a out of polygon b. Will return
  * nothing if no collision occurred. */
-std::optional<DisplacementVector> findSmallestDisplacementVector(Vertices a, Vertices b) {
+std::optional<DisplacementVector> findSmallestDisplacementVector(const std::vector<glm::vec2> &a,
+                                                                 const std::vector<glm::vec2> &b) {
   /** Use X axis as direction for polygons with only one vertex. */
   auto direction_of_smallest_overlap = a.size() == 1 ? glm::vec2{1, 0} : getEdgeNormal(a, 0);
   auto smallest_overlap = getProjectionOverlap(a, b, direction_of_smallest_overlap);
@@ -134,7 +134,7 @@ void ConvexBoundingPolygon::setPosition(const glm::vec2 &position) {
 
 float ConvexBoundingPolygon::getOrientation() const { return orientation; }
 
-void ConvexBoundingPolygon::setOrientation(float orientation) {
+void ConvexBoundingPolygon::setOrientation(const float orientation) {
   this->orientation = glm::mod(orientation, glm::two_pi<float>());
   recomputeBoundingPolygon();
 }

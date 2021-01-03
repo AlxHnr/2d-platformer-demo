@@ -108,7 +108,7 @@ bool DynamicObject::isTouchingWall() const {
   return current_sticky_wall_direction != HorizontalDirection::None;
 }
 
-const glm::vec2 DynamicObject::getRightDirection() const {
+glm::vec2 DynamicObject::getRightDirection() const {
   if (!ground_normal.has_value()) {
     /* Fall back to X axis. */
     return {1, 0};

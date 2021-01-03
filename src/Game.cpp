@@ -7,7 +7,6 @@
 #include <glm/gtc/constants.hpp>
 #include <glm/gtx/projection.hpp>
 #include <glm/gtx/rotate_vector.hpp>
-#include <nonstd/span.hpp>
 
 namespace {
 using namespace GameEngine;
@@ -33,8 +32,7 @@ std::unique_ptr<Physics::StaticObject> makeStaticObject(std::initializer_list<gl
   return std::make_unique<Physics::StaticObject>(vertices);
 }
 
-/* Represents an object which may require processing the velocity in multiple substeps for fast
- * objects. */
+/* Fast object which may require processing the velocity in multiple substeps. */
 struct UnprocessedObject {
   Physics::Object *object;
   glm::vec2 direction;
@@ -53,7 +51,7 @@ const float velocity_length_per_step = 3.5;
  * remaining.
  */
 bool processObject(UnprocessedObject &unprocessed_object,
-                   nonstd::span<const std::unique_ptr<Physics::Object>> objects) {
+                   const std::vector<std::unique_ptr<Physics::Object>> &objects) {
   const auto length_of_this_step =
       glm::min(unprocessed_object.remaining_velocity_length, velocity_length_per_step);
   unprocessed_object.object->addVelocityOffset(unprocessed_object.direction * length_of_this_step);

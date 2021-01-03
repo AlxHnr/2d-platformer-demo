@@ -7,7 +7,7 @@
 
 #include <SDL_assert.h>
 
-int main(const int arg_count, char **args) {
+int main(const int arg_count, const char *const *const args) {
   SDL_SetAssertionHandler(
       [](const SDL_AssertData *data, void *) -> SDL_AssertState {
         const auto message = std::string{"Assertion failed: "} + data->condition + ": " +
