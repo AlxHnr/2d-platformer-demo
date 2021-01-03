@@ -14,6 +14,10 @@ if(NOT EXISTS "${CMAKE_BINARY_DIR}/CPM.cmake")
 endif()
 include(${CMAKE_BINARY_DIR}/CPM.cmake)
 
+CPMAddPackage(NAME doctest VERSION 2.4.4
+  URL https://github.com/onqtam/doctest/archive/2.4.4.tar.gz
+  URL_HASH SHA256=3bcb62ad316bf4230873a336fcc6eb6292116568a6e19ab8cdd37a1610773d70)
+
 CPMAddPackage(NAME glm VERSION 0.9.9.8
   URL https://github.com/g-truc/glm/releases/download/0.9.9.8/glm-0.9.9.8.zip
   URL_HASH SHA256=37e2a3d62ea3322e43593c34bae29f57e3e251ea89f4067506c94043769ade4c)
@@ -25,10 +29,6 @@ CPMAddPackage(NAME SDL2 VERSION 2.0.14
 CPMAddPackage(NAME span-lite VERSION 0.9.0
   URL https://github.com/martinmoene/span-lite/archive/v0.9.0.tar.gz
   URL_HASH SHA256=cdb5f86e5f5e679d63700a56de734c44fe22a574a17347d09dbaaef80619af91)
-
-CPMAddPackage(NAME doctest VERSION 2.4.4
-  URL https://github.com/onqtam/doctest/archive/2.4.4.tar.gz
-  URL_HASH SHA256=3bcb62ad316bf4230873a336fcc6eb6292116568a6e19ab8cdd37a1610773d70)
 
 add_library(GameEngine
   src/ConvexBoundingPolygon.cpp
