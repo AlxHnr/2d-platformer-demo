@@ -2,7 +2,7 @@
  * Implements a class representing static world geometry.
  */
 
-#include "StaticObject.hpp"
+#include "Physics/StaticObject.hpp"
 
 namespace GameEngine::Physics {
 StaticObject::StaticObject(std::initializer_list<glm::vec2> vertices)

@@ -2,7 +2,7 @@
  * Implements an interactive character which can run, jump and fall.
  */
 
-#include "DynamicObject.hpp"
+#include "Physics/DynamicObject.hpp"
 #include <glm/common.hpp>
 #include <glm/gtx/projection.hpp>
 #include <glm/gtx/rotate_vector.hpp>

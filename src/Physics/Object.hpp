@@ -5,7 +5,7 @@
 #ifndef GAME_ENGINE_SRC_PHYSICS_OBJECT_HPP
 #define GAME_ENGINE_SRC_PHYSICS_OBJECT_HPP
 
-#include "../ConvexBoundingPolygon.hpp"
+#include "ConvexBoundingPolygon.hpp"
 #include <glm/vec2.hpp>
 
 namespace GameEngine::Physics {
