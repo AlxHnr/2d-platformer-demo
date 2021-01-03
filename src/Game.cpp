@@ -40,7 +40,7 @@ struct UnprocessedObject {
 };
 
 const float max_velocity_length = 50;
-const float velocity_length_per_step = 3.5;
+const float velocity_substep_length = 3.5;
 
 /** Apply a single velocity/collision substep to the given object.
  *
@@ -53,7 +53,7 @@ const float velocity_length_per_step = 3.5;
 bool processObject(UnprocessedObject &unprocessed_object,
                    const std::vector<std::unique_ptr<Physics::Object>> &objects) {
   const auto length_of_this_step =
-      glm::min(unprocessed_object.remaining_velocity_length, velocity_length_per_step);
+      glm::min(unprocessed_object.remaining_velocity_length, velocity_substep_length);
   unprocessed_object.object->addVelocityOffset(unprocessed_object.direction * length_of_this_step);
 
   for (const auto &other_object : objects) {
