@@ -22,6 +22,9 @@ void DynamicObject::update() {
       glm::angle(*ground_normal, glm::normalize(velocity)) > glm::half_pi<float>()) {
     velocity = glm::proj(velocity, right_direction);
   }
+  if (is_touching_ceiling) {
+    velocity.y = glm::max(velocity.y, 0.0f);
+  }
 
   const auto acceleration_vector =
       acceleration_direction == DynamicObject::HorizontalDirection::Left ? -right_direction
@@ -39,22 +42,20 @@ void DynamicObject::update() {
   /* Apply gravity orthogonal to current slope. */
   const float gravity = 0.5;
   const glm::vec2 down{-right_direction.y, right_direction.x};
-  if (is_touching_ceiling) {
-    velocity.y = glm::max(velocity.y, 0.0f);
-  }
   velocity += down * gravity;
 
   if (jumpScheduled()) {
+    const float jump_power = 15;
     if (ground_normal.has_value()) {
       tick_of_jump_request = 0;
-      velocity.y -= 15;
+      velocity.y -= jump_power;
     } else if (current_sticky_wall_direction != HorizontalDirection::None) {
       tick_of_jump_request = 0;
       const auto inversion_factor =
           current_sticky_wall_direction == HorizontalDirection::Left ? 1 : -1;
       const glm::vec2 next_jump_direction = {
           glm::rotate(glm::vec2{0, -1}, glm::radians(45.0f)).x * inversion_factor, -1};
-      velocity = next_jump_direction * 15.0f;
+      velocity = next_jump_direction * jump_power;
     }
   }
 
@@ -81,7 +82,7 @@ void DynamicObject::handleCollisionWith(Physics::Object &, const glm::vec2 &disp
 
     if (object_below_character) {
       ground_normal = glm::normalize(displacement_vector);
-    } else if (!character_falls && !object_below_character) {
+    } else if (!character_falls) {
       is_touching_ceiling = true;
     }
   } else {
@@ -115,5 +116,8 @@ const glm::vec2 DynamicObject::getRightDirection() const {
   return {-ground_normal->y, ground_normal->x};
 }
 
-bool DynamicObject::jumpScheduled() const { return current_tick - tick_of_jump_request < 6; }
+bool DynamicObject::jumpScheduled() const {
+  const auto ticks_tolerance = 6;
+  return current_tick - tick_of_jump_request < ticks_tolerance;
+}
 } // namespace GameEngine::Physics

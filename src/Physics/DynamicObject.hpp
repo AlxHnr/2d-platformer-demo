@@ -44,18 +44,26 @@ private:
   /** Speed * direction of this object. */
   glm::vec2 velocity{0.0f, 0.0f};
 
+  /** Counts each update() call. Set to 1000 ticks in the future to allow tick_of_jump_request to be
+   * (re)set to 0. */
   uint32_t current_tick = 1000;
+
+  /** Tick at which jump() was called. Allows pressing the jump button slightly before the ground or
+   * wall is touched. */
   uint32_t tick_of_jump_request = 0;
 
   bool jumpScheduled() const;
 
   HorizontalDirection acceleration_direction = HorizontalDirection::None;
 
-  /** Contains the normal of the ground if the character is standing on it. */
+  /** Contains the normal of the ground if the object is standing on it. */
   std::optional<glm::vec2> ground_normal{};
 
+  /** Contains the direction to the wall if the object is touching it. Required for proper wall
+   * jumps. */
   HorizontalDirection current_sticky_wall_direction{};
 
+  /** True if the object is jumping up into an object. */
   bool is_touching_ceiling = false;
 };
 } // namespace GameEngine::Physics
