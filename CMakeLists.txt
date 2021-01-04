@@ -32,6 +32,9 @@ CPMAddPackage(NAME span-lite VERSION 0.9.0
 
 add_library(GameEngine
   src/ConvexBoundingPolygon.cpp
+  src/Physics/DynamicObject.cpp
+  src/Physics/Integrator.cpp
+  src/Physics/StaticObject.cpp
   src/SDL2/Error.cpp
 )
 if(GAME_ENGINE_CXX_FLAGS)
@@ -51,8 +54,6 @@ add_custom_target(test COMMAND Test)
 add_executable(Demo
   src/Game.cpp
   src/Main.cpp
-  src/Physics/DynamicObject.cpp
-  src/Physics/StaticObject.cpp
 )
 target_link_libraries(Demo GameEngine)
 add_custom_target(run COMMAND Demo)

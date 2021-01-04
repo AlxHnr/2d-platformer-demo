@@ -6,6 +6,7 @@
 #define GAME_ENGINE_SRC_GAME_HPP
 
 #include "Physics/DynamicObject.hpp"
+#include "Physics/Integrator.hpp"
 #include "Physics/Object.hpp"
 #include <SDL_render.h>
 #include <memory>
@@ -22,6 +23,7 @@ public:
   void render(SDL_Renderer *renderer) const;
 
 private:
+  Physics::Integrator integrator;
   std::vector<std::unique_ptr<Physics::Object>> objects;
 };
 } // namespace GameEngine
