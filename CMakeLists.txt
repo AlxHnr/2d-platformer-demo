@@ -30,6 +30,10 @@ CPMAddPackage(NAME span-lite VERSION 0.9.0
   URL https://github.com/martinmoene/span-lite/archive/v0.9.0.tar.gz
   URL_HASH SHA256=cdb5f86e5f5e679d63700a56de734c44fe22a574a17347d09dbaaef80619af91)
 
+CPMAddPackage(NAME trompeloeil VERSION 39
+  URL https://github.com/rollbear/trompeloeil/archive/v39.tar.gz
+  URL_HASH SHA256=10506e48abd605740bc9ed43e34059f5068bc80af14476bd129a3ed3b54d522f)
+
 add_library(GameEngine
   src/ConvexBoundingPolygon.cpp
   src/Physics/DynamicObject.cpp
@@ -48,7 +52,7 @@ add_executable(Test
   test/ConvexBoundingPolygon.cpp
   test/Main.cpp
 )
-target_link_libraries(Test GameEngine doctest)
+target_link_libraries(Test GameEngine doctest trompeloeil)
 add_custom_target(test COMMAND Test)
 
 add_executable(Demo
