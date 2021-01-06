@@ -8,14 +8,23 @@
 #include <glm/gtx/rotate_vector.hpp>
 
 namespace {
+using namespace std::chrono_literals;
 using namespace GameEngine::Physics;
 
 /** Maximal total length of velocity vector applicable per tick. */
-const float velocity_length_max = 50;
+constexpr float velocity_length_max = 50;
 
 /** Maximal length of velocity vector applied per substep. For each tick the velocity vector is
  * divided into substeps to prevent objects from clipping/tunneling trough walls. */
-const float velocity_length_substep = 3.5;
+constexpr float velocity_length_substep = 3.5;
+
+constexpr auto ticks_per_second = 60;
+
+constexpr auto tick_duration = std::chrono::microseconds{1s} / ticks_per_second;
+
+/** Prevents the integrator from locking up by spending too much time compensating for low
+ * framerates. */
+constexpr auto integration_time_max = tick_duration * 10;
 
 /* Represents an object during a substep. */
 struct UnprocessedObject {
@@ -55,10 +64,8 @@ bool processObject(UnprocessedObject &unprocessed_object,
   unprocessed_object.remaining_velocity_length -= length_of_this_step;
   return unprocessed_object.remaining_velocity_length < glm::epsilon<float>();
 }
-} // namespace
 
-namespace GameEngine::Physics {
-void Integrator::integrate(const std::vector<std::unique_ptr<Object>> &objects) {
+void applyTick(const std::vector<std::unique_ptr<Object>> &objects) {
   for (const auto &object : objects) {
     object->update();
   }
@@ -87,5 +94,20 @@ void Integrator::integrate(const std::vector<std::unique_ptr<Object>> &objects) 
                                              }),
                               unprocessed_objects.end());
   }
+}
+} // namespace
+
+namespace GameEngine::Physics {
+void Integrator::integrate(const std::chrono::microseconds duration_of_last_frame,
+                           const std::vector<std::unique_ptr<Object>> &objects) {
+  auto unprocessed_time =
+      std::min(duration_of_last_frame + leftover_time_from_last_tick, integration_time_max);
+
+  while (unprocessed_time >= tick_duration) {
+    applyTick(objects);
+    unprocessed_time -= tick_duration;
+  }
+
+  leftover_time_from_last_tick = unprocessed_time;
 }
 } // namespace GameEngine::Physics

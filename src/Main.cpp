@@ -40,7 +40,7 @@ int main() {
 
   bool program_running = true;
   auto [window, renderer] = makeWindowAndRenderer();
-  auto time_delta = 0us;
+  auto duration_of_last_frame = 0us;
   const auto *buttons = SDL_GetKeyboardState(nullptr);
   Game game;
 
@@ -70,7 +70,7 @@ int main() {
       game.getGameCharacter().accelerate(Physics::DynamicObject::HorizontalDirection::None);
     }
 
-    game.integratePhysics();
+    game.integratePhysics(duration_of_last_frame);
 
     SDL_SetRenderDrawColor(renderer.get(), 0, 0, 0, 255);
     SDL_RenderClear(renderer.get());
@@ -79,7 +79,8 @@ int main() {
 
     const auto frame_duration = std::chrono::steady_clock::now() - frame_start_time;
     std::this_thread::sleep_for(std::chrono::microseconds{1s} / 60 - frame_duration);
-    time_delta = std::chrono::duration_cast<std::chrono::microseconds>(
+
+    duration_of_last_frame = std::chrono::duration_cast<std::chrono::microseconds>(
         std::chrono::steady_clock::now() - frame_start_time);
   }
 }

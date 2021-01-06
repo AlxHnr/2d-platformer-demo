@@ -19,7 +19,7 @@ public:
 
   Physics::DynamicObject &getGameCharacter();
   const Physics::DynamicObject &getGameCharacter() const;
-  void integratePhysics();
+  void integratePhysics(std::chrono::microseconds time_since_last_tick);
   void render(SDL_Renderer *renderer) const;
 
 private:

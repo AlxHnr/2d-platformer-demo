@@ -60,7 +60,9 @@ const Physics::DynamicObject &Game::getGameCharacter() const {
   return *dynamic_cast<Physics::DynamicObject *>(objects.front().get());
 }
 
-void Game::integratePhysics() { integrator.integrate(objects); }
+void Game::integratePhysics(const std::chrono::microseconds time_since_last_tick) {
+  integrator.integrate(time_since_last_tick, objects);
+}
 
 void Game::render(SDL_Renderer *renderer) const {
   const auto &game_character = getGameCharacter();
