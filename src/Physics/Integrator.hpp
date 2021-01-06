@@ -25,7 +25,7 @@ public:
                  const std::vector<std::unique_ptr<Object>> &objects);
 
 private:
-  std::chrono::microseconds leftover_time_from_last_tick;
+  std::chrono::microseconds leftover_time_from_last_tick{};
 };
 } // namespace GameEngine::Physics
 
