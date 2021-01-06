@@ -27,11 +27,11 @@ void DynamicObject::update() {
   }
 
   const auto acceleration_vector =
-      acceleration_direction == DynamicObject::HorizontalDirection::Left ? -right_direction
-                                                                         : right_direction;
+      acceleration_direction == HorizontalDirection::Left ? -right_direction : right_direction;
   const bool accelerating_in_moving_direction = glm::dot(velocity, acceleration_vector) > 0;
-  if (acceleration_direction == DynamicObject::HorizontalDirection::None) {
-    const glm::vec2 friction_factor{0.95, 1};
+  if (acceleration_direction == HorizontalDirection::None) {
+    const auto friction_factor =
+        ground_normal.has_value() ? glm::vec2{0.9, 0.9} : glm::vec2{0.95, 1};
     velocity *= friction_factor;
   } else if (!accelerating_in_moving_direction ||
              glm::length(glm::proj(velocity, acceleration_vector)) < 10.0) {
