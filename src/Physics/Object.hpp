@@ -14,10 +14,9 @@ class Object {
 public:
   virtual ~Object() = default;
 
-  /** Update the state of the object for the current tick. This function does not need to apply the
-   * objects velocity to its position, which is done by the physics integrator. Will be called only
-   * once per tick, before all addVelocityStep() and handleCollisionWith() calls.
-   */
+  /** Update the state of the object including its velocity vector. This function should not apply
+   * the velocity. Will be called once at the beginning of each tick. Will be called before
+   * addVelocityStep() and handleCollisionWith().  */
   virtual void update() = 0;
 
   /** @return Current velocity of this object. Will be applied by the physics engine. */
@@ -30,6 +29,7 @@ public:
    */
   virtual void addVelocityOffset(const glm::vec2 &offset) = 0;
 
+  /** @return Boundaries of this object in the game world for collision detection. */
   virtual const ConvexBoundingPolygon &getBoundingPolygon() const = 0;
 
   /** Will be called if a collision occurred. Two objects may collide multiple times during the same

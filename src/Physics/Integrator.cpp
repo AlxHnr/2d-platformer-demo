@@ -10,10 +10,14 @@
 namespace {
 using namespace GameEngine::Physics;
 
-const float max_velocity_length = 50;
-const float velocity_substep_length = 3.5;
+/** Maximal total length of velocity vector applicable per tick. */
+const float velocity_length_max = 50;
 
-/* Fast object which may require processing the velocity in multiple substeps. */
+/** Maximal length of velocity vector applied per substep. For each tick the velocity vector is
+ * divided into substeps to prevent objects from clipping/tunneling trough walls. */
+const float velocity_length_substep = 3.5;
+
+/* Represents an object during a substep. */
 struct UnprocessedObject {
   Object *object;
   glm::vec2 direction;
@@ -31,7 +35,7 @@ struct UnprocessedObject {
 bool processObject(UnprocessedObject &unprocessed_object,
                    const std::vector<std::unique_ptr<Object>> &objects) {
   const auto length_of_this_step =
-      glm::min(unprocessed_object.remaining_velocity_length, velocity_substep_length);
+      glm::min(unprocessed_object.remaining_velocity_length, velocity_length_substep);
   unprocessed_object.object->addVelocityOffset(unprocessed_object.direction * length_of_this_step);
 
   for (const auto &other_object : objects) {
@@ -63,7 +67,7 @@ void Integrator::integrate(const std::vector<std::unique_ptr<Object>> &objects) 
 
   for (const auto &object : objects) {
     const auto remaining_velocity_length =
-        glm::min(glm::length(object->getVelocity()), max_velocity_length);
+        glm::min(glm::length(object->getVelocity()), velocity_length_max);
 
     /* Don't normalize vectors with zero length. */
     const auto direction = remaining_velocity_length > glm::epsilon<float>()
