@@ -51,6 +51,7 @@ target_include_directories(GameEngine PUBLIC src)
 add_executable(Test
   test/ConvexBoundingPolygon.cpp
   test/Main.cpp
+  test/Physics/Integrator.cpp
 )
 target_link_libraries(Test GameEngine doctest trompeloeil)
 add_custom_target(test COMMAND Test)
