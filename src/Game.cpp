@@ -26,6 +26,7 @@ namespace GameEngine {
 Game::Game(const size_t screen_width, const size_t screen_height)
     : camera{screen_width, screen_height} {
   objects.push_back(makeBox<Physics::DynamicObject>({1.625, -7.625}, 1.0, 1.0));
+  camera.setPosition(getGameCharacter().getBoundingPolygon().getPosition());
 
   objects.push_back(makeStaticObject({{0.25, -0.25}, {31.75, -0.25}}));  /* Ceiling. */
   objects.push_back(makeStaticObject({{0.25, -0.25}, {0.25, -19.5}}));   /* Left wall. */
