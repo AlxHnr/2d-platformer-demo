@@ -34,18 +34,18 @@ void DynamicObject::update() {
         ground_normal.has_value() ? glm::vec2{0.9, 0.9} : glm::vec2{0.95, 1};
     velocity *= friction_factor;
   } else if (!accelerating_in_moving_direction ||
-             glm::length(glm::proj(velocity, acceleration_vector)) < 10.0) {
-    const float horizontal_speed = 1;
+             glm::length(glm::proj(velocity, acceleration_vector)) < 0.25) {
+    const float horizontal_speed = 0.025;
     velocity += acceleration_vector * horizontal_speed;
   }
 
   /* Apply gravity orthogonal to current slope. */
-  const float gravity = 0.5;
+  const float gravity = 0.0125;
   const glm::vec2 down{-right_direction.y, right_direction.x};
   velocity += down * gravity;
 
   if (jumpScheduled()) {
-    const float jump_power = 15;
+    const float jump_power = 0.375;
     if (ground_normal.has_value()) {
       tick_of_jump_request = 0;
       velocity.y -= jump_power;

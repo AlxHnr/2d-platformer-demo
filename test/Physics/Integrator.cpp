@@ -91,17 +91,18 @@ TEST_CASE("Physics::Integrator applies velocity properly") {
   ALLOW_CALL(object, getBoundingPolygon()).RETURN(polygon);
 
   SUBCASE("Small velocities are applied in one step") {
-    const glm::vec2 velocity{1.5, 2};
+    const glm::vec2 velocity{0.0375, 0.05};
     ALLOW_CALL(object, getVelocity()).RETURN(velocity);
     REQUIRE_CALL(object, addVelocityOffset(trompeloeil::_))
-        .WITH(_1.x == doctest::Approx(1.5))
-        .WITH(_1.y == doctest::Approx(2));
+        .WITH(_1.x == doctest::Approx(0.0375))
+        .WITH(_1.y == doctest::Approx(0.05));
     Physics::Integrator{}.integrate(17ms, objects);
   }
 
   SUBCASE("Large velocities are divided into multiple substeps") {
-    const glm::vec2 velocity{-8, 7};
-    const auto direction_step = glm::normalize(velocity) * 3.5f;
+    const glm::vec2 velocity{-0.2, 0.175};
+    const auto direction_step = glm::normalize(velocity) * 0.0875f;
+    const auto last_step = glm::mod(velocity, direction_step);
     ALLOW_CALL(object, getVelocity()).RETURN(velocity);
 
     trompeloeil::sequence sequence;
@@ -112,15 +113,16 @@ TEST_CASE("Physics::Integrator applies velocity properly") {
         .TIMES(3);
     REQUIRE_CALL(object, addVelocityOffset(trompeloeil::_))
         .IN_SEQUENCE(sequence)
-        .WITH(_1.x == doctest::Approx(-0.097945)) /* Last remaining substep. */
-        .WITH(_1.y == doctest::Approx(0.085702));
+        .WITH(_1.x == doctest::Approx(last_step.x)) /* Last remaining substep. */
+        .WITH(_1.y == doctest::Approx(last_step.y));
 
     Physics::Integrator{}.integrate(17ms, objects);
   }
 
   SUBCASE("Applicable velocity has a limit per tick") {
-    const glm::vec2 velocity{290, -950};
-    const auto direction_step = glm::normalize(velocity) * 3.5f;
+    const glm::vec2 velocity{7.25, -23.75};
+    const auto direction_step = glm::normalize(velocity) * 0.0875f;
+    const auto last_step = glm::mod(glm::normalize(velocity) * 1.25f, direction_step);
     ALLOW_CALL(object, getVelocity()).RETURN(velocity);
 
     trompeloeil::sequence sequence;
@@ -128,11 +130,11 @@ TEST_CASE("Physics::Integrator applies velocity properly") {
         .IN_SEQUENCE(sequence)
         .WITH(_1.x == doctest::Approx(direction_step.x))
         .WITH(_1.y == doctest::Approx(direction_step.y))
-        .TIMES(static_cast<size_t>(50 / 3.5));
+        .TIMES(static_cast<size_t>(1.25 / 0.0875f));
     REQUIRE_CALL(object, addVelocityOffset(trompeloeil::_))
         .IN_SEQUENCE(sequence)
-        .WITH(_1.x == doctest::Approx(0.291963)) /* Last remaining substep. */
-        .WITH(_1.y == doctest::Approx(-0.956430));
+        .WITH(_1.x == doctest::Approx(last_step.x)) /* Last remaining substep. */
+        .WITH(_1.y == doctest::Approx(last_step.y));
 
     Physics::Integrator{}.integrate(17ms, objects);
   }
@@ -215,7 +217,7 @@ TEST_CASE(
 
   auto &first_object = static_cast<MockObject &>(*objects.front());
   ConvexBoundingPolygon first_polygon{{0, 0}, {0, 1}, {1, 1}, {1, 0}};
-  const glm::vec2 first_velocity{10, 0};
+  const glm::vec2 first_velocity{0.25, 0};
   REQUIRE_CALL(first_object, update());
   ALLOW_CALL(first_object, getVelocity()).RETURN(first_velocity);
   ALLOW_CALL(first_object, addVelocityOffset(trompeloeil::_));
@@ -223,7 +225,7 @@ TEST_CASE(
 
   auto &second_object = static_cast<MockObject &>(*objects.back());
   const ConvexBoundingPolygon second_polygon{{0.5, 0}, {0.5, 1}, {1.5, 1}, {1.5, 0}};
-  const glm::vec2 second_velocity{-7, 0};
+  const glm::vec2 second_velocity{-0.175, 0};
   REQUIRE_CALL(second_object, update());
   ALLOW_CALL(second_object, getVelocity()).RETURN(second_velocity);
   ALLOW_CALL(second_object, addVelocityOffset(trompeloeil::_));

@@ -25,26 +25,27 @@ std::unique_ptr<Physics::StaticObject> makeStaticObject(std::initializer_list<gl
 namespace GameEngine {
 Game::Game(const size_t screen_width, const size_t screen_height)
     : camera{screen_width, screen_height} {
-  camera.setPosition({screen_width / 2, screen_height / 2});
+  objects.push_back(makeBox<Physics::DynamicObject>({1.625, 7.625}, 1.0, 1.0));
 
-  objects.push_back(makeBox<Physics::DynamicObject>({65, 305}, 40, 40));
+  objects.push_back(makeStaticObject({{0.25, 0.25}, {31.75, 0.25}}));  /* Ceiling. */
+  objects.push_back(makeStaticObject({{0.25, 0.25}, {0.25, 19.5}}));   /* Left wall. */
+  objects.push_back(makeStaticObject({{31.75, 0.25}, {31.75, 19.5}})); /* Right wall. */
+  objects.push_back(makeStaticObject({{0.25, 19.5}, {31.75, 19.5}}));  /* Ground. */
 
-  objects.push_back(makeStaticObject({{10, 10}, {1270, 10}}));    /* Ceiling. */
-  objects.push_back(makeStaticObject({{10, 10}, {10, 780}}));     /* Left wall. */
-  objects.push_back(makeStaticObject({{1270, 10}, {1270, 780}})); /* Right wall. */
-  objects.push_back(makeStaticObject({{10, 780}, {1270, 780}}));  /* Ground. */
-
-  objects.push_back(makeBox<Physics::StaticObject>({870, 705}, 150, 150));
+  objects.push_back(makeBox<Physics::StaticObject>({21.75, 17.625}, 3.75, 3.75));
   for (size_t index = 0; index < 24; ++index) {
-    const float width = 15;
-    objects.push_back(makeStaticObject({{745 + width * index, 320}, {745 + width * index, 325}}));
+    const float width = 0.375;
+    objects.push_back(
+        makeStaticObject({{18.625 + width * index, 8.0}, {18.625 + width * index, 8.125}}));
   }
 
-  objects.push_back(makeStaticObject({{450, 780}, {650, 780}, {795, 630}}));    /* Ramp. */
-  objects.push_back(makeStaticObject({{10, 600}, {10, 780}, {340, 780}}));      /* Ramp. */
-  objects.push_back(makeStaticObject({{750, 470}, {790, 520}, {620, 470}}));    /* Plattform. */
-  objects.push_back(makeStaticObject({{550, 320}, {590, 370}, {420, 320}}));    /* Plattform. */
-  objects.push_back(makeStaticObject({{1150, 780}, {1270, 780}, {1270, 470}})); /* Steep ramp. */
+  objects.push_back(makeStaticObject({{11.25, 19.5}, {16.25, 19.5}, {19.875, 15.75}})); /* Ramp. */
+  objects.push_back(makeStaticObject({{0.25, 15.0}, {0.25, 19.5}, {8.5, 19.5}}));       /* Ramp. */
+  objects.push_back(
+      makeStaticObject({{18.75, 11.75}, {19.75, 13.0}, {15.5, 11.75}}));           /* Plattform. */
+  objects.push_back(makeStaticObject({{13.75, 8.0}, {14.75, 9.25}, {10.5, 8.0}})); /* Plattform. */
+  objects.push_back(
+      makeStaticObject({{28.75, 19.5}, {31.75, 19.5}, {31.75, 11.75}})); /* Steep ramp. */
 }
 
 Physics::DynamicObject &Game::getGameCharacter() {
@@ -57,12 +58,12 @@ const Physics::DynamicObject &Game::getGameCharacter() const {
 
 void Game::addStaticBox(const glm::vec2 &screen_position) {
   objects.push_back(
-      makeBox<Physics::StaticObject>(camera.toWorldCoordinate(screen_position), 20, 20));
+      makeBox<Physics::StaticObject>(camera.toWorldCoordinate(screen_position), 0.5, 0.5));
 }
 
 void Game::addDynamicBox(const glm::vec2 &screen_position) {
   objects.push_back(
-      makeBox<Physics::DynamicObject>(camera.toWorldCoordinate(screen_position), 20, 20));
+      makeBox<Physics::DynamicObject>(camera.toWorldCoordinate(screen_position), 0.5, 0.5));
 }
 
 void Game::integratePhysics(const std::chrono::microseconds time_since_last_tick) {
@@ -100,9 +101,9 @@ void Game::render(SDL_Renderer *renderer) const {
   const auto character_position = game_character.getBoundingPolygon().getPosition();
   const auto character_on_screen = camera.toScreenCoordinate(character_position);
   const auto right_direction_on_screen_end =
-      camera.toScreenCoordinate(character_position + game_character.getRightDirection() * 50.0f);
+      camera.toScreenCoordinate(character_position + game_character.getRightDirection());
   const auto velocity_on_screen_end =
-      camera.toScreenCoordinate(character_position + game_character.getVelocity() * 50.0f);
+      camera.toScreenCoordinate(character_position + game_character.getVelocity() * 7.5f);
 
   SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
   SDL_RenderDrawLine(renderer, character_on_screen.x, character_on_screen.y,

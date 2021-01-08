@@ -9,7 +9,8 @@
 #include <glm/vec2.hpp>
 
 namespace GameEngine {
-/** Transforms game world coordinates to screen coordinates. */
+/** Transforms game world coordinates to screen coordinates. The screens aspect ratio will be
+ * considered. E.g. a 16:9 monitor spans 48x27 units in the game world. */
 class Camera {
 public:
   Camera(size_t screen_width, size_t screen_height);
@@ -28,8 +29,12 @@ public:
 
 private:
   glm::vec2 screen_center;
+
+  /** Factor for scaling world coordinates up to screen coordinates. */
+  glm::vec2 world_to_screen_scale;
+
   glm::vec2 position = {0, 0};
-  float scaling_factor = 1;
+  float zoom = 1;
   float orientation = 0;
 };
 } // namespace GameEngine

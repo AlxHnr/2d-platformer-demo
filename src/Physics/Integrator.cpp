@@ -12,11 +12,11 @@ using namespace std::chrono_literals;
 using namespace GameEngine::Physics;
 
 /** Maximal total length of velocity vector applicable per tick. */
-constexpr float velocity_length_max = 50;
+constexpr float velocity_length_max = 1.25;
 
 /** Maximal length of velocity vector applied per substep. For each tick the velocity vector is
  * divided into substeps to prevent objects from clipping/tunneling trough walls. */
-constexpr float velocity_length_substep = 3.5;
+constexpr float velocity_length_substep = 0.0875;
 
 constexpr auto ticks_per_second = 60;
 
