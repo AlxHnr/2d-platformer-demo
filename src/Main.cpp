@@ -17,11 +17,14 @@ using namespace GameEngine;
 using namespace std::chrono_literals;
 
 namespace {
+const size_t screen_width = 1280;
+const size_t screen_height = 800;
+
 /** @return Pair containing [window, renderer]. */
 auto makeWindowAndRenderer() {
   SDL_Window *window = nullptr;
   SDL_Renderer *renderer = nullptr;
-  if (SDL_CreateWindowAndRenderer(1280, 800, 0, &window, &renderer) != 0) {
+  if (SDL_CreateWindowAndRenderer(screen_width, screen_height, 0, &window, &renderer) != 0) {
     SDL2::throwRuntimeError("Failed to create window and renderer");
   }
   return std::pair{SDL2::wrapPointer(window), SDL2::wrapPointer(renderer)};
@@ -42,7 +45,8 @@ int main() {
   auto [window, renderer] = makeWindowAndRenderer();
   auto duration_of_last_frame = 0us;
   const auto *buttons = SDL_GetKeyboardState(nullptr);
-  Game game;
+
+  Game game{screen_width, screen_height};
 
   while (program_running) {
     const auto frame_start_time = std::chrono::steady_clock::now();
@@ -57,7 +61,19 @@ int main() {
         if (event.key.keysym.sym == SDLK_UP) {
           game.getGameCharacter().jump();
         } else if (event.key.keysym.sym == SDLK_r) {
-          game = Game{};
+          game = Game{screen_width, screen_height};
+        }
+      } else if (event.type == SDL_MOUSEBUTTONDOWN) {
+        if (event.button.button == SDL_BUTTON_LEFT) {
+          game.addStaticBox({event.button.x, event.button.y});
+        } else if (event.button.button == SDL_BUTTON_RIGHT) {
+          game.addDynamicBox({event.button.x, event.button.y});
+        }
+      } else if (event.type == SDL_MOUSEWHEEL) {
+        if (buttons[SDL_SCANCODE_LCTRL]) {
+          game.rotateCamera(event.wheel.y * 0.05);
+        } else {
+          game.scaleCamera(event.wheel.y * 0.05);
         }
       }
     }
