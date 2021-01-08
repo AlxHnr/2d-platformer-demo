@@ -15,7 +15,7 @@ Camera::Camera(const size_t screen_width, const size_t screen_height)
     : screen_center{screen_width / 2, screen_height / 2} {
   const float scaling_factor =
       glm::min(screen_width, screen_height) / game_world_camera_side_length;
-  world_to_screen_scale = {scaling_factor, scaling_factor};
+  world_to_screen_scale = {scaling_factor, -scaling_factor};
 }
 
 glm::vec2 Camera::toScreenCoordinate(const glm::vec2 &world_coordinate) const {

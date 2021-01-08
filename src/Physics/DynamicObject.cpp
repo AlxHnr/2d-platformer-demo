@@ -23,7 +23,7 @@ void DynamicObject::update() {
     velocity = glm::proj(velocity, right_direction);
   }
   if (is_touching_ceiling) {
-    velocity.y = glm::max(velocity.y, 0.0f);
+    velocity.y = glm::min(velocity.y, 0.0f);
   }
 
   const auto acceleration_vector =
@@ -41,20 +41,20 @@ void DynamicObject::update() {
 
   /* Apply gravity orthogonal to current slope. */
   const float gravity = 0.0125;
-  const glm::vec2 down{-right_direction.y, right_direction.x};
+  const glm::vec2 down{right_direction.y, -right_direction.x};
   velocity += down * gravity;
 
   if (jumpScheduled()) {
     const float jump_power = 0.375;
     if (ground_normal.has_value()) {
       tick_of_jump_request = 0;
-      velocity.y -= jump_power;
+      velocity.y += jump_power;
     } else if (current_sticky_wall_direction != HorizontalDirection::None) {
       tick_of_jump_request = 0;
       const auto inversion_factor =
           current_sticky_wall_direction == HorizontalDirection::Left ? 1 : -1;
       const glm::vec2 next_jump_direction = {
-          glm::rotate(glm::vec2{0, -1}, glm::radians(45.0f)).x * inversion_factor, -1};
+          glm::rotate(glm::vec2{0, 1}, glm::radians(-45.0f)).x * inversion_factor, 1};
       velocity = next_jump_direction * jump_power;
     }
   }
@@ -77,8 +77,8 @@ void DynamicObject::handleCollisionWith(Physics::Object &, const glm::vec2 &disp
 
   if (glm::abs(displacement_vector.x) < glm::abs(displacement_vector.y)) {
     /* Vertical collision. */
-    const bool character_falls = velocity.y > 0;
-    const bool object_below_character = displacement_vector.y < 0;
+    const bool character_falls = velocity.y < 0;
+    const bool object_below_character = displacement_vector.y > 0;
 
     if (object_below_character) {
       ground_normal = glm::normalize(displacement_vector);
@@ -113,7 +113,7 @@ glm::vec2 DynamicObject::getRightDirection() const {
     /* Fall back to X axis. */
     return {1, 0};
   }
-  return {-ground_normal->y, ground_normal->x};
+  return {ground_normal->y, -ground_normal->x};
 }
 
 bool DynamicObject::jumpScheduled() const {

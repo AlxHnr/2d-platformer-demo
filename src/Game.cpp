@@ -13,8 +13,8 @@ std::unique_ptr<T> makeBox(const glm::vec2 &center, const float width, const flo
   const glm::vec2 box_half_width = {width / 2, 0};
   const glm::vec2 box_half_height = {0, height / 2};
   return std::make_unique<T>(std::initializer_list<glm::vec2>{
-      center - box_half_width + box_half_height, center - box_half_width - box_half_height,
-      center + box_half_width - box_half_height, center + box_half_width + box_half_height});
+      center - box_half_width - box_half_height, center - box_half_width + box_half_height,
+      center + box_half_width + box_half_height, center + box_half_width - box_half_height});
 }
 
 std::unique_ptr<Physics::StaticObject> makeStaticObject(std::initializer_list<glm::vec2> vertices) {
@@ -25,27 +25,29 @@ std::unique_ptr<Physics::StaticObject> makeStaticObject(std::initializer_list<gl
 namespace GameEngine {
 Game::Game(const size_t screen_width, const size_t screen_height)
     : camera{screen_width, screen_height} {
-  objects.push_back(makeBox<Physics::DynamicObject>({1.625, 7.625}, 1.0, 1.0));
+  objects.push_back(makeBox<Physics::DynamicObject>({1.625, -7.625}, 1.0, 1.0));
 
-  objects.push_back(makeStaticObject({{0.25, 0.25}, {31.75, 0.25}}));  /* Ceiling. */
-  objects.push_back(makeStaticObject({{0.25, 0.25}, {0.25, 19.5}}));   /* Left wall. */
-  objects.push_back(makeStaticObject({{31.75, 0.25}, {31.75, 19.5}})); /* Right wall. */
-  objects.push_back(makeStaticObject({{0.25, 19.5}, {31.75, 19.5}}));  /* Ground. */
+  objects.push_back(makeStaticObject({{0.25, -0.25}, {31.75, -0.25}}));  /* Ceiling. */
+  objects.push_back(makeStaticObject({{0.25, -0.25}, {0.25, -19.5}}));   /* Left wall. */
+  objects.push_back(makeStaticObject({{31.75, -0.25}, {31.75, -19.5}})); /* Right wall. */
+  objects.push_back(makeStaticObject({{0.25, -19.5}, {31.75, -19.5}}));  /* Ground. */
 
-  objects.push_back(makeBox<Physics::StaticObject>({21.75, 17.625}, 3.75, 3.75));
+  objects.push_back(makeBox<Physics::StaticObject>({21.75, -17.625}, 3.75, 3.75));
   for (size_t index = 0; index < 24; ++index) {
     const float width = 0.375;
     objects.push_back(
-        makeStaticObject({{18.625 + width * index, 8.0}, {18.625 + width * index, 8.125}}));
+        makeStaticObject({{18.625 + width * index, -8.0}, {18.625 + width * index, -8.125}}));
   }
 
-  objects.push_back(makeStaticObject({{11.25, 19.5}, {16.25, 19.5}, {19.875, 15.75}})); /* Ramp. */
-  objects.push_back(makeStaticObject({{0.25, 15.0}, {0.25, 19.5}, {8.5, 19.5}}));       /* Ramp. */
   objects.push_back(
-      makeStaticObject({{18.75, 11.75}, {19.75, 13.0}, {15.5, 11.75}}));           /* Plattform. */
-  objects.push_back(makeStaticObject({{13.75, 8.0}, {14.75, 9.25}, {10.5, 8.0}})); /* Plattform. */
+      makeStaticObject({{11.25, -19.5}, {16.25, -19.5}, {19.875, -15.75}}));         /* Ramp. */
+  objects.push_back(makeStaticObject({{0.25, -15.0}, {0.25, -19.5}, {8.5, -19.5}})); /* Ramp. */
   objects.push_back(
-      makeStaticObject({{28.75, 19.5}, {31.75, 19.5}, {31.75, 11.75}})); /* Steep ramp. */
+      makeStaticObject({{18.75, -11.75}, {19.75, -13.0}, {15.5, -11.75}})); /* Plattform. */
+  objects.push_back(
+      makeStaticObject({{13.75, -8.0}, {14.75, -9.25}, {10.5, -8.0}})); /* Plattform. */
+  objects.push_back(
+      makeStaticObject({{28.75, -19.5}, {31.75, -19.5}, {31.75, -11.75}})); /* Steep ramp. */
 }
 
 Physics::DynamicObject &Game::getGameCharacter() {
