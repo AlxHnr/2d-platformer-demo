@@ -40,4 +40,8 @@ void Camera::setScale(const float scaling_factor) {
 void Camera::setOrientation(const float orientation) {
   this->orientation = glm::mod(orientation, glm::two_pi<float>());
 }
+
+void Camera::stepTowardsPosition(const glm::vec2 &target_position) {
+  position += (target_position - position) * 0.1f;
+}
 } // namespace GameEngine

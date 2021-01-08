@@ -27,6 +27,10 @@ public:
   /** @param orientation Rotation angle in radians. */
   void setOrientation(float orientation);
 
+  /** Perform a single step towards the given target position using averaging and interpolation.
+   * Should be called every frame. */
+  void stepTowardsPosition(const glm::vec2 &target_position);
+
 private:
   glm::vec2 screen_center;
 

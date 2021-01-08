@@ -70,7 +70,7 @@ void Game::addDynamicBox(const glm::vec2 &screen_position) {
 
 void Game::integratePhysics(const std::chrono::microseconds time_since_last_tick) {
   integrator.integrate(time_since_last_tick, objects);
-  camera.setPosition(getGameCharacter().getBoundingPolygon().getPosition());
+  camera.stepTowardsPosition(getGameCharacter().getBoundingPolygon().getPosition());
 }
 
 void Game::rotateCamera(float angle) {
