@@ -31,10 +31,10 @@ private:
   glm::vec2 screen_center;
 
   /** Factor for scaling world coordinates up to screen coordinates. */
-  glm::vec2 world_to_screen_scale;
+  glm::vec2 world_to_screen_scaling_factor;
 
   glm::vec2 position = {0, 0};
-  float zoom = 1;
+  float scaling_factor = 1;
   float orientation = 0;
 };
 } // namespace GameEngine
