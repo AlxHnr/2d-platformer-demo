@@ -35,6 +35,7 @@ CPMAddPackage(NAME trompeloeil VERSION 39
   URL_HASH SHA256=10506e48abd605740bc9ed43e34059f5068bc80af14476bd129a3ed3b54d522f)
 
 add_library(GameEngine
+  src/Camera.cpp
   src/ConvexBoundingPolygon.cpp
   src/Physics/DynamicObject.cpp
   src/Physics/Integrator.cpp
