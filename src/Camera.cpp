@@ -19,7 +19,11 @@ glm::vec2 Camera::toWorldCoordinate(const glm::vec2 &screen_coordinate) const {
 
 void Camera::setPosition(const glm::vec2 &position) { this->position = position; }
 
-void Camera::setScale(float scaling_factor) { this->scaling_factor = scaling_factor; }
+void Camera::setScale(const float scaling_factor) {
+  this->scaling_factor = glm::max(scaling_factor, 0.0f);
+}
 
-void Camera::setOrientation(float orientation) { this->orientation = orientation; }
+void Camera::setOrientation(const float orientation) {
+  this->orientation = glm::mod(orientation, glm::two_pi<float>());
+}
 } // namespace GameEngine
