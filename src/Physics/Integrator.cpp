@@ -63,7 +63,7 @@ bool processObject(UnprocessedObject &unprocessed_object,
   }
 
   unprocessed_object.remaining_velocity_length -= length_of_this_step;
-  return unprocessed_object.remaining_velocity_length < glm::epsilon<float>();
+  return unprocessed_object.remaining_velocity_length <= glm::epsilon<float>();
 }
 
 void applyTick(const std::vector<std::unique_ptr<Object>> &objects) {

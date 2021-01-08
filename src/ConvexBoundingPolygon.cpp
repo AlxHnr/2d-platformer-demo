@@ -95,7 +95,7 @@ std::optional<DisplacementVector> findSmallestDisplacementVector(const std::vect
   /** Use X axis as direction for polygons with only one vertex. */
   auto direction_of_smallest_overlap = a.size() == 1 ? glm::vec2{1, 0} : getEdgeNormal(a, 0);
   auto smallest_overlap = getProjectionOverlap(a, b, direction_of_smallest_overlap);
-  if (smallest_overlap < glm::epsilon<float>()) {
+  if (smallest_overlap <= glm::epsilon<float>()) {
     return std::nullopt;
   }
 
@@ -103,7 +103,7 @@ std::optional<DisplacementVector> findSmallestDisplacementVector(const std::vect
   for (size_t index = 1; index < a_edges; ++index) {
     const auto axis = getEdgeNormal(a, index);
     const auto overlap = getProjectionOverlap(a, b, axis);
-    if (overlap < glm::epsilon<float>()) {
+    if (overlap <= glm::epsilon<float>()) {
       return std::nullopt;
     }
     if (overlap < smallest_overlap) {
