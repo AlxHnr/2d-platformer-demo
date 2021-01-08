@@ -16,7 +16,7 @@ constexpr float velocity_length_max = 2.5;
 
 /** For each tick the velocity vector is divided into substeps to prevent objects from clipping or
  * tunneling trough walls. This value is low enough to prevent a square with a size of 0.3x0.3
- * in-game units from falling trough a line at max speed. */
+ * in-game units from falling trough a line. */
 constexpr float velocity_length_substep = 0.15;
 
 constexpr auto ticks_per_second = 60;
