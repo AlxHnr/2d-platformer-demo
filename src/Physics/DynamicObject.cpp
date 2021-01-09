@@ -17,6 +17,11 @@ void DynamicObject::update() {
 
   const auto right_direction = getRightDirection();
 
+  const float ground_friction = ground_normal.has_value() ? 0.05 : 0;
+  const float air_friction = 0.01;
+  velocity *= 1 - air_friction;
+  velocity *= 1 - ground_friction;
+
   /* Align velocity parallel to ground when moving towards ground. */
   if (ground_normal.has_value() &&
       glm::angle(*ground_normal, glm::normalize(velocity)) > glm::half_pi<float>()) {
@@ -25,27 +30,22 @@ void DynamicObject::update() {
   if (is_touching_ceiling) {
     velocity.y = glm::min(velocity.y, 0.0f);
   }
+  if (current_sticky_wall_direction != HorizontalDirection::None) {
+    velocity.x = 0;
+  }
 
   const auto acceleration_vector =
       acceleration_direction == HorizontalDirection::Left ? -right_direction : right_direction;
   const bool accelerating_in_moving_direction = glm::dot(velocity, acceleration_vector) > 0;
-  if (acceleration_direction == HorizontalDirection::None) {
-    const auto friction_factor =
-        ground_normal.has_value() ? glm::vec2{0.9, 0.9} : glm::vec2{0.95, 1};
-    velocity *= friction_factor;
-  } else if (!accelerating_in_moving_direction ||
-             glm::length(glm::proj(velocity, acceleration_vector)) < 0.25) {
-    const float horizontal_speed = 0.025;
+  if (acceleration_direction != HorizontalDirection::None &&
+      (glm::length(glm::proj(velocity, acceleration_vector)) < 0.35 ||
+       !accelerating_in_moving_direction)) {
+    const float horizontal_speed = ground_normal.has_value() ? 0.05 : 0.025;
     velocity += acceleration_vector * horizontal_speed;
   }
 
-  /* Apply gravity orthogonal to current slope. */
-  const float gravity = 0.0125;
-  const glm::vec2 down{right_direction.y, -right_direction.x};
-  velocity += down * gravity;
-
   if (jumpScheduled()) {
-    const float jump_power = 0.375;
+    const float jump_power = 0.475 * (1 - ground_friction);
     if (ground_normal.has_value()) {
       tick_of_jump_request = 0;
       velocity.y += jump_power;
@@ -58,6 +58,11 @@ void DynamicObject::update() {
       velocity = next_jump_direction * jump_power;
     }
   }
+
+  /* Apply gravity orthogonal to current slope. */
+  const float gravity = 0.0125;
+  const glm::vec2 down{right_direction.y, -right_direction.x};
+  velocity += down * gravity;
 
   ground_normal.reset();
   current_sticky_wall_direction = HorizontalDirection::None;
