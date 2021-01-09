@@ -15,8 +15,6 @@ DynamicObject::DynamicObject(std::initializer_list<glm::vec2> vertices)
 void DynamicObject::update() {
   current_tick++;
 
-  const auto right_direction = getRightDirection();
-
   const float horizontal_acceleration = ground_normal.has_value() ? 0.05 : 0.025;
   const float ground_friction = ground_normal.has_value() ? 0.05 : 0;
   const float air_friction = 0.01;
@@ -26,7 +24,7 @@ void DynamicObject::update() {
   /* Align velocity parallel to ground when moving towards ground. */
   if (ground_normal.has_value() &&
       glm::angle(*ground_normal, glm::normalize(velocity)) > glm::half_pi<float>()) {
-    velocity = glm::proj(velocity, right_direction);
+    velocity = glm::proj(velocity, getRightDirection());
   }
   if (is_touching_ceiling) {
     velocity.y = glm::min(velocity.y, 0.0f);
@@ -45,8 +43,9 @@ void DynamicObject::update() {
     velocity.x *= 1 - wall_resistance;
   }
 
-  const auto acceleration_vector =
-      acceleration_direction == HorizontalDirection::Left ? -right_direction : right_direction;
+  const auto acceleration_vector = acceleration_direction == HorizontalDirection::Left
+                                       ? -getRightDirection()
+                                       : getRightDirection();
   const bool accelerating_in_moving_direction = glm::dot(velocity, acceleration_vector) > 0;
   if (acceleration_direction != HorizontalDirection::None &&
       (glm::length(glm::proj(velocity, acceleration_vector)) < 0.35 ||
@@ -71,8 +70,7 @@ void DynamicObject::update() {
 
   /* Apply gravity orthogonal to current slope. */
   const float gravity = 0.0125;
-  const glm::vec2 down{right_direction.y, -right_direction.x};
-  velocity += down * gravity;
+  velocity -= getUpDirection() * gravity;
 
   ground_normal.reset();
   direction_to_colliding_wall = HorizontalDirection::None;
@@ -116,6 +114,8 @@ bool DynamicObject::isTouchingGround() const { return ground_normal.has_value();
 bool DynamicObject::isTouchingWall() const {
   return direction_to_colliding_wall != HorizontalDirection::None;
 }
+
+glm::vec2 DynamicObject::getUpDirection() const { return ground_normal.value_or(glm::vec2{0, 1}); }
 
 glm::vec2 DynamicObject::getRightDirection() const {
   if (!ground_normal.has_value()) {

@@ -29,7 +29,11 @@ public:
   bool isTouchingGround() const;
   bool isTouchingWall() const;
 
-  /** @return Right direction orthogonal to the slope of the ground on which this object stands.
+  /** @return Up direction orthogonal to the slope of the ground on which this object stands. If the
+   * object is in the air it will return the Y axis {0, 1}. */
+  glm::vec2 getUpDirection() const;
+
+  /** @return Right direction corresponding to the slope of the ground on which this object stands.
    * If the object is in the air it will return the X axis {1, 0}. */
   glm::vec2 getRightDirection() const;
 
