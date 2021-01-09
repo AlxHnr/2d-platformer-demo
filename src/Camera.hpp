@@ -15,11 +15,11 @@ class Camera {
 public:
   Camera(size_t screen_width, size_t screen_height);
 
-  glm::vec2 toScreenCoordinate(const glm::vec2 &world_coordinate) const;
-  glm::vec2 toWorldCoordinate(const glm::vec2 &screen_coordinate) const;
+  glm::vec2 toScreenCoordinate(glm::vec2 world_coordinate) const;
+  glm::vec2 toWorldCoordinate(glm::vec2 screen_coordinate) const;
 
   /** @param position New center of the camera in the game world. */
-  void setPosition(const glm::vec2 &position);
+  void setPosition(glm::vec2 position);
 
   /** @param scaling_factor E.g. 2.0f to zoom in by 2x. Defaults to 1.0f. */
   void setScale(float scaling_factor);
@@ -29,7 +29,7 @@ public:
 
   /** Perform a single step towards the given target position using averaging and interpolation.
    * Should be called every frame. */
-  void stepTowardsPosition(const glm::vec2 &target_position);
+  void stepTowardsPosition(glm::vec2 target_position);
 
 private:
   glm::vec2 screen_center;

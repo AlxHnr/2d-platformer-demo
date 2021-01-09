@@ -10,11 +10,11 @@ StaticObject::StaticObject(std::initializer_list<glm::vec2> vertices)
 
 void StaticObject::update() {}
 
-const glm::vec2 &StaticObject::getVelocity() const { return velocity; }
+glm::vec2 StaticObject::getVelocity() const { return velocity; }
 
-void StaticObject::addVelocityOffset(const glm::vec2 &) { return; }
+void StaticObject::addVelocityOffset(glm::vec2) { return; }
 
 const ConvexBoundingPolygon &StaticObject::getBoundingPolygon() const { return bounding_polygon; }
 
-void StaticObject::handleCollisionWith(Physics::Object &, const glm::vec2 &) {}
+void StaticObject::handleCollisionWith(Physics::Object &, glm::vec2) {}
 } // namespace GameEngine::Physics

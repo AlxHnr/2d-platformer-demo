@@ -86,19 +86,17 @@ TEST_CASE("Rotate polygon") {
 
 TEST_CASE("Traverse polygon using forEachEdge()") {
   SUBCASE("Zero vertices") {
-    ConvexBoundingPolygon{}.forEachEdge(
-        [](const glm::vec2 &, const glm::vec2 &) { REQUIRE(false); });
+    ConvexBoundingPolygon{}.forEachEdge([](glm::vec2, glm::vec2) { REQUIRE(false); });
   }
 
   SUBCASE("One vertex") {
-    ConvexBoundingPolygon{}.forEachEdge(
-        [](const glm::vec2 &, const glm::vec2 &) { REQUIRE(false); });
+    ConvexBoundingPolygon{}.forEachEdge([](glm::vec2, glm::vec2) { REQUIRE(false); });
   }
 
   SUBCASE("Two vertices") {
     size_t edges_traversed = 0;
     ConvexBoundingPolygon line{{-5, 12}, {6.5, 11}};
-    line.forEachEdge([&](const glm::vec2 &start, const glm::vec2 &end) {
+    line.forEachEdge([&](const glm::vec2 start, const glm::vec2 end) {
       REQUIRE(start.x == doctest::Approx(-5));
       REQUIRE(start.y == doctest::Approx(12));
       REQUIRE(end.x == doctest::Approx(6.5));
@@ -111,7 +109,7 @@ TEST_CASE("Traverse polygon using forEachEdge()") {
   SUBCASE("Three vertices") {
     size_t edges_traversed = 0;
     ConvexBoundingPolygon triangle{{-5, 12}, {-4, -9}, {6.5, -11}};
-    triangle.forEachEdge([&](const glm::vec2 &start, const glm::vec2 &end) {
+    triangle.forEachEdge([&](const glm::vec2 start, const glm::vec2 end) {
       if (edges_traversed == 0) {
         REQUIRE(start.x == doctest::Approx(-5));
         REQUIRE(start.y == doctest::Approx(12));
@@ -137,7 +135,7 @@ TEST_CASE("Traverse polygon using forEachEdge()") {
   SUBCASE("Four vertices") {
     size_t edges_traversed = 0;
     ConvexBoundingPolygon uneven_quad = {{-5, 12}, {-4, -9}, {6.5, -11}, {5, 9.5}};
-    uneven_quad.forEachEdge([&](const glm::vec2 &start, const glm::vec2 &end) {
+    uneven_quad.forEachEdge([&](const glm::vec2 start, const glm::vec2 end) {
       if (edges_traversed == 0) {
         REQUIRE(start.x == doctest::Approx(-5));
         REQUIRE(start.y == doctest::Approx(12));

@@ -21,10 +21,10 @@ public:
   ConvexBoundingPolygon(std::initializer_list<glm::vec2> vertices);
 
   /** @return Center of the object in the game world. */
-  const glm::vec2 &getPosition() const;
+  glm::vec2 getPosition() const;
 
   /** @param position New position (center) of the object in the game world. */
-  void setPosition(const glm::vec2 &position);
+  void setPosition(glm::vec2 position);
 
   /** @return Orientation of this polygon in radians. */
   float getOrientation() const;
@@ -71,8 +71,8 @@ public:
    * @param function Will be called on each edge. Takes the start and end position of the current
    * edge.
    */
-  void forEachEdge(const std::function<void(const glm::vec2 &edge_start, const glm::vec2 &edge_end)>
-                       &function) const;
+  void
+  forEachEdge(const std::function<void(glm::vec2 edge_start, glm::vec2 edge_end)> &function) const;
 
 private:
   /** Center of this object. */

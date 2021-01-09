@@ -20,14 +20,14 @@ public:
   virtual void update() = 0;
 
   /** @return Current velocity of this object. Will be applied by the physics engine. */
-  virtual const glm::vec2 &getVelocity() const = 0;
+  virtual glm::vec2 getVelocity() const = 0;
 
   /** Move this object by the given amount. May be called multiple times for each tick to handle
    * substeps. Must update the polygon returned by getBoundingPolygon().
    *
    * @param Offset Offset to be added to the objects current position.
    */
-  virtual void addVelocityOffset(const glm::vec2 &offset) = 0;
+  virtual void addVelocityOffset(glm::vec2 offset) = 0;
 
   /** @return Boundaries of this object in the game world for collision detection. */
   virtual const ConvexBoundingPolygon &getBoundingPolygon() const = 0;
@@ -38,7 +38,7 @@ public:
    * @param other Object which this object collided with.
    * @param displacement_vector Offset for moving this object out of the other object.
    */
-  virtual void handleCollisionWith(Object &other, const glm::vec2 &displacement_vector) = 0;
+  virtual void handleCollisionWith(Object &other, glm::vec2 displacement_vector) = 0;
 };
 } // namespace GameEngine::Physics
 

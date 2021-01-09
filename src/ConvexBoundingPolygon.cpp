@@ -60,7 +60,7 @@ struct ProjectedVertices {
 };
 
 ProjectedVertices projectVerticesOntoAxis(const std::vector<glm::vec2> &polygon,
-                                          const glm::vec2 &axis) {
+                                          const glm::vec2 axis) {
   const auto first_dot_product = glm::dot(polygon.front(), axis);
   float min = first_dot_product;
   float max = first_dot_product;
@@ -76,7 +76,7 @@ ProjectedVertices projectVerticesOntoAxis(const std::vector<glm::vec2> &polygon,
 /** @return Overlap found while projecting the given polygons onto the specified axis. Will be < 0
  * if no overlap exists. */
 float getProjectionOverlap(const std::vector<glm::vec2> &a, const std::vector<glm::vec2> &b,
-                           const glm::vec2 &axis) {
+                           const glm::vec2 axis) {
   const auto a_projected = projectVerticesOntoAxis(a, axis);
   const auto b_projected = projectVerticesOntoAxis(b, axis);
   return glm::min(b_projected.max - a_projected.min, a_projected.max - b_projected.min);
@@ -122,12 +122,12 @@ ConvexBoundingPolygon::ConvexBoundingPolygon(std::initializer_list<glm::vec2> ve
   position = vertices.size() == 0 ? glm::vec2{0, 0} : computeCenter(vertices);
   std::transform(vertices.begin(), vertices.end(),
                  std::back_inserter(bounding_polygon_relative_to_center),
-                 [this](const glm::vec2 &vertex) { return vertex - position; });
+                 [this](const glm::vec2 vertex) { return vertex - position; });
 }
 
-const glm::vec2 &ConvexBoundingPolygon::getPosition() const { return position; }
+glm::vec2 ConvexBoundingPolygon::getPosition() const { return position; }
 
-void ConvexBoundingPolygon::setPosition(const glm::vec2 &position) {
+void ConvexBoundingPolygon::setPosition(const glm::vec2 position) {
   this->position = position;
   recomputeBoundingPolygon();
 }
@@ -178,7 +178,7 @@ void ConvexBoundingPolygon::recomputeBoundingPolygon() {
   std::transform(
       bounding_polygon_relative_to_center.cbegin(), bounding_polygon_relative_to_center.cend(),
       bounding_polygon.begin(),
-      [this](const glm::vec2 &vertex) { return glm::rotate(vertex, orientation) + position; });
+      [this](const glm::vec2 vertex) { return glm::rotate(vertex, orientation) + position; });
 }
 
 const std::vector<glm::vec2> &ConvexBoundingPolygon::getVertices() const {
@@ -186,8 +186,7 @@ const std::vector<glm::vec2> &ConvexBoundingPolygon::getVertices() const {
 }
 
 void ConvexBoundingPolygon::forEachEdge(
-    const std::function<void(const glm::vec2 &edge_start, const glm::vec2 &edge_end)> &function)
-    const {
+    const std::function<void(glm::vec2 edge_start, glm::vec2 edge_end)> &function) const {
   const auto edge_count = countEdges(bounding_polygon);
   for (size_t index = 0; index < edge_count; ++index) {
     const auto [start, end] = getEdge(bounding_polygon, index);

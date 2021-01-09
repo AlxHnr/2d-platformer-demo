@@ -20,8 +20,8 @@ public:
 
   Physics::DynamicObject &getGameCharacter();
   const Physics::DynamicObject &getGameCharacter() const;
-  void addStaticBox(const glm::vec2 &screen_position);
-  void addDynamicBox(const glm::vec2 &screen_position);
+  void addStaticBox(glm::vec2 screen_position);
+  void addDynamicBox(glm::vec2 screen_position);
   void integratePhysics(std::chrono::microseconds time_since_last_tick);
 
   void rotateCamera(float angle);

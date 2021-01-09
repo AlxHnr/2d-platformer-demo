@@ -77,15 +77,15 @@ void DynamicObject::update() {
   is_touching_ceiling = false;
 }
 
-const glm::vec2 &DynamicObject::getVelocity() const { return velocity; }
+glm::vec2 DynamicObject::getVelocity() const { return velocity; }
 
-void DynamicObject::addVelocityOffset(const glm::vec2 &offset) {
+void DynamicObject::addVelocityOffset(const glm::vec2 offset) {
   bounding_polygon.setPosition(bounding_polygon.getPosition() + offset);
 }
 
 const ConvexBoundingPolygon &DynamicObject::getBoundingPolygon() const { return bounding_polygon; }
 
-void DynamicObject::handleCollisionWith(Physics::Object &, const glm::vec2 &displacement_vector) {
+void DynamicObject::handleCollisionWith(Physics::Object &, const glm::vec2 displacement_vector) {
   addVelocityOffset(displacement_vector);
 
   if (glm::abs(displacement_vector.x) < glm::abs(displacement_vector.y)) {

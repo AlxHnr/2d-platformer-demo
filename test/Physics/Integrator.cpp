@@ -14,10 +14,10 @@ using namespace std::chrono_literals;
 
 class MockObject : public Physics::Object {
   MAKE_MOCK0(update, void(), override);
-  MAKE_CONST_MOCK0(getVelocity, const glm::vec2 &(), override);
-  MAKE_MOCK1(addVelocityOffset, void(const glm::vec2 &), override);
+  MAKE_CONST_MOCK0(getVelocity, glm::vec2(), override);
+  MAKE_MOCK1(addVelocityOffset, void(glm::vec2), override);
   MAKE_CONST_MOCK0(getBoundingPolygon, const ConvexBoundingPolygon &(), override);
-  MAKE_MOCK2(handleCollisionWith, void(Physics::Object &, const glm::vec2 &), override);
+  MAKE_MOCK2(handleCollisionWith, void(Physics::Object &, glm::vec2), override);
 };
 } // namespace
 

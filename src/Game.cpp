@@ -9,7 +9,7 @@ namespace {
 using namespace GameEngine;
 
 template <typename T>
-std::unique_ptr<T> makeBox(const glm::vec2 &center, const float width, const float height) {
+std::unique_ptr<T> makeBox(const glm::vec2 center, const float width, const float height) {
   const glm::vec2 box_half_width = {width / 2, 0};
   const glm::vec2 box_half_height = {0, height / 2};
   return std::make_unique<T>(std::initializer_list<glm::vec2>{
@@ -59,12 +59,12 @@ const Physics::DynamicObject &Game::getGameCharacter() const {
   return *dynamic_cast<Physics::DynamicObject *>(objects.front().get());
 }
 
-void Game::addStaticBox(const glm::vec2 &screen_position) {
+void Game::addStaticBox(const glm::vec2 screen_position) {
   objects.push_back(
       makeBox<Physics::StaticObject>(camera.toWorldCoordinate(screen_position), 0.5, 0.5));
 }
 
-void Game::addDynamicBox(const glm::vec2 &screen_position) {
+void Game::addDynamicBox(const glm::vec2 screen_position) {
   objects.push_back(
       makeBox<Physics::DynamicObject>(camera.toWorldCoordinate(screen_position), 0.5, 0.5));
 }
@@ -118,7 +118,7 @@ void Game::render(SDL_Renderer *renderer) const {
 }
 
 void Game::renderPolygon(SDL_Renderer *renderer, const ConvexBoundingPolygon &polygon) const {
-  polygon.forEachEdge([&](const glm::vec2 &world_start, const glm::vec2 &world_end) {
+  polygon.forEachEdge([&](const glm::vec2 world_start, const glm::vec2 world_end) {
     const auto start = camera.toScreenCoordinate(world_start);
     const auto end = camera.toScreenCoordinate(world_end);
     SDL_RenderDrawLine(renderer, start.x, start.y, end.x, end.y);

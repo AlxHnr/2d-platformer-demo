@@ -21,10 +21,10 @@ public:
   DynamicObject(std::initializer_list<glm::vec2> vertices);
 
   void update() override;
-  const glm::vec2 &getVelocity() const override;
-  virtual void addVelocityOffset(const glm::vec2 &offset) override;
+  glm::vec2 getVelocity() const override;
+  virtual void addVelocityOffset(glm::vec2 offset) override;
   const ConvexBoundingPolygon &getBoundingPolygon() const override;
-  void handleCollisionWith(Physics::Object &other, const glm::vec2 &displacement_vector) override;
+  void handleCollisionWith(Physics::Object &other, glm::vec2 displacement_vector) override;
 
   bool isTouchingGround() const;
   bool isTouchingWall() const;

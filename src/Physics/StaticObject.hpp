@@ -21,10 +21,10 @@ public:
   StaticObject(std::initializer_list<glm::vec2> vertices);
 
   void update() override;
-  const glm::vec2 &getVelocity() const override;
-  virtual void addVelocityOffset(const glm::vec2 &) override;
+  glm::vec2 getVelocity() const override;
+  virtual void addVelocityOffset(glm::vec2) override;
   const ConvexBoundingPolygon &getBoundingPolygon() const override;
-  void handleCollisionWith(Physics::Object &, const glm::vec2 &) override;
+  void handleCollisionWith(Physics::Object &, glm::vec2) override;
 
 private:
   glm::vec2 velocity{};
