@@ -21,12 +21,6 @@ public:
    */
   DynamicObject(std::initializer_list<glm::vec2> vertices);
 
-  void update() override;
-  glm::vec2 getVelocity() const override;
-  virtual void addVelocityOffset(glm::vec2 offset) override;
-  const ConvexBoundingPolygon &getBoundingPolygon() const override;
-  void handleCollisionWith(Physics::Object &other, glm::vec2 displacement_vector) override;
-
   bool isTouchingGround() const;
 
   /** @return Direction to the colliding wall, if the object is colliding with a wall. */
@@ -39,6 +33,12 @@ public:
   /** @return Right direction corresponding to the slope of the ground on which this object stands.
    * If the object is in the air it will return the X axis {1, 0}. */
   glm::vec2 getRightDirection() const;
+
+  void update() override;
+  glm::vec2 getVelocity() const override;
+  virtual void addVelocityOffset(glm::vec2 offset) override;
+  const ConvexBoundingPolygon &getBoundingPolygon() const override;
+  void handleCollisionWith(Physics::Object &other, glm::vec2 displacement_vector) override;
 
   void jump();
 

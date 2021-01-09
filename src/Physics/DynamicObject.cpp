@@ -11,6 +11,21 @@
 namespace GameEngine::Physics {
 DynamicObject::DynamicObject(std::initializer_list<glm::vec2> vertices)
     : bounding_polygon{vertices} {}
+bool DynamicObject::isTouchingGround() const { return ground_normal.has_value(); }
+
+std::optional<HorizontalDirection> DynamicObject::isTouchingWall() const {
+  return direction_to_colliding_wall;
+}
+
+glm::vec2 DynamicObject::getUpDirection() const { return ground_normal.value_or(glm::vec2{0, 1}); }
+
+glm::vec2 DynamicObject::getRightDirection() const {
+  if (!ground_normal.has_value()) {
+    /* Fall back to X axis. */
+    return {1, 0};
+  }
+  return {ground_normal->y, -ground_normal->x};
+}
 
 void DynamicObject::update() {
   current_tick++;
@@ -109,22 +124,6 @@ void DynamicObject::handleCollisionWith(Physics::Object &, const glm::vec2 displ
           other_object_right_of_self ? HorizontalDirection::Right : HorizontalDirection::Left;
     }
   }
-}
-
-bool DynamicObject::isTouchingGround() const { return ground_normal.has_value(); }
-
-std::optional<HorizontalDirection> DynamicObject::isTouchingWall() const {
-  return direction_to_colliding_wall;
-}
-
-glm::vec2 DynamicObject::getUpDirection() const { return ground_normal.value_or(glm::vec2{0, 1}); }
-
-glm::vec2 DynamicObject::getRightDirection() const {
-  if (!ground_normal.has_value()) {
-    /* Fall back to X axis. */
-    return {1, 0};
-  }
-  return {ground_normal->y, -ground_normal->x};
 }
 
 void DynamicObject::jump() { tick_of_jump_request = current_tick; }
