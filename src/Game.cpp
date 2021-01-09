@@ -28,10 +28,10 @@ Game::Game(const size_t screen_width, const size_t screen_height)
   objects.push_back(makeBox<Physics::DynamicObject>({1.625, -7.625}, 1.0, 1.0));
   camera.setPosition(getGameCharacter().getBoundingPolygon().getPosition());
 
-  objects.push_back(makeStaticObject({{0.25, -0.25}, {31.75, -0.25}}));  /* Ceiling. */
-  objects.push_back(makeStaticObject({{0.25, -0.25}, {0.25, -19.5}}));   /* Left wall. */
-  objects.push_back(makeStaticObject({{31.75, -0.25}, {31.75, -19.5}})); /* Right wall. */
-  objects.push_back(makeStaticObject({{0.25, -19.5}, {31.75, -19.5}}));  /* Ground. */
+  objects.push_back(makeStaticObject({{0.25, 100}, {31.75, 100}}));     /* Ceiling. */
+  objects.push_back(makeStaticObject({{0.25, 100}, {0.25, -19.5}}));    /* Left wall. */
+  objects.push_back(makeStaticObject({{31.75, 100}, {31.75, -19.5}}));  /* Right wall. */
+  objects.push_back(makeStaticObject({{0.25, -19.5}, {31.75, -19.5}})); /* Ground. */
 
   objects.push_back(makeBox<Physics::StaticObject>({21.75, -17.625}, 3.75, 3.75));
   for (size_t index = 0; index < 24; ++index) {
