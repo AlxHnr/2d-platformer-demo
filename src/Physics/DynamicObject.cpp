@@ -61,9 +61,9 @@ void DynamicObject::update() {
     } else if (direction_to_colliding_wall != HorizontalDirection::None) {
       tick_of_jump_request = 0;
       const auto inversion_factor =
-          direction_to_colliding_wall == HorizontalDirection::Left ? 1 : -1;
+          direction_to_colliding_wall == HorizontalDirection::Left ? -1 : 1;
       const glm::vec2 next_jump_direction = {
-          glm::rotate(glm::vec2{0, 1}, glm::radians(-45.0f)).x * inversion_factor, 1};
+          glm::rotate(glm::vec2{0, 1}, glm::radians(45.0f)).x * inversion_factor, 1};
       velocity = next_jump_direction * jump_power;
     }
   }
