@@ -17,9 +17,11 @@ void DynamicObject::update() {
 
   const float horizontal_acceleration = ground_normal.has_value() ? 0.05 : 0.025;
   const float ground_friction = ground_normal.has_value() ? 0.05 : 0;
+  const float wall_friction = direction_to_colliding_wall.has_value() ? 0.03 : 0;
   const float air_friction = 0.01;
   velocity *= 1 - air_friction;
   velocity *= 1 - ground_friction;
+  velocity *= 1 - wall_friction;
 
   /* Align velocity parallel to ground when moving towards ground. */
   if (ground_normal.has_value() &&
@@ -54,17 +56,17 @@ void DynamicObject::update() {
   }
 
   if (jumpScheduled()) {
-    const float jump_power = 0.475 * (1 - ground_friction);
+    const float jump_power = 0.475;
     if (ground_normal.has_value()) {
       tick_of_jump_request = 0;
-      velocity.y += jump_power;
+      velocity.y += jump_power * (1 - ground_friction);
     } else if (direction_to_colliding_wall.has_value()) {
       tick_of_jump_request = 0;
       const auto inversion_factor =
           direction_to_colliding_wall == HorizontalDirection::Left ? -1 : 1;
-      const glm::vec2 next_jump_direction = {
+      const glm::vec2 jump_direction = {
           glm::rotate(glm::vec2{0, 1}, glm::radians(45.0f)).x * inversion_factor, 1};
-      velocity = next_jump_direction * jump_power;
+      velocity = jump_direction * jump_power * (1 - wall_friction);
     }
   }
 
