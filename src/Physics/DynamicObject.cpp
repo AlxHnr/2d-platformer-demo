@@ -17,6 +17,7 @@ void DynamicObject::update() {
 
   const auto right_direction = getRightDirection();
 
+  const float horizontal_acceleration = ground_normal.has_value() ? 0.05 : 0.025;
   const float ground_friction = ground_normal.has_value() ? 0.05 : 0;
   const float air_friction = 0.01;
   velocity *= 1 - air_friction;
@@ -30,8 +31,18 @@ void DynamicObject::update() {
   if (is_touching_ceiling) {
     velocity.y = glm::min(velocity.y, 0.0f);
   }
-  if (current_sticky_wall_direction != HorizontalDirection::None) {
-    velocity.x = 0;
+  if (current_sticky_wall_direction != HorizontalDirection::None && !ground_normal.has_value()) {
+    const float wall_gravity = horizontal_acceleration * 0.99;
+    const float wall_resistance = 0.5;
+    const auto x_direction_towards_wall =
+        current_sticky_wall_direction == HorizontalDirection::Left ? -1 : 1;
+    const bool moving_left = velocity.x < 0;
+    const bool wall_is_left = current_sticky_wall_direction == HorizontalDirection::Left;
+
+    if (wall_is_left != moving_left || glm::abs(velocity.x) < wall_gravity) {
+      velocity.x += x_direction_towards_wall * wall_gravity;
+    }
+    velocity.x *= 1 - wall_resistance;
   }
 
   const auto acceleration_vector =
@@ -40,8 +51,7 @@ void DynamicObject::update() {
   if (acceleration_direction != HorizontalDirection::None &&
       (glm::length(glm::proj(velocity, acceleration_vector)) < 0.35 ||
        !accelerating_in_moving_direction)) {
-    const float horizontal_speed = ground_normal.has_value() ? 0.05 : 0.025;
-    velocity += acceleration_vector * horizontal_speed;
+    velocity += acceleration_vector * horizontal_acceleration;
   }
 
   if (jumpScheduled()) {
