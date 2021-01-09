@@ -79,11 +79,11 @@ int main() {
     }
 
     if (buttons[SDL_SCANCODE_LEFT]) {
-      game.getGameCharacter().accelerate(HorizontalDirection::Left);
+      game.getGameCharacter().run(HorizontalDirection::Left);
     } else if (buttons[SDL_SCANCODE_RIGHT]) {
-      game.getGameCharacter().accelerate(HorizontalDirection::Right);
+      game.getGameCharacter().run(HorizontalDirection::Right);
     } else {
-      game.getGameCharacter().accelerate(HorizontalDirection::None);
+      game.getGameCharacter().run(std::nullopt);
     }
 
     game.integratePhysics(duration_of_last_frame);

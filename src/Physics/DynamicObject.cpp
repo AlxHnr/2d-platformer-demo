@@ -29,7 +29,7 @@ void DynamicObject::update() {
   if (is_touching_ceiling) {
     velocity.y = glm::min(velocity.y, 0.0f);
   }
-  if (direction_to_colliding_wall != HorizontalDirection::None && !ground_normal.has_value()) {
+  if (direction_to_colliding_wall.has_value() && !ground_normal.has_value()) {
     const float wall_gravity = horizontal_acceleration * 0.99;
     const float wall_resistance = 0.5;
     const auto x_direction_towards_wall =
@@ -47,7 +47,7 @@ void DynamicObject::update() {
                                        ? -getRightDirection()
                                        : getRightDirection();
   const bool accelerating_in_moving_direction = glm::dot(velocity, acceleration_vector) > 0;
-  if (acceleration_direction != HorizontalDirection::None &&
+  if (acceleration_direction.has_value() &&
       (glm::length(glm::proj(velocity, acceleration_vector)) < 0.35 ||
        !accelerating_in_moving_direction)) {
     velocity += acceleration_vector * horizontal_acceleration;
@@ -58,7 +58,7 @@ void DynamicObject::update() {
     if (ground_normal.has_value()) {
       tick_of_jump_request = 0;
       velocity.y += jump_power;
-    } else if (direction_to_colliding_wall != HorizontalDirection::None) {
+    } else if (direction_to_colliding_wall.has_value()) {
       tick_of_jump_request = 0;
       const auto inversion_factor =
           direction_to_colliding_wall == HorizontalDirection::Left ? -1 : 1;
@@ -73,7 +73,7 @@ void DynamicObject::update() {
   velocity -= getUpDirection() * gravity;
 
   ground_normal.reset();
-  direction_to_colliding_wall = HorizontalDirection::None;
+  direction_to_colliding_wall.reset();
   is_touching_ceiling = false;
 }
 
@@ -111,8 +111,8 @@ void DynamicObject::handleCollisionWith(Physics::Object &, const glm::vec2 displ
 
 bool DynamicObject::isTouchingGround() const { return ground_normal.has_value(); }
 
-bool DynamicObject::isTouchingWall() const {
-  return direction_to_colliding_wall != HorizontalDirection::None;
+std::optional<HorizontalDirection> DynamicObject::isTouchingWall() const {
+  return direction_to_colliding_wall;
 }
 
 glm::vec2 DynamicObject::getUpDirection() const { return ground_normal.value_or(glm::vec2{0, 1}); }
@@ -127,7 +127,7 @@ glm::vec2 DynamicObject::getRightDirection() const {
 
 void DynamicObject::jump() { tick_of_jump_request = current_tick; }
 
-void DynamicObject::accelerate(const HorizontalDirection direction) {
+void DynamicObject::run(const std::optional<HorizontalDirection> direction) {
   acceleration_direction = direction;
 }
 

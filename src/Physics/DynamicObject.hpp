@@ -28,7 +28,9 @@ public:
   void handleCollisionWith(Physics::Object &other, glm::vec2 displacement_vector) override;
 
   bool isTouchingGround() const;
-  bool isTouchingWall() const;
+
+  /** @return Direction to the colliding wall, if the object is colliding with a wall. */
+  std::optional<HorizontalDirection> isTouchingWall() const;
 
   /** @return Normal of the grounds slope on which this object stands. If the object is in the air
    * it will return the Y axis {0, 1}. */
@@ -39,19 +41,22 @@ public:
   glm::vec2 getRightDirection() const;
 
   void jump();
-  void accelerate(HorizontalDirection direction);
+
+  /** @param direction Optional direction to which the object should accelerate. If no direction was
+   * given, the object will slow down and stop. The slope of the ground will be considered. */
+  void run(std::optional<HorizontalDirection> direction);
 
 private:
   ConvexBoundingPolygon bounding_polygon;
 
   /** Speed * direction of this object. */
-  glm::vec2 velocity{0.0f, 0.0f};
+  glm::vec2 velocity = {0, 0};
 
   /** Contains the normal of the ground if the object is standing on it. */
-  std::optional<glm::vec2> ground_normal{};
+  std::optional<glm::vec2> ground_normal = std::nullopt;
 
   /** Contains the direction to the wall if the object is touching it. */
-  HorizontalDirection direction_to_colliding_wall{};
+  std::optional<HorizontalDirection> direction_to_colliding_wall = std::nullopt;
 
   /** True if the object is hitting another object from below. */
   bool is_touching_ceiling = false;
@@ -66,7 +71,7 @@ private:
 
   bool jumpScheduled() const;
 
-  HorizontalDirection acceleration_direction = HorizontalDirection::None;
+  std::optional<HorizontalDirection> acceleration_direction = std::nullopt;
 };
 } // namespace GameEngine::Physics
 

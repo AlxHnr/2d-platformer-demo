@@ -6,7 +6,7 @@
 #define GAME_ENGINE_SRC_HORIZONTAL_DIRECTION_HPP
 
 namespace GameEngine {
-enum class HorizontalDirection { None, Left, Right };
+enum class HorizontalDirection { Left, Right };
 }
 
 #endif
