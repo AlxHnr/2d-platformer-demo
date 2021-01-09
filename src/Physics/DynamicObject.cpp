@@ -31,13 +31,13 @@ void DynamicObject::update() {
   if (is_touching_ceiling) {
     velocity.y = glm::min(velocity.y, 0.0f);
   }
-  if (current_sticky_wall_direction != HorizontalDirection::None && !ground_normal.has_value()) {
+  if (direction_to_colliding_wall != HorizontalDirection::None && !ground_normal.has_value()) {
     const float wall_gravity = horizontal_acceleration * 0.99;
     const float wall_resistance = 0.5;
     const auto x_direction_towards_wall =
-        current_sticky_wall_direction == HorizontalDirection::Left ? -1 : 1;
+        direction_to_colliding_wall == HorizontalDirection::Left ? -1 : 1;
     const bool moving_left = velocity.x < 0;
-    const bool wall_is_left = current_sticky_wall_direction == HorizontalDirection::Left;
+    const bool wall_is_left = direction_to_colliding_wall == HorizontalDirection::Left;
 
     if (wall_is_left != moving_left || glm::abs(velocity.x) < wall_gravity) {
       velocity.x += x_direction_towards_wall * wall_gravity;
@@ -59,10 +59,10 @@ void DynamicObject::update() {
     if (ground_normal.has_value()) {
       tick_of_jump_request = 0;
       velocity.y += jump_power;
-    } else if (current_sticky_wall_direction != HorizontalDirection::None) {
+    } else if (direction_to_colliding_wall != HorizontalDirection::None) {
       tick_of_jump_request = 0;
       const auto inversion_factor =
-          current_sticky_wall_direction == HorizontalDirection::Left ? 1 : -1;
+          direction_to_colliding_wall == HorizontalDirection::Left ? 1 : -1;
       const glm::vec2 next_jump_direction = {
           glm::rotate(glm::vec2{0, 1}, glm::radians(-45.0f)).x * inversion_factor, 1};
       velocity = next_jump_direction * jump_power;
@@ -75,7 +75,7 @@ void DynamicObject::update() {
   velocity += down * gravity;
 
   ground_normal.reset();
-  current_sticky_wall_direction = HorizontalDirection::None;
+  direction_to_colliding_wall = HorizontalDirection::None;
   is_touching_ceiling = false;
 }
 
@@ -92,35 +92,29 @@ void DynamicObject::handleCollisionWith(Physics::Object &, const glm::vec2 &disp
 
   if (glm::abs(displacement_vector.x) < glm::abs(displacement_vector.y)) {
     /* Vertical collision. */
-    const bool character_falls = velocity.y < 0;
-    const bool object_below_character = displacement_vector.y > 0;
+    const bool is_falling = velocity.y < 0;
+    const bool other_object_below_self = displacement_vector.y > 0;
 
-    if (object_below_character) {
+    if (other_object_below_self) {
       ground_normal = glm::normalize(displacement_vector);
-    } else if (!character_falls) {
+    } else if (!is_falling) {
       is_touching_ceiling = true;
     }
   } else {
     /* Horizontal collision. */
-    const bool character_moves_right = velocity.x > 0;
-    const bool object_right_of_character = displacement_vector.x < 0;
-    if (character_moves_right == object_right_of_character) {
-      current_sticky_wall_direction =
-          object_right_of_character ? HorizontalDirection::Right : HorizontalDirection::Left;
+    const bool is_moving_right = velocity.x > 0;
+    const bool other_object_right_of_self = displacement_vector.x < 0;
+    if (is_moving_right == other_object_right_of_self) {
+      direction_to_colliding_wall =
+          other_object_right_of_self ? HorizontalDirection::Right : HorizontalDirection::Left;
     }
   }
-}
-
-void DynamicObject::jump() { tick_of_jump_request = current_tick; }
-
-void DynamicObject::accelerate(const DynamicObject::HorizontalDirection direction) {
-  acceleration_direction = direction;
 }
 
 bool DynamicObject::isTouchingGround() const { return ground_normal.has_value(); }
 
 bool DynamicObject::isTouchingWall() const {
-  return current_sticky_wall_direction != HorizontalDirection::None;
+  return direction_to_colliding_wall != HorizontalDirection::None;
 }
 
 glm::vec2 DynamicObject::getRightDirection() const {
@@ -129,6 +123,12 @@ glm::vec2 DynamicObject::getRightDirection() const {
     return {1, 0};
   }
   return {ground_normal->y, -ground_normal->x};
+}
+
+void DynamicObject::jump() { tick_of_jump_request = current_tick; }
+
+void DynamicObject::accelerate(const DynamicObject::HorizontalDirection direction) {
+  acceleration_direction = direction;
 }
 
 bool DynamicObject::jumpScheduled() const {
