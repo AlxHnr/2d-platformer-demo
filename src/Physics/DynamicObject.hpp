@@ -5,6 +5,7 @@
 #ifndef GAME_ENGINE_SRC_PHYSICS_DYNAMIC_OBJECT_HPP
 #define GAME_ENGINE_SRC_PHYSICS_DYNAMIC_OBJECT_HPP
 
+#include "HorizontalDirection.hpp"
 #include "Physics/Object.hpp"
 #include <glm/vec2.hpp>
 #include <optional>
@@ -38,7 +39,6 @@ public:
   glm::vec2 getRightDirection() const;
 
   void jump();
-  enum class HorizontalDirection { None, Left, Right };
   void accelerate(HorizontalDirection direction);
 
 private:

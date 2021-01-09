@@ -127,7 +127,7 @@ glm::vec2 DynamicObject::getRightDirection() const {
 
 void DynamicObject::jump() { tick_of_jump_request = current_tick; }
 
-void DynamicObject::accelerate(const DynamicObject::HorizontalDirection direction) {
+void DynamicObject::accelerate(const HorizontalDirection direction) {
   acceleration_direction = direction;
 }
 

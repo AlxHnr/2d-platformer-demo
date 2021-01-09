@@ -79,11 +79,11 @@ int main() {
     }
 
     if (buttons[SDL_SCANCODE_LEFT]) {
-      game.getGameCharacter().accelerate(Physics::DynamicObject::HorizontalDirection::Left);
+      game.getGameCharacter().accelerate(HorizontalDirection::Left);
     } else if (buttons[SDL_SCANCODE_RIGHT]) {
-      game.getGameCharacter().accelerate(Physics::DynamicObject::HorizontalDirection::Right);
+      game.getGameCharacter().accelerate(HorizontalDirection::Right);
     } else {
-      game.getGameCharacter().accelerate(Physics::DynamicObject::HorizontalDirection::None);
+      game.getGameCharacter().accelerate(HorizontalDirection::None);
     }
 
     game.integratePhysics(duration_of_last_frame);
