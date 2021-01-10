@@ -36,7 +36,9 @@ void DynamicObject::update() {
   const float air_friction = 0.01;
   velocity *= 1 - air_friction;
   velocity *= 1 - ground_friction;
-  velocity *= 1 - wall_friction;
+  if (velocity.y < 0) {
+    velocity *= 1 - wall_friction;
+  }
 
   /* Align velocity parallel to ground when moving towards ground. */
   if (ground_normal.has_value() &&
