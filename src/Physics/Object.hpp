@@ -25,7 +25,7 @@ public:
   /** Move this object by the given amount. May be called multiple times for each tick to handle
    * substeps. Must update the polygon returned by getBoundingPolygon().
    *
-   * @param Offset Offset to be added to the objects current position.
+   * @param offset To be added to the objects current position.
    */
   virtual void addVelocityOffset(glm::vec2 offset) = 0;
 
