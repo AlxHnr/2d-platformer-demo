@@ -62,6 +62,9 @@ void DynamicObject::update() {
     velocity.x *= 1 - wall_resistance;
   }
 
+  const float gravity = 0.0125;
+  velocity -= getUpDirection() * gravity;
+
   const auto acceleration_vector = acceleration_direction == HorizontalDirection::Left
                                        ? -getRightDirection()
                                        : getRightDirection();
@@ -86,10 +89,6 @@ void DynamicObject::update() {
       velocity = jump_direction * jump_power * (1 - wall_friction);
     }
   }
-
-  /* Apply gravity orthogonal to current slope. */
-  const float gravity = 0.0125;
-  velocity -= getUpDirection() * gravity;
 
   ground_normal.reset();
   direction_to_colliding_wall.reset();
