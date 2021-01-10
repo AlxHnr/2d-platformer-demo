@@ -47,7 +47,7 @@ void DynamicObject::update() {
     velocity.y = glm::min(velocity.y, 0.0f);
   }
   if (direction_to_colliding_wall.has_value() && !ground_normal.has_value()) {
-    const float wall_gravity = horizontal_acceleration * 0.99;
+    const float wall_gravity = 0.0001; /* Small value to keep objects sticking to walls. */
     const float wall_resistance = 0.5;
     const auto x_direction_towards_wall =
         direction_to_colliding_wall == HorizontalDirection::Left ? -1 : 1;
