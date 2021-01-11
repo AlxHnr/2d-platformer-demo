@@ -16,8 +16,7 @@ class DynamicObject : public Physics::Object {
 public:
   /** Construct a dynamic object with the boundaries of the given polygon.
    *
-   * @param vertices Zero or more points representing a convex polygon. If no points are provided,
-   * it will behave like a non-existing dummy.
+   * @param vertices Zero or more points representing a convex polygon.
    */
   DynamicObject(std::initializer_list<glm::vec2> vertices);
 
@@ -49,8 +48,20 @@ public:
 private:
   ConvexBoundingPolygon bounding_polygon;
 
-  /** Speed * direction of this object. */
+  /** Current direction * speed of this object. */
   glm::vec2 velocity = {0, 0};
+
+  /** Positive value, continuously applied to the object orthogonal to the current slope. */
+  float gravity = 0.0125;
+
+  /** Value between 0 and 1, applied to the object while touching the ground. */
+  float ground_friction = 0.05;
+
+  /** Value between 0 and 1, applied to the object while sliding down a wall. */
+  float wall_friction = 0.03;
+
+  /** Value between 0 and 1, continuously applied to the object. */
+  float air_friction = 0.01;
 
   /** Contains the normal of the ground if the object is standing on it. */
   std::optional<glm::vec2> ground_normal = std::nullopt;
