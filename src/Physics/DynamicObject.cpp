@@ -93,8 +93,6 @@ void DynamicObject::update() {
   is_touching_ceiling = false;
 }
 
-glm::vec2 DynamicObject::getVelocity() const { return velocity; }
-
 void DynamicObject::addVelocityOffset(const glm::vec2 offset) {
   bounding_polygon.setPosition(bounding_polygon.getPosition() + offset);
 }
@@ -123,6 +121,30 @@ void DynamicObject::handleCollisionWith(Physics::Object &, const glm::vec2 displ
           other_object_right_of_self ? HorizontalDirection::Right : HorizontalDirection::Left;
     }
   }
+}
+
+glm::vec2 DynamicObject::getVelocity() const { return velocity; }
+
+float DynamicObject::getGravity() const { return gravity; }
+
+void DynamicObject::setGravity(const float gravity) { this->gravity = glm::max(gravity, 0.0f); }
+
+float DynamicObject::getGroundFriction() const { return gravity; }
+
+void DynamicObject::setGroundFriction(const float ground_friction) {
+  this->ground_friction = glm::clamp(ground_friction, 0.0f, 1.0f);
+}
+
+float DynamicObject::getWallFriction() const { return gravity; }
+
+void DynamicObject::setWallFriction(const float wall_friction) {
+  this->wall_friction = glm::clamp(wall_friction, 0.0f, 1.0f);
+}
+
+float DynamicObject::getAirFriction() const { return gravity; }
+
+void DynamicObject::setAirFriction(const float air_friction) {
+  this->air_friction = glm::clamp(air_friction, 0.0f, 1.0f);
 }
 
 void DynamicObject::jump() { tick_of_jump_request = current_tick; }

@@ -34,10 +34,39 @@ public:
   glm::vec2 getRightDirection() const;
 
   void update() override;
-  glm::vec2 getVelocity() const override;
   virtual void addVelocityOffset(glm::vec2 offset) override;
   const ConvexBoundingPolygon &getBoundingPolygon() const override;
   void handleCollisionWith(Physics::Object &other, glm::vec2 displacement_vector) override;
+
+  glm::vec2 getVelocity() const override;
+
+  /** @return Positive value, continuously applied to the object orthogonal to the current slope. */
+  float getGravity() const;
+
+  /** @param gravity Positive value, continuously applied to the object orthogonal to the current
+   * slope. If negative, will be set to zero. */
+  void setGravity(float gravity);
+
+  /** @return Value between 0 and 1, applied to the object while touching the ground. */
+  float getGroundFriction() const;
+
+  /** @param ground_friction Value between 0 and 1, applied to the object while touching the ground.
+   * Will be clamped to the expected range. */
+  void setGroundFriction(float ground_friction);
+
+  /** @return Value between 0 and 1, applied to the object while sliding down a wall. */
+  float getWallFriction() const;
+
+  /** @param wall_friction Value between 0 and 1, applied to the object while sliding down a wall.
+   * Will be clamped to the expected range. */
+  void setWallFriction(float wall_friction);
+
+  /** @return Value between 0 and 1, continuously applied to the object. */
+  float getAirFriction() const;
+
+  /** @param air_friction Value between 0 and 1, continuously applied to the object. Will be clamped
+   * to the expected range. */
+  void setAirFriction(float air_friction);
 
   void jump();
 
