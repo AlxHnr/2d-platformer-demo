@@ -51,4 +51,22 @@ void JumpAndRunObject::jump() { time_of_jump_request = std::chrono::steady_clock
 void JumpAndRunObject::run(const std::optional<HorizontalDirection> direction) {
   acceleration_direction = direction;
 }
+
+float JumpAndRunObject::getJumpPower() const { return jump_power; }
+
+void JumpAndRunObject::setJumpPower(const float jump_power) {
+  this->jump_power = glm::max(jump_power, 0.0f);
+}
+
+float JumpAndRunObject::getHorizontalAcceleration() const { return horizontal_acceleration; }
+
+void JumpAndRunObject::setHorizontalAcceleration(const float horizontal_acceleration) {
+  this->horizontal_acceleration = glm::max(horizontal_acceleration, 0.0f);
+}
+
+float JumpAndRunObject::getHorizontalSpeedMax() const { return horizontal_speed_max; }
+
+void JumpAndRunObject::setHorizontalSpeedMax(const float horizontal_speed_max) {
+  this->horizontal_speed_max = glm::max(horizontal_speed_max, 0.0f);
+}
 } // namespace GameEngine::Physics

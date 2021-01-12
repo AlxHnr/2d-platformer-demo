@@ -30,6 +30,30 @@ public:
    * was given, the object will slow down and stop. The slope of the ground will be considered. */
   void run(std::optional<HorizontalDirection> direction);
 
+  /** @return Positive length of each jumps velocity vector. */
+  float getJumpPower() const;
+
+  /** @param jump_power Value containing the new length of a jumps velocity vector. If negative,
+   * will be set to zero. */
+  void setJumpPower(float jump_power);
+
+  /** @return Positive value which will be applied to the object on each tick while running.
+   * Application of this value depends on the slope of the ground and whether the object is in the
+   * air or not. */
+  float getHorizontalAcceleration() const;
+
+  /** @param horizontal_acceleration Value which will be applied to the object on each tick
+   * while running. If negative, will be set to zero. Application of this value depends on the slope
+   * of the ground and whether the object is in the air or not. */
+  void setHorizontalAcceleration(float horizontal_acceleration);
+
+  /** @return Positive speed limit at which the acceleration stops. */
+  float getHorizontalSpeedMax() const;
+
+  /** @param horizontal_speed_max Speed limit at which the acceleration stops. If negative, will be
+   * set to zero. */
+  void setHorizontalSpeedMax(float horizontal_speed_max);
+
 private:
   /** Length of a jumps velocity vector. */
   float jump_power = 0.475;
