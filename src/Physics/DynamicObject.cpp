@@ -125,6 +125,8 @@ void DynamicObject::handleCollisionWith(Physics::Object &, const glm::vec2 displ
 
 glm::vec2 DynamicObject::getVelocity() const { return velocity; }
 
+void DynamicObject::setVelocity(const glm::vec2 velocity) { this->velocity = velocity; }
+
 float DynamicObject::getGravity() const { return gravity; }
 
 void DynamicObject::setGravity(const float gravity) { this->gravity = glm::max(gravity, 0.0f); }

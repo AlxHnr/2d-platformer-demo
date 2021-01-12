@@ -39,6 +39,7 @@ public:
   void handleCollisionWith(Physics::Object &other, glm::vec2 displacement_vector) override;
 
   glm::vec2 getVelocity() const override;
+  void setVelocity(glm::vec2 velocity);
 
   /** @return Positive value, continuously applied to the object orthogonal to the current slope. */
   float getGravity() const;
