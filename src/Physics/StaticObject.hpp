@@ -11,7 +11,7 @@
 
 namespace GameEngine::Physics {
 /** Solid non-interactive geometric object making up the game world. */
-class StaticObject : public Physics::Object {
+class StaticObject : public Object {
 public:
   /** Construct a solid object from the given vertices.
    *

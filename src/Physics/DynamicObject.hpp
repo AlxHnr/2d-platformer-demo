@@ -12,7 +12,7 @@
 
 namespace GameEngine::Physics {
 /** Interactive object subject to gravity and horizontal acceleration. */
-class DynamicObject : public Physics::Object {
+class DynamicObject : public Object {
 public:
   /** Construct a dynamic object with the boundaries of the given polygon.
    *
