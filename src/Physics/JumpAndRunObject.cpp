@@ -35,7 +35,7 @@ void JumpAndRunObject::update() {
     if (standing_on_ground) {
       time_of_jump_request = {};
       setVelocity(getVelocity() + glm::vec2{0, jump_power});
-    } else if (direction_to_colliding_wall.has_value()) {
+    } else if (walljump_enabled && direction_to_colliding_wall.has_value()) {
       time_of_jump_request = {};
       const auto inversion_factor =
           direction_to_colliding_wall == HorizontalDirection::Left ? -1 : 1;
@@ -57,6 +57,10 @@ float JumpAndRunObject::getJumpPower() const { return jump_power; }
 void JumpAndRunObject::setJumpPower(const float jump_power) {
   this->jump_power = glm::max(jump_power, 0.0f);
 }
+
+bool JumpAndRunObject::getWalljumpEnabled() const { return walljump_enabled; }
+
+void JumpAndRunObject::setWalljumpEnabled(const bool enabled) { walljump_enabled = enabled; }
 
 float JumpAndRunObject::getHorizontalAcceleration() const { return horizontal_acceleration; }
 

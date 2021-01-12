@@ -37,6 +37,15 @@ public:
    * will be set to zero. */
   void setJumpPower(float jump_power);
 
+  /** @return True if the object can jump from a wall during a collision. */
+  bool getWalljumpEnabled() const;
+
+  /** Enable or disable walljumping.
+   *
+   * @param enabled True if the object can jump from a wall during a collision.
+   */
+  void setWalljumpEnabled(bool enabled);
+
   /** @return Positive value which will be applied to the object on each tick while running.
    * Application of this value depends on the slope of the ground and whether the object is in the
    * air or not. */
@@ -57,6 +66,9 @@ public:
 private:
   /** Length of a jumps velocity vector. */
   float jump_power = 0.475;
+
+  /** True if the object can jump from a wall during a collision. */
+  bool walljump_enabled = true;
 
   /** Will be applied to the object on each tick while running. Application of this value depends on
    * the slope of the ground and whether the object is in the air or not. */
