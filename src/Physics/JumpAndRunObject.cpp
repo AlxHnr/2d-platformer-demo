@@ -34,7 +34,7 @@ void JumpAndRunObject::update() {
   if (std::chrono::steady_clock::now() - time_of_jump_request < 100ms) {
     if (standing_on_ground) {
       time_of_jump_request = {};
-      setVelocity(getVelocity() + glm::vec2{0, jump_power});
+      setVelocity({getVelocity().x, jump_power});
     } else if (walljump_enabled && direction_to_colliding_wall.has_value()) {
       time_of_jump_request = {};
       const auto inversion_factor =
