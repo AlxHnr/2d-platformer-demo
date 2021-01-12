@@ -6,6 +6,7 @@
 #define GAME_ENGINE_SRC_PHYSICS_JUMP_AND_RUN_OBJECT_HPP
 
 #include "Physics/DynamicObject.hpp"
+#include <chrono>
 
 namespace GameEngine::Physics {
 /** Physical object which can accelerate and run up slopes, move in the air and do wall jumps.
@@ -40,13 +41,9 @@ private:
   /** Speed limit at which the acceleration stops. */
   float horizontal_speed_max = 0.35;
 
-  /** Counts each update() call. Set to 1000 ticks in the future to allow tick_of_jump_request to be
-   * (re)set to 0. */
-  uint32_t current_tick = 1000;
-
-  /** Tick at which jump() was called. Allows pressing the jump button slightly before the ground or
-   * wall is touched. */
-  uint32_t tick_of_jump_request = 0;
+  /** Timepoint at which jump() was called. Allows pressing the jump button slightly before the
+   * ground or wall is touched. */
+  std::chrono::steady_clock::time_point time_of_jump_request{};
 
   std::optional<HorizontalDirection> acceleration_direction = std::nullopt;
 };

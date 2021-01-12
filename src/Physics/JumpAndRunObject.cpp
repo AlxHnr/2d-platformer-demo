@@ -12,6 +12,8 @@ JumpAndRunObject::JumpAndRunObject(std::initializer_list<glm::vec2> vertices)
     : DynamicObject{vertices} {}
 
 void JumpAndRunObject::update() {
+  using namespace std::chrono_literals;
+
   /* Capture base classes values before calling its update() function. */
   const bool standing_on_ground = isTouchingGround();
   const auto direction_to_colliding_wall = isTouchingWall();
@@ -29,14 +31,12 @@ void JumpAndRunObject::update() {
     }
   }
 
-  current_tick++;
-  const auto ticks_tolerance = 6;
-  if (current_tick - tick_of_jump_request < ticks_tolerance) {
+  if (std::chrono::steady_clock::now() - time_of_jump_request < 100ms) {
     if (standing_on_ground) {
-      tick_of_jump_request = 0;
+      time_of_jump_request = {};
       setVelocity(getVelocity() + glm::vec2{0, jump_power});
     } else if (direction_to_colliding_wall.has_value()) {
-      tick_of_jump_request = 0;
+      time_of_jump_request = {};
       const auto inversion_factor =
           direction_to_colliding_wall == HorizontalDirection::Left ? -1 : 1;
       const glm::vec2 jump_direction = {
@@ -46,7 +46,7 @@ void JumpAndRunObject::update() {
   }
 }
 
-void JumpAndRunObject::jump() { tick_of_jump_request = current_tick; }
+void JumpAndRunObject::jump() { time_of_jump_request = std::chrono::steady_clock::now(); }
 
 void JumpAndRunObject::run(const std::optional<HorizontalDirection> direction) {
   acceleration_direction = direction;
