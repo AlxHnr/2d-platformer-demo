@@ -3,14 +3,13 @@
  */
 
 #include "Physics/DynamicObject.hpp"
-#include <glm/common.hpp>
 #include <glm/gtx/projection.hpp>
-#include <glm/gtx/rotate_vector.hpp>
 #include <glm/gtx/vector_angle.hpp>
 
 namespace GameEngine::Physics {
 DynamicObject::DynamicObject(std::initializer_list<glm::vec2> vertices)
     : bounding_polygon{vertices} {}
+
 bool DynamicObject::isTouchingGround() const { return ground_normal.has_value(); }
 
 std::optional<HorizontalDirection> DynamicObject::isTouchingWall() const {
@@ -28,9 +27,6 @@ glm::vec2 DynamicObject::getRightDirection() const {
 }
 
 void DynamicObject::update() {
-  current_tick++;
-
-  const float horizontal_acceleration = ground_normal.has_value() ? 0.05 : 0.025;
   if (ground_normal.has_value()) {
     velocity *= 1 - ground_friction;
   }
@@ -62,31 +58,6 @@ void DynamicObject::update() {
   }
 
   velocity -= getUpDirection() * gravity;
-
-  const auto acceleration_vector = acceleration_direction == HorizontalDirection::Left
-                                       ? -getRightDirection()
-                                       : getRightDirection();
-  const bool accelerating_in_moving_direction = glm::dot(velocity, acceleration_vector) > 0;
-  if (acceleration_direction.has_value() &&
-      (glm::length(glm::proj(velocity, acceleration_vector)) < 0.35 ||
-       !accelerating_in_moving_direction)) {
-    velocity += acceleration_vector * horizontal_acceleration;
-  }
-
-  if (jumpScheduled()) {
-    const float jump_power = 0.475;
-    if (ground_normal.has_value()) {
-      tick_of_jump_request = 0;
-      velocity.y += jump_power;
-    } else if (direction_to_colliding_wall.has_value()) {
-      tick_of_jump_request = 0;
-      const auto inversion_factor =
-          direction_to_colliding_wall == HorizontalDirection::Left ? -1 : 1;
-      const glm::vec2 jump_direction = {
-          glm::rotate(glm::vec2{0, 1}, glm::radians(45.0f)).x * inversion_factor, 1};
-      velocity = jump_direction * jump_power;
-    }
-  }
 
   ground_normal.reset();
   direction_to_colliding_wall.reset();
@@ -147,16 +118,5 @@ float DynamicObject::getAirFriction() const { return gravity; }
 
 void DynamicObject::setAirFriction(const float air_friction) {
   this->air_friction = glm::clamp(air_friction, 0.0f, 1.0f);
-}
-
-void DynamicObject::jump() { tick_of_jump_request = current_tick; }
-
-void DynamicObject::run(const std::optional<HorizontalDirection> direction) {
-  acceleration_direction = direction;
-}
-
-bool DynamicObject::jumpScheduled() const {
-  const auto ticks_tolerance = 6;
-  return current_tick - tick_of_jump_request < ticks_tolerance;
 }
 } // namespace GameEngine::Physics

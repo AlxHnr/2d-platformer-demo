@@ -25,7 +25,7 @@ std::unique_ptr<Physics::StaticObject> makeStaticObject(std::initializer_list<gl
 namespace GameEngine {
 Game::Game(const size_t screen_width, const size_t screen_height)
     : camera{screen_width, screen_height} {
-  objects.push_back(makeBox<Physics::DynamicObject>({1.625, -7.625}, 1.0, 1.0));
+  objects.push_back(makeBox<Physics::JumpAndRunObject>({1.625, -7.625}, 1.0, 1.0));
   camera.setPosition(getGameCharacter().getBoundingPolygon().getPosition());
 
   objects.push_back(makeStaticObject({{0.25, 100}, {31.75, 100}}));     /* Ceiling. */
@@ -51,12 +51,12 @@ Game::Game(const size_t screen_width, const size_t screen_height)
       makeStaticObject({{28.75, -19.5}, {31.75, -19.5}, {31.75, -11.75}})); /* Steep ramp. */
 }
 
-Physics::DynamicObject &Game::getGameCharacter() {
-  return *dynamic_cast<Physics::DynamicObject *>(objects.front().get());
+Physics::JumpAndRunObject &Game::getGameCharacter() {
+  return *dynamic_cast<Physics::JumpAndRunObject *>(objects.front().get());
 }
 
-const Physics::DynamicObject &Game::getGameCharacter() const {
-  return *dynamic_cast<Physics::DynamicObject *>(objects.front().get());
+const Physics::JumpAndRunObject &Game::getGameCharacter() const {
+  return *dynamic_cast<Physics::JumpAndRunObject *>(objects.front().get());
 }
 
 void Game::addStaticBox(const glm::vec2 screen_position) {

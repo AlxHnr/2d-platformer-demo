@@ -6,8 +6,8 @@
 #define GAME_ENGINE_SRC_GAME_HPP
 
 #include "Camera.hpp"
-#include "Physics/DynamicObject.hpp"
 #include "Physics/Integrator.hpp"
+#include "Physics/JumpAndRunObject.hpp"
 #include "Physics/Object.hpp"
 #include <SDL_render.h>
 #include <memory>
@@ -18,8 +18,8 @@ class Game {
 public:
   Game(size_t screen_width, size_t screen_height);
 
-  Physics::DynamicObject &getGameCharacter();
-  const Physics::DynamicObject &getGameCharacter() const;
+  Physics::JumpAndRunObject &getGameCharacter();
+  const Physics::JumpAndRunObject &getGameCharacter() const;
   void addStaticBox(glm::vec2 screen_position);
   void addDynamicBox(glm::vec2 screen_position);
   void integratePhysics(std::chrono::microseconds time_since_last_tick);

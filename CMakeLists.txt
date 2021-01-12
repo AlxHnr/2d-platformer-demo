@@ -39,6 +39,7 @@ add_library(GameEngine
   src/ConvexBoundingPolygon.cpp
   src/Physics/DynamicObject.cpp
   src/Physics/Integrator.cpp
+  src/Physics/JumpAndRunObject.cpp
   src/Physics/StaticObject.cpp
   src/SDL2/Error.cpp
 )

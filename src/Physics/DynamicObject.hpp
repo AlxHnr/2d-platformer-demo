@@ -69,12 +69,6 @@ public:
    * to the expected range. */
   void setAirFriction(float air_friction);
 
-  void jump();
-
-  /** @param direction Optional direction to which the object should accelerate. If no direction was
-   * given, the object will slow down and stop. The slope of the ground will be considered. */
-  void run(std::optional<HorizontalDirection> direction);
-
 private:
   ConvexBoundingPolygon bounding_polygon;
 
@@ -101,18 +95,6 @@ private:
 
   /** True if the object is hitting another object from below. */
   bool is_touching_ceiling = false;
-
-  /** Counts each update() call. Set to 1000 ticks in the future to allow tick_of_jump_request to be
-   * (re)set to 0. */
-  uint32_t current_tick = 1000;
-
-  /** Tick at which jump() was called. Allows pressing the jump button slightly before the ground or
-   * wall is touched. */
-  uint32_t tick_of_jump_request = 0;
-
-  bool jumpScheduled() const;
-
-  std::optional<HorizontalDirection> acceleration_direction = std::nullopt;
 };
 } // namespace GameEngine::Physics
 
