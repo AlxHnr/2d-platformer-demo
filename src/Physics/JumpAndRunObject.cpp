@@ -20,6 +20,10 @@ void JumpAndRunObject::update() {
   const auto right_direction = getRightDirection();
   DynamicObject::update();
 
+  if (standing_on_ground) {
+    airjumps_remaining = airjumps_max;
+  }
+
   if (acceleration_direction.has_value()) {
     const auto acceleration_vector =
         acceleration_direction == HorizontalDirection::Left ? -right_direction : right_direction;
@@ -42,6 +46,10 @@ void JumpAndRunObject::update() {
       const glm::vec2 jump_direction = {
           glm::rotate(glm::vec2{0, 1}, glm::radians(45.0f)).x * inversion_factor, 1};
       setVelocity(jump_direction * jump_power);
+    } else if (airjumps_remaining > 0) {
+      airjumps_remaining--;
+      time_of_jump_request = {};
+      setVelocity({getVelocity().x, jump_power});
     }
   }
 }
@@ -61,6 +69,12 @@ void JumpAndRunObject::setJumpPower(const float jump_power) {
 bool JumpAndRunObject::getWalljumpEnabled() const { return walljump_enabled; }
 
 void JumpAndRunObject::setWalljumpEnabled(const bool enabled) { walljump_enabled = enabled; }
+
+uint16_t JumpAndRunObject::getAirjumpsMax() const { return airjumps_max; }
+
+void JumpAndRunObject::setAirjumpsMax(const uint16_t airjumps_max) {
+  this->airjumps_max = airjumps_max;
+}
 
 float JumpAndRunObject::getHorizontalAcceleration() const { return horizontal_acceleration; }
 

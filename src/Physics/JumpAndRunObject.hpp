@@ -46,6 +46,14 @@ public:
    */
   void setWalljumpEnabled(bool enabled);
 
+  /** @return Amount of jumps the object can perform in the air before touching the ground again.
+   * Zero means airjumping is disabled. */
+  uint16_t getAirjumpsMax() const;
+
+  /** @param airjumps_max Amount of jumps the object can perform in the air before touching the
+   * ground again. Zero means airjumping is disabled. */
+  void setAirjumpsMax(uint16_t airjumps_max);
+
   /** @return Positive value which will be applied to the object on each tick while running.
    * Application of this value depends on the slope of the ground and whether the object is in the
    * air or not. */
@@ -69,6 +77,12 @@ private:
 
   /** True if the object can jump from a wall during a collision. */
   bool walljump_enabled = true;
+
+  /** Maximal limit of jumps the object can perform in the air before touching the ground again. */
+  uint16_t airjumps_max = 0;
+
+  /** Amount of airjumps the object has left before touching the ground again. */
+  uint16_t airjumps_remaining = 0;
 
   /** Will be applied to the object on each tick while running. Application of this value depends on
    * the slope of the ground and whether the object is in the air or not. */
