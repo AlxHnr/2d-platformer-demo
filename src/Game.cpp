@@ -40,6 +40,8 @@ Game::Game(const size_t screen_width, const size_t screen_height)
         makeStaticObject({{18.625 + width * index, -8.0}, {18.625 + width * index, -8.125}}));
   }
 
+  objects.push_back(makeStaticObject({{18, 2}, {23, -3.0}, {27, 2}})); /* Plattform. */
+
   objects.push_back(
       makeStaticObject({{11.25, -19.5}, {16.25, -19.5}, {19.875, -15.75}}));         /* Ramp. */
   objects.push_back(makeStaticObject({{0.25, -15.0}, {0.25, -19.5}, {8.5, -19.5}})); /* Ramp. */
