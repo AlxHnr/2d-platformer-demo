@@ -38,17 +38,17 @@ void JumpAndRunObject::update() {
   if (std::chrono::steady_clock::now() - time_of_jump_request < 100ms) {
     if (standing_on_ground) {
       time_of_jump_request = {};
-      setVelocity({getVelocity().x, jump_power});
+      setVelocity({getVelocity().x, jump_power * (1 - getGroundStickiness())});
     } else if (walljump_enabled && direction_to_colliding_wall.has_value()) {
       time_of_jump_request = {};
       const auto inversion_factor =
           direction_to_colliding_wall == HorizontalDirection::Left ? -1 : 1;
       const glm::vec2 jump_direction = {
           glm::rotate(glm::vec2{0, 1}, glm::radians(45.0f)).x * inversion_factor, 1};
-      setVelocity(jump_direction * jump_power);
+      setVelocity(jump_direction * jump_power * (1 - getWallStickiness()));
     } else if (airjumps_remaining > 0) {
-      airjumps_remaining--;
       time_of_jump_request = {};
+      airjumps_remaining--;
       setVelocity({getVelocity().x, jump_power});
     }
   }

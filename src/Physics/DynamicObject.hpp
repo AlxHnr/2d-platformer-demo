@@ -49,18 +49,18 @@ public:
   void setGravity(float gravity);
 
   /** @return Value between 0 and 1, applied to the object while touching the ground. */
-  float getGroundFriction() const;
+  float getGroundStickiness() const;
 
-  /** @param ground_friction Value between 0 and 1, applied to the object while touching the ground.
+  /** @param ground_stickiness Value between 0 and 1, applied to the object while touching the
+   * ground. Will be clamped to the expected range. */
+  void setGroundStickiness(float ground_stickiness);
+
+  /** @return Value between 0 and 1, applied to the object while sliding on a wall. */
+  float getWallStickiness() const;
+
+  /** @param wall_stickiness Value between 0 and 1, applied to the object while sliding on a wall.
    * Will be clamped to the expected range. */
-  void setGroundFriction(float ground_friction);
-
-  /** @return Value between 0 and 1, applied to the object while sliding down a wall. */
-  float getWallFriction() const;
-
-  /** @param wall_friction Value between 0 and 1, applied to the object while sliding down a wall.
-   * Will be clamped to the expected range. */
-  void setWallFriction(float wall_friction);
+  void setWallStickiness(float wall_stickiness);
 
   /** @return Value between 0 and 1, continuously applied to the object. */
   float getAirFriction() const;
@@ -79,10 +79,10 @@ private:
   float gravity = 0.0125;
 
   /** Value between 0 and 1, applied to the object while touching the ground. */
-  float ground_friction = 0.05;
+  float ground_stickiness = 0.05;
 
-  /** Value between 0 and 1, applied to the object while sliding down a wall. */
-  float wall_friction = 0.03;
+  /** Value between 0 and 1, applied to the object while sliding on a wall. */
+  float wall_stickiness = 0;
 
   /** Value between 0 and 1, continuously applied to the object. */
   float air_friction = 0.01;

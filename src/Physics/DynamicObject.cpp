@@ -27,14 +27,6 @@ glm::vec2 DynamicObject::getRightDirection() const {
 }
 
 void DynamicObject::update() {
-  if (ground_normal.has_value()) {
-    velocity *= 1 - ground_friction;
-  }
-  if (direction_to_colliding_wall.has_value() && velocity.y < 0) {
-    velocity *= 1 - wall_friction;
-  }
-  velocity *= 1 - air_friction;
-
   /* Align velocity parallel to ground when moving towards ground. */
   if (ground_normal.has_value() &&
       glm::angle(*ground_normal, glm::normalize(velocity)) > glm::half_pi<float>()) {
@@ -42,6 +34,9 @@ void DynamicObject::update() {
   }
   if (is_touching_ceiling) {
     velocity.y = glm::min(velocity.y, 0.0f);
+  }
+  if (ground_normal.has_value()) {
+    velocity *= 1 - ground_stickiness;
   }
   if (direction_to_colliding_wall.has_value()) {
     const float wall_gravity = 0.0001; /* Small value to keep objects sticking to walls. */
@@ -55,8 +50,9 @@ void DynamicObject::update() {
       velocity.x += x_direction_towards_wall * wall_gravity;
     }
     velocity.x *= 1 - wall_resistance;
+    velocity *= 1 - wall_stickiness;
   }
-
+  velocity *= 1 - air_friction;
   velocity -= getUpDirection() * gravity;
 
   ground_normal.reset();
@@ -102,16 +98,16 @@ float DynamicObject::getGravity() const { return gravity; }
 
 void DynamicObject::setGravity(const float gravity) { this->gravity = glm::max(gravity, 0.0f); }
 
-float DynamicObject::getGroundFriction() const { return gravity; }
+float DynamicObject::getGroundStickiness() const { return ground_stickiness; }
 
-void DynamicObject::setGroundFriction(const float ground_friction) {
-  this->ground_friction = glm::clamp(ground_friction, 0.0f, 1.0f);
+void DynamicObject::setGroundStickiness(const float ground_stickiness) {
+  this->ground_stickiness = glm::clamp(ground_stickiness, 0.0f, 1.0f);
 }
 
-float DynamicObject::getWallFriction() const { return gravity; }
+float DynamicObject::getWallStickiness() const { return wall_stickiness; }
 
-void DynamicObject::setWallFriction(const float wall_friction) {
-  this->wall_friction = glm::clamp(wall_friction, 0.0f, 1.0f);
+void DynamicObject::setWallStickiness(const float wall_stickiness) {
+  this->wall_stickiness = glm::clamp(wall_stickiness, 0.0f, 1.0f);
 }
 
 float DynamicObject::getAirFriction() const { return gravity; }
