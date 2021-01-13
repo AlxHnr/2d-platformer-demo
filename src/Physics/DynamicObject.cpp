@@ -33,6 +33,7 @@ void DynamicObject::update() {
     velocity = glm::proj(velocity, getRightDirection());
   }
   if (is_touching_ceiling) {
+    velocity = glm::proj(velocity, -getUpDirection());
     velocity.y = glm::min(velocity.y, 0.0f);
   }
   if (ground_normal.has_value()) {
@@ -69,7 +70,8 @@ const ConvexBoundingPolygon &DynamicObject::getBoundingPolygon() const { return 
 void DynamicObject::handleCollisionWith(Physics::Object &, const glm::vec2 displacement_vector) {
   addVelocityOffset(displacement_vector);
 
-  if (glm::abs(displacement_vector.x) < glm::abs(displacement_vector.y)) {
+  const auto angle = glm::angle(glm::vec2{0, 1}, glm::normalize(displacement_vector));
+  if (angle < glm::radians(55.0f) || angle > glm::radians(100.0f)) {
     /* Vertical collision. */
     const bool is_falling = velocity.y < 0;
     const bool other_object_below_self = displacement_vector.y > 0;
