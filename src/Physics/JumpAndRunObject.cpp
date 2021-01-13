@@ -18,6 +18,9 @@ void JumpAndRunObject::update() {
   const bool standing_on_ground = isTouchingGround();
   const auto direction_to_colliding_wall = isTouchingWall();
   const auto right_direction = getRightDirection();
+  if (direction_to_colliding_wall.has_value() && getVelocity().y < 0) {
+    setVelocity(getVelocity() * (1 - wall_grip));
+  }
   DynamicObject::update();
 
   if (standing_on_ground) {
@@ -69,6 +72,12 @@ void JumpAndRunObject::setJumpPower(const float jump_power) {
 bool JumpAndRunObject::getWalljumpEnabled() const { return walljump_enabled; }
 
 void JumpAndRunObject::setWalljumpEnabled(const bool enabled) { walljump_enabled = enabled; }
+
+float JumpAndRunObject::getWallGrip() const { return wall_grip; }
+
+void JumpAndRunObject::setWallGrip(const float wall_grip) {
+  this->wall_grip = glm::clamp(wall_grip, 0.0f, 1.0f);
+}
 
 uint16_t JumpAndRunObject::getAirjumpsMax() const { return airjumps_max; }
 

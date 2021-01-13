@@ -46,6 +46,13 @@ public:
    */
   void setWalljumpEnabled(bool enabled);
 
+  /** @return Friction value between 0 and 1, applied while the object slides down a wall. */
+  float getWallGrip() const;
+
+  /** @param wall_grip Friction value between 0 and 1, applied while the object slides down a wall.
+   * Will be clamped to the expected range. */
+  void setWallGrip(float wall_grip);
+
   /** @return Amount of jumps the object can perform in the air before touching the ground again.
    * Zero means airjumping is disabled. */
   uint16_t getAirjumpsMax() const;
@@ -77,6 +84,9 @@ private:
 
   /** True if the object can jump from a wall during a collision. */
   bool walljump_enabled = true;
+
+  /** Friction applied to the object while sliding down a wall. */
+  float wall_grip = 0.03;
 
   /** Maximal limit of jumps the object can perform in the air before touching the ground again. */
   uint16_t airjumps_max = 0;
