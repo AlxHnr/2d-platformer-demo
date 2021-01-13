@@ -78,6 +78,14 @@ public:
    * set to zero. */
   void setHorizontalSpeedMax(float horizontal_speed_max);
 
+  /** @return Friction value between 0 and 1, applied when the object touches the ground and stops
+   * running. */
+  float getGroundGrip() const;
+
+  /** @param ground_grip Friction value between 0 and 1, applied when the object touches the ground
+   * and stops running. Will be clamped to the expected range. */
+  void setGroundGrip(float ground_grip);
+
 private:
   /** Length of a jumps velocity vector. */
   float jump_power = 0.475;
@@ -100,6 +108,9 @@ private:
 
   /** Speed limit at which the acceleration stops. */
   float horizontal_speed_max = 0.35;
+
+  /** Friction of the floor applied when the object stops running. */
+  float ground_grip = 0.05;
 
   /** Timepoint at which jump() was called. Allows pressing the jump button slightly before the
    * ground or wall is touched. */

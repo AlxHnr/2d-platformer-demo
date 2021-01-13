@@ -18,6 +18,9 @@ void JumpAndRunObject::update() {
   const bool standing_on_ground = isTouchingGround();
   const auto direction_to_colliding_wall = isTouchingWall();
   const auto right_direction = getRightDirection();
+  if (standing_on_ground && !acceleration_direction.has_value()) {
+    setVelocity(getVelocity() * (1 - ground_grip));
+  }
   if (direction_to_colliding_wall.has_value() && getVelocity().y < 0) {
     setVelocity(getVelocity() * (1 - wall_grip));
   }
@@ -95,5 +98,11 @@ float JumpAndRunObject::getHorizontalSpeedMax() const { return horizontal_speed_
 
 void JumpAndRunObject::setHorizontalSpeedMax(const float horizontal_speed_max) {
   this->horizontal_speed_max = glm::max(horizontal_speed_max, 0.0f);
+}
+
+float JumpAndRunObject::getGroundGrip() const { return ground_grip; }
+
+void JumpAndRunObject::setGroundGrip(const float ground_grip) {
+  this->ground_grip = glm::clamp(ground_grip, 0.0f, 1.0f);
 }
 } // namespace GameEngine::Physics
