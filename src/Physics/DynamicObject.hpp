@@ -1,5 +1,5 @@
 /** @file
- * Contains a physical object subject to gravity and horizontal acceleration.
+ * Contains a physical object subject to gravity.
  */
 
 #ifndef GAME_ENGINE_SRC_PHYSICS_DYNAMIC_OBJECT_HPP
@@ -10,7 +10,7 @@
 #include <optional>
 
 namespace GameEngine::Physics {
-/** Interactive object subject to gravity and horizontal acceleration. */
+/** Interactive object subject to gravity. */
 class DynamicObject : public Object {
 public:
   /** Construct a dynamic object with the boundaries of the given polygon.
