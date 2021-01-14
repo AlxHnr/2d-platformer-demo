@@ -8,10 +8,10 @@
 #include <doctest/trompeloeil.hpp>
 #include <glm/geometric.hpp>
 
-namespace {
 using namespace GameEngine;
 using namespace std::chrono_literals;
 
+namespace {
 class MockObject : public Physics::Object {
   MAKE_MOCK0(update, void(), override);
   MAKE_CONST_MOCK0(getVelocity, glm::vec2(), override);

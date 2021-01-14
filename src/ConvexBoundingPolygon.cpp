@@ -10,9 +10,9 @@
 #include <glm/gtx/rotate_vector.hpp>
 #include <numeric>
 
-namespace {
 using namespace GameEngine;
 
+namespace {
 glm::vec2 computeCenter(const std::vector<glm::vec2> &polygon) {
   return std::accumulate(polygon.cbegin(), polygon.cend(), glm::vec2{}) /
          static_cast<float>(polygon.size());

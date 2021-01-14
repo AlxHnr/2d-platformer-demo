@@ -5,9 +5,9 @@
 #include <Geometry.hpp>
 #include <doctest/doctest.h>
 
-TEST_CASE("Traverse polygon using forEachEdge()") {
-  using namespace GameEngine::Geometry;
+using namespace GameEngine::Geometry;
 
+TEST_CASE("Traverse polygon using forEachEdge()") {
   SUBCASE("Zero vertices") {
     forEachEdge({}, [](glm::vec2, glm::vec2) { REQUIRE(false); });
   }

@@ -8,9 +8,9 @@
 #include <glm/gtc/constants.hpp>
 #include <glm/trigonometric.hpp>
 
-namespace {
 using namespace GameEngine;
 
+namespace {
 /** Basic counterclockwise quad. */
 const ConvexBoundingPolygon quad{{-1, 1}, {-1, -1}, {1, -1}, {1, 1}};
 } // namespace

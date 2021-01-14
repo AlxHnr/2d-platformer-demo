@@ -6,9 +6,9 @@
 #include "Geometry.hpp"
 #include "Physics/StaticObject.hpp"
 
-namespace {
 using namespace GameEngine;
 
+namespace {
 template <typename T>
 std::unique_ptr<T> makeBox(const glm::vec2 center, const float width, const float height) {
   const glm::vec2 box_half_width = {width / 2, 0};

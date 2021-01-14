@@ -8,10 +8,10 @@
 #include <glm/gtx/projection.hpp>
 #include <glm/gtx/rotate_vector.hpp>
 
-namespace {
 using namespace std::chrono_literals;
 using namespace GameEngine::Physics;
 
+namespace {
 /** Maximal total length of velocity vector applicable per tick. */
 constexpr float velocity_length_max = 2.5;
 
