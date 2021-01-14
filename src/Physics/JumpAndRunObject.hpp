@@ -5,6 +5,7 @@
 #ifndef GAME_ENGINE_SRC_PHYSICS_JUMP_AND_RUN_OBJECT_HPP
 #define GAME_ENGINE_SRC_PHYSICS_JUMP_AND_RUN_OBJECT_HPP
 
+#include "HorizontalDirection.hpp"
 #include "Physics/DynamicObject.hpp"
 #include <chrono>
 

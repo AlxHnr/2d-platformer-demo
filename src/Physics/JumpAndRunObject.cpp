@@ -47,8 +47,7 @@ void JumpAndRunObject::update() {
       setVelocity({getVelocity().x, jump_power * (1 - getGroundStickiness())});
     } else if (walljump_enabled && direction_to_colliding_wall.has_value()) {
       time_of_jump_request = {};
-      const auto inversion_factor =
-          direction_to_colliding_wall == HorizontalDirection::Left ? -1 : 1;
+      const auto inversion_factor = direction_to_colliding_wall->x < 0 ? -1 : 1;
       const glm::vec2 jump_direction = {
           glm::rotate(glm::vec2{0, 1}, glm::radians(45.0f)).x * inversion_factor, 1};
       setVelocity(jump_direction * jump_power * (1 - getWallStickiness()));

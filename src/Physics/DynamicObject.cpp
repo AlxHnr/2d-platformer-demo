@@ -12,7 +12,7 @@ DynamicObject::DynamicObject(std::initializer_list<glm::vec2> vertices)
 
 bool DynamicObject::isTouchingGround() const { return ground_normal.has_value(); }
 
-std::optional<HorizontalDirection> DynamicObject::isTouchingWall() const {
+std::optional<glm::vec2> DynamicObject::isTouchingWall() const {
   return direction_to_colliding_wall;
 }
 
@@ -42,10 +42,9 @@ void DynamicObject::update() {
   if (direction_to_colliding_wall.has_value()) {
     const float wall_gravity = 0.0001; /* Small value to keep objects sticking to walls. */
     const float wall_resistance = 0.5;
-    const auto x_direction_towards_wall =
-        direction_to_colliding_wall == HorizontalDirection::Left ? -1 : 1;
+    const auto x_direction_towards_wall = direction_to_colliding_wall->x < 0 ? -1 : 1;
     const bool moving_left = velocity.x < 0;
-    const bool wall_is_left = direction_to_colliding_wall == HorizontalDirection::Left;
+    const bool wall_is_left = direction_to_colliding_wall->x < 0;
 
     if (wall_is_left != moving_left || glm::abs(velocity.x) < wall_gravity) {
       velocity.x += x_direction_towards_wall * wall_gravity;
@@ -86,8 +85,7 @@ void DynamicObject::handleCollisionWith(Physics::Object &, const glm::vec2 displ
     const bool is_moving_right = velocity.x > 0;
     const bool other_object_right_of_self = displacement_vector.x < 0;
     if (is_moving_right == other_object_right_of_self) {
-      direction_to_colliding_wall =
-          other_object_right_of_self ? HorizontalDirection::Right : HorizontalDirection::Left;
+      direction_to_colliding_wall = glm::normalize(-displacement_vector);
     }
   }
 }

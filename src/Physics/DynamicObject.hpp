@@ -5,7 +5,6 @@
 #ifndef GAME_ENGINE_SRC_PHYSICS_DYNAMIC_OBJECT_HPP
 #define GAME_ENGINE_SRC_PHYSICS_DYNAMIC_OBJECT_HPP
 
-#include "HorizontalDirection.hpp"
 #include "Physics/Object.hpp"
 #include <glm/vec2.hpp>
 #include <optional>
@@ -23,7 +22,7 @@ public:
   bool isTouchingGround() const;
 
   /** @return Direction to the colliding wall, if the object is colliding with a wall. */
-  std::optional<HorizontalDirection> isTouchingWall() const;
+  std::optional<glm::vec2> isTouchingWall() const;
 
   /** @return Normal of the grounds slope on which this object stands. If the object is in the air
    * it will return the Y axis {0, 1}. */
@@ -91,7 +90,7 @@ private:
   std::optional<glm::vec2> ground_normal = std::nullopt;
 
   /** Contains the direction to the wall if the object is touching it. */
-  std::optional<HorizontalDirection> direction_to_colliding_wall = std::nullopt;
+  std::optional<glm::vec2> direction_to_colliding_wall = std::nullopt;
 
   /** True if the object is hitting another object from below. */
   bool is_touching_ceiling = false;
