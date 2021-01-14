@@ -5,8 +5,8 @@
 #ifndef GAME_ENGINE_SRC_CONVEX_BOUNDING_POLYGON_HPP
 #define GAME_ENGINE_SRC_CONVEX_BOUNDING_POLYGON_HPP
 
-#include <functional>
 #include <glm/vec2.hpp>
+#include <optional>
 #include <vector>
 
 namespace GameEngine {
@@ -65,14 +65,6 @@ public:
 
   /** @return Vertices of this polygon in the game world. */
   const std::vector<glm::vec2> &getVertices() const;
-
-  /** Apply the given function to all edges of this polygon.
-   *
-   * @param function Will be called on each edge. Takes the start and end position of the current
-   * edge.
-   */
-  void
-  forEachEdge(const std::function<void(glm::vec2 edge_start, glm::vec2 edge_end)> &function) const;
 
 private:
   /** Center of this object. */

@@ -3,6 +3,7 @@
  */
 
 #include "Game.hpp"
+#include "Geometry.hpp"
 #include "Physics/StaticObject.hpp"
 
 namespace {
@@ -122,10 +123,11 @@ void Game::render(SDL_Renderer *renderer) const {
 }
 
 void Game::renderPolygon(SDL_Renderer *renderer, const ConvexBoundingPolygon &polygon) const {
-  polygon.forEachEdge([&](const glm::vec2 world_start, const glm::vec2 world_end) {
-    const auto start = camera.toScreenCoordinate(world_start);
-    const auto end = camera.toScreenCoordinate(world_end);
-    SDL_RenderDrawLine(renderer, start.x, start.y, end.x, end.y);
-  });
+  Geometry::forEachEdge(polygon.getVertices(),
+                        [&](const glm::vec2 world_start, const glm::vec2 world_end) {
+                          const auto start = camera.toScreenCoordinate(world_start);
+                          const auto end = camera.toScreenCoordinate(world_end);
+                          SDL_RenderDrawLine(renderer, start.x, start.y, end.x, end.y);
+                        });
 }
 } // namespace GameEngine

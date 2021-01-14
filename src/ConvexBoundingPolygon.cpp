@@ -3,52 +3,24 @@
  */
 
 #include "ConvexBoundingPolygon.hpp"
+#include "Geometry.hpp"
 #include <SDL_assert.h>
+#include <algorithm>
 #include <glm/gtc/constants.hpp>
 #include <glm/gtx/rotate_vector.hpp>
 #include <numeric>
 
 namespace {
+using namespace GameEngine;
+
 glm::vec2 computeCenter(const std::vector<glm::vec2> &polygon) {
   return std::accumulate(polygon.cbegin(), polygon.cend(), glm::vec2{}) /
          static_cast<float>(polygon.size());
 }
 
-/** Count the edges of the given polygon.
- *
- * @param polygon Contains zero or more vertices.
- *
- * @return Amount of edges in the given polygon. E.g. a triangle with 3 points has 3 edges. A line
- * with 2 points has one edge.
- */
-size_t countEdges(const std::vector<glm::vec2> &polygon) {
-  if (polygon.size() < 2) {
-    return 0;
-  }
-  if (polygon.size() == 2) {
-    return 1;
-  }
-  return polygon.size();
-}
-/** Get the edge from the given polygon specified by the edges index.
- *
- * @param polygon Contains at least two vertices representing an edge.
- * @param edge_index Index of the edge starting at 0. Must be inside the bounds of the given
- * polygon. See countEdges().
- *
- * @return [start, end] positions of the polygons nth edge.
- */
-std::pair<glm::vec2, glm::vec2> getEdge(const std::vector<glm::vec2> &polygon,
-                                        const size_t edge_index) {
-  if (edge_index == polygon.size() - 1) {
-    return {polygon.back(), polygon.front()};
-  }
-  return {polygon[edge_index], polygon[edge_index + 1]};
-}
-
 /** @return Normal vector orthogonal to the polygons nth edge. */
 glm::vec2 getEdgeNormal(const std::vector<glm::vec2> &polygon, const size_t edge_index) {
-  const auto [start, end] = getEdge(polygon, edge_index);
+  const auto [start, end] = Geometry::getEdge(polygon, edge_index);
   return glm::normalize(glm::vec2{start.y - end.y, end.x - start.x});
 }
 
@@ -99,7 +71,7 @@ std::optional<DisplacementVector> findSmallestDisplacementVector(const std::vect
     return std::nullopt;
   }
 
-  const auto a_edges = countEdges(a);
+  const auto a_edges = Geometry::countEdges(a);
   for (size_t index = 1; index < a_edges; ++index) {
     const auto axis = getEdgeNormal(a, index);
     const auto overlap = getProjectionOverlap(a, b, axis);
@@ -183,14 +155,5 @@ void ConvexBoundingPolygon::recomputeBoundingPolygon() {
 
 const std::vector<glm::vec2> &ConvexBoundingPolygon::getVertices() const {
   return bounding_polygon;
-}
-
-void ConvexBoundingPolygon::forEachEdge(
-    const std::function<void(glm::vec2 edge_start, glm::vec2 edge_end)> &function) const {
-  const auto edge_count = countEdges(bounding_polygon);
-  for (size_t index = 0; index < edge_count; ++index) {
-    const auto [start, end] = getEdge(bounding_polygon, index);
-    function(start, end);
-  }
 }
 } // namespace GameEngine

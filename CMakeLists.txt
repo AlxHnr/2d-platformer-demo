@@ -37,6 +37,7 @@ CPMAddPackage(NAME trompeloeil VERSION 39
 add_library(GameEngine
   src/Camera.cpp
   src/ConvexBoundingPolygon.cpp
+  src/Geometry.cpp
   src/Physics/DynamicObject.cpp
   src/Physics/Integrator.cpp
   src/Physics/JumpAndRunObject.cpp
@@ -52,6 +53,7 @@ target_include_directories(GameEngine PUBLIC src)
 
 add_executable(Test
   test/ConvexBoundingPolygon.cpp
+  test/Geometry.cpp
   test/Main.cpp
   test/Physics/Integrator.cpp
 )

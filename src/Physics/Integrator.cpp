@@ -3,6 +3,7 @@
  */
 
 #include "Physics/Integrator.hpp"
+#include <algorithm>
 #include <glm/gtc/constants.hpp>
 #include <glm/gtx/projection.hpp>
 #include <glm/gtx/rotate_vector.hpp>
