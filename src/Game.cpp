@@ -87,36 +87,38 @@ void Game::scaleCamera(float scaling_factor) {
 }
 
 void Game::render(SDL_Renderer *renderer) const {
-  const auto &game_character = getGameCharacter();
+  for (const auto &object : objects) {
+    const auto *dynamic_object = dynamic_cast<Physics::DynamicObject *>(object.get());
+    if (dynamic_object == nullptr) {
+      SDL_SetRenderDrawColor(renderer, 180, 180, 255, 255);
+      renderPolygon(renderer, object->getBoundingPolygon());
+      continue;
+    }
 
-  SDL_SetRenderDrawColor(renderer, 180, 180, 255, 255);
-  for (size_t index = 1; index < objects.size(); ++index) {
-    renderPolygon(renderer, objects[index]->getBoundingPolygon());
-  }
+    if (dynamic_object->isTouchingGround()) {
+      SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+    } else if (dynamic_object->isTouchingWall()) {
+      SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
+    } else {
+      SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    }
+    renderPolygon(renderer, dynamic_object->getBoundingPolygon());
 
-  if (game_character.isTouchingGround()) {
+    const auto character_position = dynamic_object->getBoundingPolygon().getPosition();
+    const auto character_on_screen = camera.toScreenCoordinate(character_position);
+    const auto right_direction_on_screen_end =
+        camera.toScreenCoordinate(character_position + dynamic_object->getRightDirection());
+    const auto velocity_on_screen_end =
+        camera.toScreenCoordinate(character_position + dynamic_object->getVelocity() * 7.5f);
+
     SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-  } else if (game_character.isTouchingWall()) {
-    SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
-  } else {
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    SDL_RenderDrawLine(renderer, character_on_screen.x, character_on_screen.y,
+                       right_direction_on_screen_end.x, right_direction_on_screen_end.y);
+
+    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+    SDL_RenderDrawLine(renderer, character_on_screen.x, character_on_screen.y,
+                       velocity_on_screen_end.x, velocity_on_screen_end.y);
   }
-  renderPolygon(renderer, game_character.getBoundingPolygon());
-
-  const auto character_position = game_character.getBoundingPolygon().getPosition();
-  const auto character_on_screen = camera.toScreenCoordinate(character_position);
-  const auto right_direction_on_screen_end =
-      camera.toScreenCoordinate(character_position + game_character.getRightDirection());
-  const auto velocity_on_screen_end =
-      camera.toScreenCoordinate(character_position + game_character.getVelocity() * 7.5f);
-
-  SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-  SDL_RenderDrawLine(renderer, character_on_screen.x, character_on_screen.y,
-                     right_direction_on_screen_end.x, right_direction_on_screen_end.y);
-
-  SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-  SDL_RenderDrawLine(renderer, character_on_screen.x, character_on_screen.y,
-                     velocity_on_screen_end.x, velocity_on_screen_end.y);
 }
 
 void Game::renderPolygon(SDL_Renderer *renderer, const ConvexBoundingPolygon &polygon) const {
