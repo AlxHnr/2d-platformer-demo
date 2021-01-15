@@ -291,6 +291,20 @@ TEST_CASE("Physics::Integrator considers capped frame times when computing remai
   REQUIRE(integrator.getRendererInterpolationValue() == doctest::Approx(0));
 }
 
+TEST_CASE("Physics::Integrator speed factor getter and setter") {
+  Physics::Integrator integrator{};
+
+  SUBCASE("Clamping") {
+    integrator.setSpeedFactor(-12);
+    REQUIRE(integrator.getSpeedFactor() == doctest::Approx(0));
+  }
+
+  SUBCASE("Setting valid values") {
+    integrator.setSpeedFactor(0.78);
+    REQUIRE(integrator.getSpeedFactor() == doctest::Approx(0.78));
+  }
+}
+
 TEST_CASE("Physics::Integrator has adjustable simulation speed") {
   std::vector<std::unique_ptr<Physics::Object>> objects;
   objects.push_back(std::make_unique<MockObject>());

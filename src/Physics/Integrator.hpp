@@ -30,6 +30,10 @@ public:
    * at the previous tick and 1.0f refers to the current state. */
   float getRendererInterpolationValue() const;
 
+  /** @return Positive value determining the speed of the game logic. E.g. 0.5f for half the speed
+   * or 2.0f to run twice as fast. */
+  float getSpeedFactor() const;
+
   /** @param speed_factor Factor determining the speed of the game logic. E.g. 0.5f for half the
    * speed or 2.0f to run twice as fast. If negative will be set to zero. */
   void setSpeedFactor(float speed_factor);

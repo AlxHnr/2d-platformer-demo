@@ -120,6 +120,8 @@ float Integrator::getRendererInterpolationValue() const {
          std::chrono::duration_cast<std::chrono::microseconds>(tick_duration).count();
 }
 
+float Integrator::getSpeedFactor() const { return speed_factor; }
+
 void Integrator::setSpeedFactor(const float speed_factor) {
   this->speed_factor = glm::max(speed_factor, 0.0f);
 }
