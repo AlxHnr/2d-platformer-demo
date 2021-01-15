@@ -21,13 +21,14 @@ public:
    * @param duration_of_last_frame Total time elapsed during the last frame. This includes the
    * previous call of this function.
    * @param objects Will be moved by their velocity and collision-checked against all other objects.
-   *
-   * @return Value between 0 and 1 representing the amount of unprocessed time remaining for the
-   * current frame. Used for rendering intermediate states, where 0.0f refers to the objects state
-   * at the previous tick and 1.0f refers to the current state.
    */
-  float integrate(std::chrono::microseconds duration_of_last_frame,
-                  const std::vector<std::unique_ptr<Object>> &objects);
+  void integrate(std::chrono::microseconds duration_of_last_frame,
+                 const std::vector<std::unique_ptr<Object>> &objects);
+
+  /** @return Value between 0 and 1 representing the amount of unprocessed time remaining for the
+   * current frame. Used for rendering intermediate states, where 0.0f refers to the objects state
+   * at the previous tick and 1.0f refers to the current state. */
+  float getRendererInterpolationValue() const;
 
   /** @param speed_factor Factor determining the speed of the game logic. E.g. 0.5f for half the
    * speed or 2.0f to run twice as fast. If negative will be set to zero. */

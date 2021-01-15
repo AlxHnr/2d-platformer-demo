@@ -34,8 +34,6 @@ private:
   float camera_orientation = 0;
 
   Physics::Integrator integrator;
-  float integrator_tick_blend_value = 0;
-
   std::vector<std::unique_ptr<Physics::Object>> objects;
 };
 } // namespace GameEngine

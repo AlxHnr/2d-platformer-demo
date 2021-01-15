@@ -100,8 +100,8 @@ void applyTick(const std::vector<std::unique_ptr<Object>> &objects) {
 } // namespace
 
 namespace GameEngine::Physics {
-float Integrator::integrate(const std::chrono::microseconds duration_of_last_frame,
-                            const std::vector<std::unique_ptr<Object>> &objects) {
+void Integrator::integrate(const std::chrono::microseconds duration_of_last_frame,
+                           const std::vector<std::unique_ptr<Object>> &objects) {
   const auto scaled_delta =
       std::chrono::duration_cast<std::chrono::microseconds>(duration_of_last_frame * speed_factor);
   auto unprocessed_time =
@@ -113,6 +113,9 @@ float Integrator::integrate(const std::chrono::microseconds duration_of_last_fra
   }
 
   leftover_time_from_last_tick = unprocessed_time;
+}
+
+float Integrator::getRendererInterpolationValue() const {
   return static_cast<float>(leftover_time_from_last_tick.count()) /
          std::chrono::duration_cast<std::chrono::microseconds>(tick_duration).count();
 }
