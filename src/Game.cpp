@@ -84,7 +84,7 @@ void Game::rotateCamera(float angle) {
 
 void Game::scaleCamera(float scaling_factor) {
   camera_zoom += scaling_factor;
-  camera.setScale(camera_zoom);
+  camera.setZoom(camera_zoom);
 }
 
 void Game::render(SDL_Renderer *renderer) const {

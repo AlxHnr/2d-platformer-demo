@@ -21,8 +21,8 @@ public:
   /** @param position New center of the camera in the game world. */
   void setPosition(glm::vec2 position);
 
-  /** @param scaling_factor E.g. 2.0f to zoom in by 2x. Defaults to 1.0f. */
-  void setScale(float scaling_factor);
+  /** @param zoom E.g. 2.0f to zoom in by 2x. Defaults to 1.0f. */
+  void setZoom(float zoom);
 
   /** @param orientation Rotation angle in radians. */
   void setOrientation(float orientation);
@@ -32,14 +32,12 @@ public:
   void stepTowardsPosition(glm::vec2 target_position);
 
 private:
-  glm::vec2 screen_center;
-
-  /** Factor for scaling world coordinates up to screen coordinates. */
-  glm::vec2 world_to_screen_scaling_factor;
-
   glm::vec2 position = {0, 0};
-  float scaling_factor = 1;
+  float zoom = 1;
   float orientation = 0;
+
+  glm::vec2 center_on_screen;
+  glm::vec2 world_to_screen_scaling_factor;
 };
 } // namespace GameEngine
 
