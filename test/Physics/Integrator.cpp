@@ -306,12 +306,13 @@ TEST_CASE("Physics::Integrator has adjustable simulation speed") {
   SUBCASE("Slow down simulation - no tick happens") {
     integrator.setSpeedFactor(0.5);
     integrator.integrate(17ms, objects);
+    REQUIRE(integrator.getRendererInterpolationValue() == doctest::Approx(0.51002));
   }
 
-  SUBCASE("Slow down simulation - one tick") {
+  SUBCASE("Slow down simulation - almost one tick") {
     integrator.setSpeedFactor(0.5);
-    REQUIRE_CALL(object, update());
-    integrator.integrate(34ms, objects);
+    integrator.integrate(33ms, objects);
+    REQUIRE(integrator.getRendererInterpolationValue() == doctest::Approx(0.99004));
   }
 
   SUBCASE("Slow down simulation - one accumulated tick") {
@@ -320,36 +321,42 @@ TEST_CASE("Physics::Integrator has adjustable simulation speed") {
     integrator.integrate(20ms, objects);
     integrator.integrate(5ms, objects);
     integrator.integrate(9ms, objects);
+    REQUIRE(integrator.getRendererInterpolationValue() == doctest::Approx(0.02004));
   }
 
   SUBCASE("Slow down simulation - two ticks") {
     integrator.setSpeedFactor(0.5);
     REQUIRE_CALL(object, update()).TIMES(2);
-    integrator.integrate(68ms, objects);
+    integrator.integrate(67ms, objects);
+    REQUIRE(integrator.getRendererInterpolationValue() == doctest::Approx(0.01008));
   }
 
   SUBCASE("Speed up simulation - no tick happens") {
     integrator.setSpeedFactor(2);
     integrator.integrate(7ms, objects);
+    REQUIRE(integrator.getRendererInterpolationValue() == doctest::Approx(0.84003));
   }
 
-  SUBCASE("Slow down simulation - one tick") {
+  SUBCASE("Speed up simulation - one tick") {
     integrator.setSpeedFactor(2);
     REQUIRE_CALL(object, update());
     integrator.integrate(8500us, objects);
+    REQUIRE(integrator.getRendererInterpolationValue() == doctest::Approx(0.02004));
   }
 
-  SUBCASE("Slow down simulation - one accumulated tick") {
+  SUBCASE("Speed up simulation - one accumulated tick") {
     integrator.setSpeedFactor(2);
     REQUIRE_CALL(object, update());
     integrator.integrate(3ms, objects);
     integrator.integrate(1ms, objects);
     integrator.integrate(5ms, objects);
+    REQUIRE(integrator.getRendererInterpolationValue() == doctest::Approx(0.08004));
   }
 
-  SUBCASE("Slow down simulation - two ticks") {
+  SUBCASE("Speed up simulation - two ticks") {
     integrator.setSpeedFactor(2);
     REQUIRE_CALL(object, update()).TIMES(2);
     integrator.integrate(17ms, objects);
+    REQUIRE(integrator.getRendererInterpolationValue() == doctest::Approx(0.04008));
   }
 }
