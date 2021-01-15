@@ -102,8 +102,10 @@ void applyTick(const std::vector<std::unique_ptr<Object>> &objects) {
 namespace GameEngine::Physics {
 float Integrator::integrate(const std::chrono::microseconds duration_of_last_frame,
                             const std::vector<std::unique_ptr<Object>> &objects) {
+  const auto scaled_delta =
+      std::chrono::duration_cast<std::chrono::microseconds>(duration_of_last_frame * speed_factor);
   auto unprocessed_time =
-      std::min(duration_of_last_frame + leftover_time_from_last_tick, integration_time_max);
+      std::min(scaled_delta + leftover_time_from_last_tick, integration_time_max);
 
   while (unprocessed_time >= tick_duration) {
     applyTick(objects);
@@ -113,5 +115,9 @@ float Integrator::integrate(const std::chrono::microseconds duration_of_last_fra
   leftover_time_from_last_tick = unprocessed_time;
   return static_cast<float>(leftover_time_from_last_tick.count()) /
          std::chrono::duration_cast<std::chrono::microseconds>(tick_duration).count();
+}
+
+void Integrator::setSpeedFactor(const float speed_factor) {
+  this->speed_factor = glm::max(speed_factor, 0.0f);
 }
 } // namespace GameEngine::Physics

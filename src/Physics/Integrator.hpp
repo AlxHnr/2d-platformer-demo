@@ -29,8 +29,14 @@ public:
   float integrate(std::chrono::microseconds duration_of_last_frame,
                   const std::vector<std::unique_ptr<Object>> &objects);
 
+  /** @param speed_factor Factor determining the speed of the game logic. E.g. 0.5f for half the
+   * speed or 2.0f to run twice as fast. If negative will be set to zero. */
+  void setSpeedFactor(float speed_factor);
+
 private:
   std::chrono::microseconds leftover_time_from_last_tick{};
+
+  float speed_factor = 1;
 };
 } // namespace GameEngine::Physics
 

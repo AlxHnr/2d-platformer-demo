@@ -277,3 +277,66 @@ TEST_CASE("Physics::Integrator accumulates remainder value for interpolation pro
 TEST_CASE("Physics::Integrator considers capped frame times when computing remainder") {
   REQUIRE(Physics::Integrator{}.integrate(20min, {}) == doctest::Approx(0));
 }
+
+TEST_CASE("Physics::Integrator has adjustable simulation speed") {
+  std::vector<std::unique_ptr<Physics::Object>> objects;
+  objects.push_back(std::make_unique<MockObject>());
+  const ConvexBoundingPolygon polygon{};
+
+  auto &object = static_cast<MockObject &>(*objects.front());
+  ALLOW_CALL(object, getVelocity()).RETURN(glm::vec2{0, 0});
+  ALLOW_CALL(object, addVelocityOffset(trompeloeil::_));
+  ALLOW_CALL(object, getBoundingPolygon()).RETURN(polygon);
+
+  Physics::Integrator integrator{};
+
+  SUBCASE("Slow down simulation - no tick happens") {
+    integrator.setSpeedFactor(0.5);
+    integrator.integrate(17ms, objects);
+  }
+
+  SUBCASE("Slow down simulation - one tick") {
+    integrator.setSpeedFactor(0.5);
+    REQUIRE_CALL(object, update());
+    integrator.integrate(34ms, objects);
+  }
+
+  SUBCASE("Slow down simulation - one accumulated tick") {
+    integrator.setSpeedFactor(0.5);
+    REQUIRE_CALL(object, update());
+    integrator.integrate(20ms, objects);
+    integrator.integrate(5ms, objects);
+    integrator.integrate(9ms, objects);
+  }
+
+  SUBCASE("Slow down simulation - two ticks") {
+    integrator.setSpeedFactor(0.5);
+    REQUIRE_CALL(object, update()).TIMES(2);
+    integrator.integrate(68ms, objects);
+  }
+
+  SUBCASE("Speed up simulation - no tick happens") {
+    integrator.setSpeedFactor(2);
+    integrator.integrate(7ms, objects);
+  }
+
+  SUBCASE("Slow down simulation - one tick") {
+    integrator.setSpeedFactor(2);
+    REQUIRE_CALL(object, update());
+    integrator.integrate(8500us, objects);
+  }
+
+  SUBCASE("Slow down simulation - one accumulated tick") {
+    integrator.setSpeedFactor(2);
+    REQUIRE_CALL(object, update());
+    integrator.integrate(3ms, objects);
+    integrator.integrate(1ms, objects);
+    integrator.integrate(5ms, objects);
+  }
+
+  SUBCASE("Slow down simulation - two ticks") {
+    integrator.setSpeedFactor(2);
+    REQUIRE_CALL(object, update()).TIMES(2);
+    integrator.integrate(17ms, objects);
+  }
+}
