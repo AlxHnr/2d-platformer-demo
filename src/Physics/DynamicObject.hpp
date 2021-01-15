@@ -96,6 +96,17 @@ private:
 
   /** True if the object is hitting another object from below. */
   bool is_touching_ceiling = false;
+
+  /** Used for tick-independent rendering by interpolating with the current state. */
+  struct {
+    bool touching_ground;
+    bool touching_wall;
+    glm::vec2 velocity;
+    glm::vec2 right_direction;
+    glm::vec2 bounding_polygon_position;
+  } state_at_previous_tick;
+
+  void storeCurrentStateAsPrevious();
 };
 } // namespace GameEngine::Physics
 

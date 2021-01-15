@@ -9,7 +9,9 @@
 
 namespace GameEngine::Physics {
 DynamicObject::DynamicObject(std::initializer_list<glm::vec2> vertices)
-    : bounding_polygon{vertices} {}
+    : bounding_polygon{vertices} {
+  storeCurrentStateAsPrevious();
+}
 
 bool DynamicObject::isTouchingGround() const { return ground_normal.has_value(); }
 
@@ -28,6 +30,8 @@ glm::vec2 DynamicObject::getRightDirection() const {
 }
 
 void DynamicObject::update() {
+  storeCurrentStateAsPrevious();
+
   /* Align velocity parallel to ground when moving towards ground. */
   if (ground_normal.has_value() &&
       glm::angle(*ground_normal, glm::normalize(velocity)) > glm::half_pi<float>()) {
@@ -91,31 +95,47 @@ void DynamicObject::handleCollisionWith(Physics::Object &, const glm::vec2 displ
   }
 }
 
-void DynamicObject::render(SDL_Renderer *renderer, const Camera &camera, float) const {
-  if (ground_normal.has_value()) {
+void DynamicObject::render(SDL_Renderer *renderer, const Camera &camera,
+                           const float integrator_tick_blend_factor) const {
+  const bool lerp_is_touching_ground = integrator_tick_blend_factor < 0.5
+                                           ? state_at_previous_tick.touching_ground
+                                           : ground_normal.has_value();
+  const bool lerp_is_touching_wall = integrator_tick_blend_factor < 0.5
+                                         ? state_at_previous_tick.touching_wall
+                                         : direction_to_colliding_wall.has_value();
+
+  if (lerp_is_touching_ground) {
     SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-  } else if (direction_to_colliding_wall.has_value()) {
+  } else if (lerp_is_touching_wall) {
     SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
   } else {
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
   }
-  Geometry::forEachEdge(bounding_polygon.getVertices(),
+
+  auto lerp_polygon = bounding_polygon;
+  lerp_polygon.setPosition(glm::mix(state_at_previous_tick.bounding_polygon_position,
+                                    bounding_polygon.getPosition(), integrator_tick_blend_factor));
+  Geometry::forEachEdge(lerp_polygon.getVertices(),
                         [&](const glm::vec2 world_start, const glm::vec2 world_end) {
                           const auto start = camera.toScreenCoordinate(world_start);
                           const auto end = camera.toScreenCoordinate(world_end);
                           SDL_RenderDrawLine(renderer, start.x, start.y, end.x, end.y);
                         });
 
-  const auto position_on_screen = camera.toScreenCoordinate(bounding_polygon.getPosition());
+  const auto position_on_screen = camera.toScreenCoordinate(lerp_polygon.getPosition());
+  const auto lerp_right_direction = glm::mix(state_at_previous_tick.right_direction,
+                                             getRightDirection(), integrator_tick_blend_factor);
   const auto right_direction_on_screen_end =
-      camera.toScreenCoordinate(bounding_polygon.getPosition() + getRightDirection());
-  const auto velocity_on_screen_end =
-      camera.toScreenCoordinate(bounding_polygon.getPosition() + velocity * 7.5f);
+      camera.toScreenCoordinate(lerp_polygon.getPosition() + lerp_right_direction);
 
   SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
   SDL_RenderDrawLine(renderer, position_on_screen.x, position_on_screen.y,
                      right_direction_on_screen_end.x, right_direction_on_screen_end.y);
 
+  const auto lerp_velocity =
+      glm::mix(state_at_previous_tick.velocity, velocity, integrator_tick_blend_factor);
+  const auto velocity_on_screen_end =
+      camera.toScreenCoordinate(lerp_polygon.getPosition() + lerp_velocity * 7.5f);
   SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
   SDL_RenderDrawLine(renderer, position_on_screen.x, position_on_screen.y, velocity_on_screen_end.x,
                      velocity_on_screen_end.y);
@@ -145,5 +165,13 @@ float DynamicObject::getAirFriction() const { return gravity; }
 
 void DynamicObject::setAirFriction(const float air_friction) {
   this->air_friction = glm::clamp(air_friction, 0.0f, 1.0f);
+}
+
+void DynamicObject::storeCurrentStateAsPrevious() {
+  state_at_previous_tick.touching_ground = ground_normal.has_value();
+  state_at_previous_tick.touching_wall = direction_to_colliding_wall.has_value();
+  state_at_previous_tick.velocity = velocity;
+  state_at_previous_tick.right_direction = getRightDirection();
+  state_at_previous_tick.bounding_polygon_position = bounding_polygon.getPosition();
 }
 } // namespace GameEngine::Physics
