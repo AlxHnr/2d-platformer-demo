@@ -61,8 +61,8 @@ target_link_libraries(Test GameEngine doctest trompeloeil)
 add_custom_target(test COMMAND Test)
 
 add_executable(Demo
-  src/Game.cpp
-  src/Main.cpp
+  example/Demo/Game.cpp
+  example/Demo/Main.cpp
 )
 target_link_libraries(Demo GameEngine)
 add_custom_target(run COMMAND Demo)
