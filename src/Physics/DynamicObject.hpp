@@ -37,7 +37,7 @@ public:
   const ConvexBoundingPolygon &getBoundingPolygon() const override;
   void handleCollisionWith(Physics::Object &other, glm::vec2 displacement_vector) override;
   void render(SDL_Renderer *renderer, const Camera &camera,
-              float integrator_tick_blend_factor) const override;
+              float integrator_tick_blend_value) const override;
 
   glm::vec2 getVelocity() const override;
   void setVelocity(glm::vec2 velocity);

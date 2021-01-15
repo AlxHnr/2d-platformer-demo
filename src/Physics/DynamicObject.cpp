@@ -96,11 +96,11 @@ void DynamicObject::handleCollisionWith(Physics::Object &, const glm::vec2 displ
 }
 
 void DynamicObject::render(SDL_Renderer *renderer, const Camera &camera,
-                           const float integrator_tick_blend_factor) const {
-  const bool lerp_is_touching_ground = integrator_tick_blend_factor < 0.5
+                           const float integrator_tick_blend_value) const {
+  const bool lerp_is_touching_ground = integrator_tick_blend_value < 0.5
                                            ? state_at_previous_tick.touching_ground
                                            : ground_normal.has_value();
-  const bool lerp_is_touching_wall = integrator_tick_blend_factor < 0.5
+  const bool lerp_is_touching_wall = integrator_tick_blend_value < 0.5
                                          ? state_at_previous_tick.touching_wall
                                          : direction_to_colliding_wall.has_value();
 
@@ -114,7 +114,7 @@ void DynamicObject::render(SDL_Renderer *renderer, const Camera &camera,
 
   auto lerp_polygon = bounding_polygon;
   lerp_polygon.setPosition(glm::mix(state_at_previous_tick.bounding_polygon_position,
-                                    bounding_polygon.getPosition(), integrator_tick_blend_factor));
+                                    bounding_polygon.getPosition(), integrator_tick_blend_value));
   Geometry::forEachEdge(lerp_polygon.getVertices(),
                         [&](const glm::vec2 world_start, const glm::vec2 world_end) {
                           const auto start = camera.toScreenCoordinate(world_start);
@@ -124,7 +124,7 @@ void DynamicObject::render(SDL_Renderer *renderer, const Camera &camera,
 
   const auto position_on_screen = camera.toScreenCoordinate(lerp_polygon.getPosition());
   const auto lerp_right_direction = glm::mix(state_at_previous_tick.right_direction,
-                                             getRightDirection(), integrator_tick_blend_factor);
+                                             getRightDirection(), integrator_tick_blend_value);
   const auto right_direction_on_screen_end =
       camera.toScreenCoordinate(lerp_polygon.getPosition() + lerp_right_direction);
 
@@ -133,7 +133,7 @@ void DynamicObject::render(SDL_Renderer *renderer, const Camera &camera,
                      right_direction_on_screen_end.x, right_direction_on_screen_end.y);
 
   const auto lerp_velocity =
-      glm::mix(state_at_previous_tick.velocity, velocity, integrator_tick_blend_factor);
+      glm::mix(state_at_previous_tick.velocity, velocity, integrator_tick_blend_value);
   const auto velocity_on_screen_end =
       camera.toScreenCoordinate(lerp_polygon.getPosition() + lerp_velocity * 7.5f);
   SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);

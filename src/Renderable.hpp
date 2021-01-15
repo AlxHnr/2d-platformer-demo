@@ -18,11 +18,11 @@ public:
    *
    * @param renderer SDL renderer to use.
    * @param camera Transforms game-world coordinates to screen coordinates.
-   * @param integrator_tick_blend_factor Value between 0 and 1. Used for interpolating between the
+   * @param integrator_tick_blend_value Value between 0 and 1. Used for interpolating between the
    * objects state at the previous tick and its current state, where 0 means the previous state.
    */
   virtual void render(SDL_Renderer *renderer, const Camera &camera,
-                      float integrator_tick_blend_factor) const = 0;
+                      float integrator_tick_blend_value) const = 0;
 };
 } // namespace GameEngine
 

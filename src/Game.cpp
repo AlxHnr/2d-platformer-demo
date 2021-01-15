@@ -73,7 +73,7 @@ void Game::addDynamicBox(const glm::vec2 screen_position) {
 }
 
 void Game::integratePhysics(const std::chrono::microseconds time_since_last_tick) {
-  integrator_tick_blend_factor = integrator.integrate(time_since_last_tick, objects);
+  integrator_tick_blend_value = integrator.integrate(time_since_last_tick, objects);
   camera.stepTowardsPosition(getGameCharacter().getBoundingPolygon().getPosition());
 }
 
@@ -89,7 +89,7 @@ void Game::scaleCamera(float scaling_factor) {
 
 void Game::render(SDL_Renderer *renderer) const {
   for (const auto &object : objects) {
-    object->render(renderer, camera, integrator_tick_blend_factor);
+    object->render(renderer, camera, integrator_tick_blend_value);
   }
 }
 } // namespace GameEngine
