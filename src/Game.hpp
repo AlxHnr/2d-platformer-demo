@@ -5,10 +5,10 @@
 #ifndef GAME_ENGINE_SRC_GAME_HPP
 #define GAME_ENGINE_SRC_GAME_HPP
 
-#include "Camera.hpp"
-#include "Physics/Integrator.hpp"
-#include "Physics/JumpAndRunObject.hpp"
-#include "Physics/Object.hpp"
+#include "GameEngine/Camera.hpp"
+#include "GameEngine/Physics/Integrator.hpp"
+#include "GameEngine/Physics/JumpAndRunObject.hpp"
+#include "GameEngine/Physics/Object.hpp"
 #include <SDL_render.h>
 #include <memory>
 #include <vector>

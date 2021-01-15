@@ -2,10 +2,10 @@
  * Contains a class representing static world geometry.
  */
 
-#ifndef GAME_ENGINE_SRC_PHYSICS_STATIC_OBJECT_HPP
-#define GAME_ENGINE_SRC_PHYSICS_STATIC_OBJECT_HPP
+#ifndef GAME_ENGINE_INCLUDE_GAME_ENGINE_PHYSICS_STATIC_OBJECT_HPP
+#define GAME_ENGINE_INCLUDE_GAME_ENGINE_PHYSICS_STATIC_OBJECT_HPP
 
-#include "Physics/Object.hpp"
+#include "GameEngine/Physics/Object.hpp"
 #include <glm/vec2.hpp>
 #include <utility>
 

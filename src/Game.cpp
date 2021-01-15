@@ -3,8 +3,8 @@
  */
 
 #include "Game.hpp"
-#include "Geometry.hpp"
-#include "Physics/StaticObject.hpp"
+#include "GameEngine/Geometry.hpp"
+#include "GameEngine/Physics/StaticObject.hpp"
 
 using namespace GameEngine;
 

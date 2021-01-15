@@ -2,7 +2,7 @@
  * Implements a physics integrator.
  */
 
-#include "Physics/Integrator.hpp"
+#include "GameEngine/Physics/Integrator.hpp"
 #include <algorithm>
 #include <glm/gtc/constants.hpp>
 #include <glm/gtx/projection.hpp>

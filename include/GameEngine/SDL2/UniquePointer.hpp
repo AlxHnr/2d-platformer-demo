@@ -2,8 +2,8 @@
  * Helper functions for wrapping SDL2 types in std::unique_ptr.
  */
 
-#ifndef GAME_ENGINE_SRC_SDL2_UNIQUE_POINTER_HPP
-#define GAME_ENGINE_SRC_SDL2_UNIQUE_POINTER_HPP
+#ifndef GAME_ENGINE_INCLUDE_GAME_ENGINE_SDL2_UNIQUE_POINTER_HPP
+#define GAME_ENGINE_INCLUDE_GAME_ENGINE_SDL2_UNIQUE_POINTER_HPP
 
 #include <SDL_render.h>
 #include <SDL_video.h>

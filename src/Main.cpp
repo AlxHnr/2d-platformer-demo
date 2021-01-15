@@ -3,8 +3,8 @@
  */
 
 #include "Game.hpp"
-#include "SDL2/Error.hpp"
-#include "SDL2/UniquePointer.hpp"
+#include "GameEngine/SDL2/Error.hpp"
+#include "GameEngine/SDL2/UniquePointer.hpp"
 #include <SDL.h>
 #include <chrono>
 #include <iostream>

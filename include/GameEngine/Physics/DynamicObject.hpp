@@ -2,10 +2,10 @@
  * Contains a physical object subject to gravity.
  */
 
-#ifndef GAME_ENGINE_SRC_PHYSICS_DYNAMIC_OBJECT_HPP
-#define GAME_ENGINE_SRC_PHYSICS_DYNAMIC_OBJECT_HPP
+#ifndef GAME_ENGINE_INCLUDE_GAME_ENGINE_PHYSICS_DYNAMIC_OBJECT_HPP
+#define GAME_ENGINE_INCLUDE_GAME_ENGINE_PHYSICS_DYNAMIC_OBJECT_HPP
 
-#include "Physics/Object.hpp"
+#include "GameEngine/Physics/Object.hpp"
 #include <glm/vec2.hpp>
 #include <optional>
 

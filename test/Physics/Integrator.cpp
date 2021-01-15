@@ -2,8 +2,8 @@
  * Tests the physics integrator.
  */
 
-#include <Physics/Integrator.hpp>
-#include <Physics/Object.hpp>
+#include <GameEngine/Physics/Integrator.hpp>
+#include <GameEngine/Physics/Object.hpp>
 #include <doctest/doctest.h>
 #include <doctest/trompeloeil.hpp>
 #include <glm/geometric.hpp>

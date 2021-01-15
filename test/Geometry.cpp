@@ -2,7 +2,7 @@
  * Tests geometry helper functions.
  */
 
-#include <Geometry.hpp>
+#include <GameEngine/Geometry.hpp>
 #include <doctest/doctest.h>
 
 using namespace GameEngine::Geometry;

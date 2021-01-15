@@ -2,10 +2,10 @@
  * Declares a class for physics integration.
  */
 
-#ifndef GAME_ENGINE_SRC_PHYSICS_INTEGRATOR_HPP
-#define GAME_ENGINE_SRC_PHYSICS_INTEGRATOR_HPP
+#ifndef GAME_ENGINE_INCLUDE_GAME_ENGINE_PHYSICS_INTEGRATOR_HPP
+#define GAME_ENGINE_INCLUDE_GAME_ENGINE_PHYSICS_INTEGRATOR_HPP
 
-#include "Physics/Object.hpp"
+#include "GameEngine/Physics/Object.hpp"
 #include <chrono>
 #include <memory>
 #include <vector>

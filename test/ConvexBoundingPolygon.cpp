@@ -2,7 +2,7 @@
  * Tests ConvexBoundingPolygon class.
  */
 
-#include <ConvexBoundingPolygon.hpp>
+#include <GameEngine/ConvexBoundingPolygon.hpp>
 #include <doctest/doctest.h>
 #include <glm/geometric.hpp>
 #include <glm/gtc/constants.hpp>

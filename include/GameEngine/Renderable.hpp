@@ -2,10 +2,10 @@
  * Contains an interface for renderable objects.
  */
 
-#ifndef GAME_ENGINE_SRC_RENDERABLE_HPP
-#define GAME_ENGINE_SRC_RENDERABLE_HPP
+#ifndef GAME_ENGINE_INCLUDE_GAME_ENGINE_RENDERABLE_HPP
+#define GAME_ENGINE_INCLUDE_GAME_ENGINE_RENDERABLE_HPP
 
-#include "Camera.hpp"
+#include "GameEngine/Camera.hpp"
 #include <SDL_render.h>
 
 namespace GameEngine {

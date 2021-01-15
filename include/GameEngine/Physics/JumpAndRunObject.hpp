@@ -2,11 +2,11 @@
  * Contains a class which implements typical jump-and-run physics.
  */
 
-#ifndef GAME_ENGINE_SRC_PHYSICS_JUMP_AND_RUN_OBJECT_HPP
-#define GAME_ENGINE_SRC_PHYSICS_JUMP_AND_RUN_OBJECT_HPP
+#ifndef GAME_ENGINE_INCLUDE_GAME_ENGINE_PHYSICS_JUMP_AND_RUN_OBJECT_HPP
+#define GAME_ENGINE_INCLUDE_GAME_ENGINE_PHYSICS_JUMP_AND_RUN_OBJECT_HPP
 
-#include "HorizontalDirection.hpp"
-#include "Physics/DynamicObject.hpp"
+#include "GameEngine/HorizontalDirection.hpp"
+#include "GameEngine/Physics/DynamicObject.hpp"
 #include <chrono>
 
 namespace GameEngine::Physics {

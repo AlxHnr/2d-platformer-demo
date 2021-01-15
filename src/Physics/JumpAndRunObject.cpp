@@ -2,7 +2,7 @@
  * Implements an object with jump-and-run mechanics.
  */
 
-#include "Physics/JumpAndRunObject.hpp"
+#include "GameEngine/Physics/JumpAndRunObject.hpp"
 #include <glm/common.hpp>
 #include <glm/gtx/projection.hpp>
 #include <glm/gtx/rotate_vector.hpp>

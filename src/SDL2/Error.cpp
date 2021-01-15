@@ -2,7 +2,7 @@
  * Implements simple wrappers around SDL2 error functions.
  */
 
-#include "SDL2/Error.hpp"
+#include "GameEngine/SDL2/Error.hpp"
 #include <SDL_error.h>
 #include <system_error>
 

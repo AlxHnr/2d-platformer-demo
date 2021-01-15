@@ -2,7 +2,7 @@
  * Implements a camera for transforming world coordinates to screen coordinates.
  */
 
-#include "Camera.hpp"
+#include "GameEngine/Camera.hpp"
 #include "glm/gtx/rotate_vector.hpp"
 
 namespace {

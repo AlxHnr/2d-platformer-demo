@@ -2,8 +2,8 @@
  * Contains various helpers for dealing with geometry.
  */
 
-#ifndef GAME_ENGINE_SRC_GEOMETRY_HPP
-#define GAME_ENGINE_SRC_GEOMETRY_HPP
+#ifndef GAME_ENGINE_INCLUDE_GAME_ENGINE_GEOMETRY_HPP
+#define GAME_ENGINE_INCLUDE_GAME_ENGINE_GEOMETRY_HPP
 
 #include <functional>
 #include <glm/vec2.hpp>

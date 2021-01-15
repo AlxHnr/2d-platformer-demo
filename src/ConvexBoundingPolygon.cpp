@@ -2,8 +2,8 @@
  * Implements a basic polygon class.
  */
 
-#include "ConvexBoundingPolygon.hpp"
-#include "Geometry.hpp"
+#include "GameEngine/ConvexBoundingPolygon.hpp"
+#include "GameEngine/Geometry.hpp"
 #include <SDL_assert.h>
 #include <algorithm>
 #include <glm/gtc/constants.hpp>

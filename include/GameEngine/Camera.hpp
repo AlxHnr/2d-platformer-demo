@@ -2,8 +2,8 @@
  * Contains a camera class.
  */
 
-#ifndef GAME_ENGINE_SRC_CAMERA_HPP
-#define GAME_ENGINE_SRC_CAMERA_HPP
+#ifndef GAME_ENGINE_INCLUDE_GAME_ENGINE_CAMERA_HPP
+#define GAME_ENGINE_INCLUDE_GAME_ENGINE_CAMERA_HPP
 
 #include <cstddef>
 #include <glm/vec2.hpp>

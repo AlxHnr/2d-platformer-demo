@@ -2,8 +2,8 @@
  * Contains a polygon class representing collision boundaries.
  */
 
-#ifndef GAME_ENGINE_SRC_CONVEX_BOUNDING_POLYGON_HPP
-#define GAME_ENGINE_SRC_CONVEX_BOUNDING_POLYGON_HPP
+#ifndef GAME_ENGINE_INCLUDE_GAME_ENGINE_CONVEX_BOUNDING_POLYGON_HPP
+#define GAME_ENGINE_INCLUDE_GAME_ENGINE_CONVEX_BOUNDING_POLYGON_HPP
 
 #include <glm/vec2.hpp>
 #include <optional>

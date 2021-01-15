@@ -2,8 +2,8 @@
  * Simple wrappers around SDL2 error functions.
  */
 
-#ifndef GAME_ENGINE_SRC_SDL2_ERROR_HPP
-#define GAME_ENGINE_SRC_SDL2_ERROR_HPP
+#ifndef GAME_ENGINE_INCLUDE_GAME_ENGINE_SDL2_ERROR_HPP
+#define GAME_ENGINE_INCLUDE_GAME_ENGINE_SDL2_ERROR_HPP
 
 #include <string_view>
 

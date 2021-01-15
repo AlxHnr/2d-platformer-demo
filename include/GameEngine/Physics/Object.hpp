@@ -2,11 +2,11 @@
  * Contains an interface for objects which interact with the physics engine.
  */
 
-#ifndef GAME_ENGINE_SRC_PHYSICS_OBJECT_HPP
-#define GAME_ENGINE_SRC_PHYSICS_OBJECT_HPP
+#ifndef GAME_ENGINE_INCLUDE_GAME_ENGINE_PHYSICS_OBJECT_HPP
+#define GAME_ENGINE_INCLUDE_GAME_ENGINE_PHYSICS_OBJECT_HPP
 
-#include "ConvexBoundingPolygon.hpp"
-#include "Renderable.hpp"
+#include "GameEngine/ConvexBoundingPolygon.hpp"
+#include "GameEngine/Renderable.hpp"
 #include <glm/vec2.hpp>
 
 namespace GameEngine::Physics {

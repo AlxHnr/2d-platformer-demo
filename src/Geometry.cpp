@@ -2,7 +2,7 @@
  * Implements various helper functions for dealing with geometry.
  */
 
-#include "Geometry.hpp"
+#include "GameEngine/Geometry.hpp"
 #include <SDL_assert.h>
 
 namespace GameEngine::Geometry {
