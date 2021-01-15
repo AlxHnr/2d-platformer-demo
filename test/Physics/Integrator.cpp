@@ -18,6 +18,7 @@ class MockObject : public Physics::Object {
   MAKE_MOCK1(addVelocityOffset, void(glm::vec2), override);
   MAKE_CONST_MOCK0(getBoundingPolygon, const ConvexBoundingPolygon &(), override);
   MAKE_MOCK2(handleCollisionWith, void(Physics::Object &, glm::vec2), override);
+  MAKE_CONST_MOCK3(render, void(SDL_Renderer *, const Camera &, float), override);
 };
 } // namespace
 

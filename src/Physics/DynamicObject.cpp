@@ -3,6 +3,7 @@
  */
 
 #include "Physics/DynamicObject.hpp"
+#include "Geometry.hpp"
 #include <glm/gtx/projection.hpp>
 #include <glm/gtx/vector_angle.hpp>
 
@@ -88,6 +89,36 @@ void DynamicObject::handleCollisionWith(Physics::Object &, const glm::vec2 displ
       direction_to_colliding_wall = glm::normalize(-displacement_vector);
     }
   }
+}
+
+void DynamicObject::render(SDL_Renderer *renderer, const Camera &camera, float) const {
+  if (ground_normal.has_value()) {
+    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+  } else if (direction_to_colliding_wall.has_value()) {
+    SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
+  } else {
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+  }
+  Geometry::forEachEdge(bounding_polygon.getVertices(),
+                        [&](const glm::vec2 world_start, const glm::vec2 world_end) {
+                          const auto start = camera.toScreenCoordinate(world_start);
+                          const auto end = camera.toScreenCoordinate(world_end);
+                          SDL_RenderDrawLine(renderer, start.x, start.y, end.x, end.y);
+                        });
+
+  const auto position_on_screen = camera.toScreenCoordinate(bounding_polygon.getPosition());
+  const auto right_direction_on_screen_end =
+      camera.toScreenCoordinate(bounding_polygon.getPosition() + getRightDirection());
+  const auto velocity_on_screen_end =
+      camera.toScreenCoordinate(bounding_polygon.getPosition() + velocity * 7.5f);
+
+  SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+  SDL_RenderDrawLine(renderer, position_on_screen.x, position_on_screen.y,
+                     right_direction_on_screen_end.x, right_direction_on_screen_end.y);
+
+  SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+  SDL_RenderDrawLine(renderer, position_on_screen.x, position_on_screen.y, velocity_on_screen_end.x,
+                     velocity_on_screen_end.y);
 }
 
 glm::vec2 DynamicObject::getVelocity() const { return velocity; }

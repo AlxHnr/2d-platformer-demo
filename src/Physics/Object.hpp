@@ -6,11 +6,12 @@
 #define GAME_ENGINE_SRC_PHYSICS_OBJECT_HPP
 
 #include "ConvexBoundingPolygon.hpp"
+#include "Renderable.hpp"
 #include <glm/vec2.hpp>
 
 namespace GameEngine::Physics {
 /** Represents an object which can move and collide with other objects. */
-class Object {
+class Object : public Renderable {
 public:
   virtual ~Object() = default;
 

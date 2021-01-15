@@ -89,45 +89,7 @@ void Game::scaleCamera(float scaling_factor) {
 
 void Game::render(SDL_Renderer *renderer) const {
   for (const auto &object : objects) {
-    const auto *dynamic_object = dynamic_cast<Physics::DynamicObject *>(object.get());
-    if (dynamic_object == nullptr) {
-      SDL_SetRenderDrawColor(renderer, 180, 180, 255, 255);
-      renderPolygon(renderer, object->getBoundingPolygon());
-      continue;
-    }
-
-    if (dynamic_object->isTouchingGround()) {
-      SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-    } else if (dynamic_object->isTouchingWall()) {
-      SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
-    } else {
-      SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-    }
-    renderPolygon(renderer, dynamic_object->getBoundingPolygon());
-
-    const auto character_position = dynamic_object->getBoundingPolygon().getPosition();
-    const auto character_on_screen = camera.toScreenCoordinate(character_position);
-    const auto right_direction_on_screen_end =
-        camera.toScreenCoordinate(character_position + dynamic_object->getRightDirection());
-    const auto velocity_on_screen_end =
-        camera.toScreenCoordinate(character_position + dynamic_object->getVelocity() * 7.5f);
-
-    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-    SDL_RenderDrawLine(renderer, character_on_screen.x, character_on_screen.y,
-                       right_direction_on_screen_end.x, right_direction_on_screen_end.y);
-
-    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-    SDL_RenderDrawLine(renderer, character_on_screen.x, character_on_screen.y,
-                       velocity_on_screen_end.x, velocity_on_screen_end.y);
+    object->render(renderer, camera, 1.0);
   }
-}
-
-void Game::renderPolygon(SDL_Renderer *renderer, const ConvexBoundingPolygon &polygon) const {
-  Geometry::forEachEdge(polygon.getVertices(),
-                        [&](const glm::vec2 world_start, const glm::vec2 world_end) {
-                          const auto start = camera.toScreenCoordinate(world_start);
-                          const auto end = camera.toScreenCoordinate(world_end);
-                          SDL_RenderDrawLine(renderer, start.x, start.y, end.x, end.y);
-                        });
 }
 } // namespace GameEngine

@@ -25,6 +25,8 @@ public:
   virtual void addVelocityOffset(glm::vec2) override;
   const ConvexBoundingPolygon &getBoundingPolygon() const override;
   void handleCollisionWith(Physics::Object &, glm::vec2) override;
+  void render(SDL_Renderer *renderer, const Camera &camera,
+              float integrator_tick_blend_factor) const override;
 
 private:
   glm::vec2 velocity{};

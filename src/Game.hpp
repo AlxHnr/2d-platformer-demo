@@ -35,8 +35,6 @@ private:
 
   Physics::Integrator integrator;
   std::vector<std::unique_ptr<Physics::Object>> objects;
-
-  void renderPolygon(SDL_Renderer *renderer, const ConvexBoundingPolygon &polygon) const;
 };
 } // namespace GameEngine
 
