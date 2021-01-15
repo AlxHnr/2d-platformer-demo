@@ -251,3 +251,29 @@ TEST_CASE(
     Physics::Integrator{}.integrate(17ms, objects);
   }
 }
+
+TEST_CASE("Physics::Integrator returns correct remainder value for interpolation") {
+  REQUIRE(Physics::Integrator{}.integrate(4ms, {}) == doctest::Approx(0.24001));
+  REQUIRE(Physics::Integrator{}.integrate(8ms, {}) == doctest::Approx(0.48002));
+  REQUIRE(Physics::Integrator{}.integrate(16ms, {}) == doctest::Approx(0.96004));
+  REQUIRE(Physics::Integrator{}.integrate(17ms, {}) == doctest::Approx(0.02004));
+  REQUIRE(Physics::Integrator{}.integrate(20ms, {}) == doctest::Approx(0.20005));
+  REQUIRE(Physics::Integrator{}.integrate(34ms, {}) == doctest::Approx(0.04008));
+
+  REQUIRE(Physics::Integrator{}.integrate(16667us, {}) == doctest::Approx(0.00006));
+}
+
+TEST_CASE("Physics::Integrator accumulates remainder value for interpolation properly") {
+  Physics::Integrator integrator{};
+  REQUIRE(integrator.integrate(3ms, {}) == doctest::Approx(0.18001));
+  REQUIRE(integrator.integrate(3ms, {}) == doctest::Approx(0.36002));
+  REQUIRE(integrator.integrate(3ms, {}) == doctest::Approx(0.54003));
+  REQUIRE(integrator.integrate(3ms, {}) == doctest::Approx(0.72004));
+  REQUIRE(integrator.integrate(3ms, {}) == doctest::Approx(0.90005));
+  REQUIRE(integrator.integrate(3ms, {}) == doctest::Approx(0.08004));
+  REQUIRE(integrator.integrate(3ms, {}) == doctest::Approx(0.26005));
+}
+
+TEST_CASE("Physics::Integrator considers capped frame times when computing remainder") {
+  REQUIRE(Physics::Integrator{}.integrate(20min, {}) == doctest::Approx(0));
+}

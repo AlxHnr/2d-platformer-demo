@@ -100,8 +100,8 @@ void applyTick(const std::vector<std::unique_ptr<Object>> &objects) {
 } // namespace
 
 namespace GameEngine::Physics {
-void Integrator::integrate(const std::chrono::microseconds duration_of_last_frame,
-                           const std::vector<std::unique_ptr<Object>> &objects) {
+float Integrator::integrate(const std::chrono::microseconds duration_of_last_frame,
+                            const std::vector<std::unique_ptr<Object>> &objects) {
   auto unprocessed_time =
       std::min(duration_of_last_frame + leftover_time_from_last_tick, integration_time_max);
 
@@ -111,5 +111,7 @@ void Integrator::integrate(const std::chrono::microseconds duration_of_last_fram
   }
 
   leftover_time_from_last_tick = unprocessed_time;
+  return static_cast<float>(leftover_time_from_last_tick.count()) /
+         std::chrono::duration_cast<std::chrono::microseconds>(tick_duration).count();
 }
 } // namespace GameEngine::Physics
