@@ -4,11 +4,10 @@
 
 #include "GameEngine/SDL2/Error.hpp"
 #include <SDL_error.h>
-#include <system_error>
 
 namespace GameEngine::SDL2 {
-void throwRuntimeError(std::string_view message) {
-  throw std::runtime_error{
+std::runtime_error makeRuntimeError(std::string_view message) {
+  return std::runtime_error{
       std::string{"Error: "}.append(message).append(": ").append(SDL_GetError())};
 }
 } // namespace GameEngine::SDL2

@@ -25,7 +25,7 @@ auto makeWindowAndRenderer() {
   SDL_Window *window = nullptr;
   SDL_Renderer *renderer = nullptr;
   if (SDL_CreateWindowAndRenderer(screen_width, screen_height, 0, &window, &renderer) != 0) {
-    SDL2::throwRuntimeError("Failed to create window and renderer");
+    throw SDL2::makeRuntimeError("Failed to create window and renderer");
   }
   return std::pair{SDL2::wrapPointer(window), SDL2::wrapPointer(renderer)};
 }
@@ -35,7 +35,7 @@ int main() {
   struct Context {
     Context() {
       if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
-        SDL2::throwRuntimeError("Failed to initialize SDL2");
+        throw SDL2::makeRuntimeError("Failed to initialize SDL2");
       }
     }
     ~Context() { SDL_Quit(); }
