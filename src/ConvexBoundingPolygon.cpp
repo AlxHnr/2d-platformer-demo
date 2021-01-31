@@ -138,9 +138,9 @@ ConvexBoundingPolygon::collidesWith(const ConvexBoundingPolygon &other) const {
     return -displacement_other_from_this->direction * displacement_other_from_this->magnitude;
   }();
 
-  const auto direction_from_a_to_b =
+  const auto direction_from_this_to_other =
       computeCenter(other.bounding_polygon) - computeCenter(this->bounding_polygon);
-  if (glm::dot(direction_from_a_to_b, displacement_vector) < 0) {
+  if (glm::dot(direction_from_this_to_other, displacement_vector) < 0) {
     return displacement_vector;
   }
   return -displacement_vector;

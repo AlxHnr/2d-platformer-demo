@@ -45,13 +45,13 @@ public:
    * Usage examples:
    *
    * @code
-   * Polygon my_triangle{
+   * ConvexBoundingPolygon my_triangle{
    *     {575, 400},
    *     {792, 515},
    *     {870, 670},
    * };
    *
-   * Polygon my_line{
+   * ConvexBoundingPolygon my_line{
    *     {575, 400},
    *     {870, 670},
    * };

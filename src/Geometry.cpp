@@ -25,11 +25,11 @@ std::pair<glm::vec2, glm::vec2> getEdge(const std::vector<glm::vec2> &polygon,
   return {polygon[edge_index], polygon[edge_index + 1]};
 }
 
-void forEachEdge(const std::vector<glm::vec2> &vertices,
+void forEachEdge(const std::vector<glm::vec2> &polygon,
                  const std::function<void(glm::vec2 edge_start, glm::vec2 edge_end)> &function) {
-  const auto edge_count = countEdges(vertices);
+  const auto edge_count = countEdges(polygon);
   for (size_t index = 0; index < edge_count; ++index) {
-    const auto [start, end] = getEdge(vertices, index);
+    const auto [start, end] = getEdge(polygon, index);
     function(start, end);
   }
 }

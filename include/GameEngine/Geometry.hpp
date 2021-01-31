@@ -32,11 +32,11 @@ std::pair<glm::vec2, glm::vec2> getEdge(const std::vector<glm::vec2> &polygon,
 
 /** Apply the given function to all edges of this polygon.
  *
- * @param vertices All vertices of the polygon.
+ * @param polygon All vertices of the polygon.
  * @param function Will be called on each edge. Takes the start and end position of the current
  * edge.
  */
-void forEachEdge(const std::vector<glm::vec2> &vertices,
+void forEachEdge(const std::vector<glm::vec2> &polygon,
                  const std::function<void(glm::vec2 edge_start, glm::vec2 edge_end)> &function);
 } // namespace GameEngine::Geometry
 
