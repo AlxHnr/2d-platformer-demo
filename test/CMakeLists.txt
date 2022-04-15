@@ -1,6 +1,6 @@
-CPMAddPackage(NAME doctest VERSION 2.4.4
-  URL https://github.com/onqtam/doctest/archive/2.4.4.tar.gz
-  URL_HASH SHA256=3bcb62ad316bf4230873a336fcc6eb6292116568a6e19ab8cdd37a1610773d70)
+CPMAddPackage(NAME doctest VERSION 2.4.8
+  URL https://github.com/doctest/doctest/archive/refs/tags/v2.4.8.tar.gz
+  URL_HASH SHA256=f52763630aa17bd9772b54e14b6cdd632c87adf0169455a86a49bd94abf2cd83)
 
 CPMAddPackage(NAME trompeloeil VERSION 39
   URL https://github.com/rollbear/trompeloeil/archive/v39.tar.gz
