@@ -6,10 +6,6 @@ CPMAddPackage(NAME SDL2 VERSION 2.0.20
   URL https://libsdl.org/release/SDL2-2.0.20.tar.gz
   URL_HASH SHA256=c56aba1d7b5b0e7e999e4a7698c70b63a3394ff9704b5f6e1c57e0c16f04dd06)
 
-CPMAddPackage(NAME span-lite VERSION 0.9.0
-  URL https://github.com/martinmoene/span-lite/archive/v0.9.0.tar.gz
-  URL_HASH SHA256=cdb5f86e5f5e679d63700a56de734c44fe22a574a17347d09dbaaef80619af91)
-
 add_library(GameEngine
   Camera.cpp
   ConvexBoundingPolygon.cpp
@@ -20,5 +16,5 @@ add_library(GameEngine
   Physics/StaticObject.cpp
   SDL2/Error.cpp
 )
-target_link_libraries(GameEngine PUBLIC glm SDL2 span-lite)
+target_link_libraries(GameEngine PUBLIC glm SDL2)
 target_include_directories(GameEngine PUBLIC ../include)
