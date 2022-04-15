@@ -8,9 +8,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if(NOT EXISTS "${CMAKE_BINARY_DIR}/CPM.cmake")
   message(STATUS "Downloading CPM.cmake")
-  file(DOWNLOAD https://github.com/TheLartians/CPM.cmake/releases/download/v0.27.5/CPM.cmake
+  file(DOWNLOAD https://github.com/cpm-cmake/CPM.cmake/releases/download/v0.35.0/CPM.cmake
     "${CMAKE_BINARY_DIR}/CPM.cmake"
-    EXPECTED_HASH SHA256=f858e68c350c21c44497e56b8291c9e679bca3cfbbd96b3240ba5fc69d6ada84)
+    EXPECTED_HASH SHA256=6c3015e0359c99994f65d248c8541a9cb02e03419d46961ce7d4e38b50d87635)
 endif()
 include(${CMAKE_BINARY_DIR}/CPM.cmake)
 
